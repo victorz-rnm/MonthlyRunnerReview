@@ -1,0 +1,34 @@
+//// runner instances are stopped
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA4VU207bQBB9z1dMn2xXViigVk2rIFXlokiFIuL2parQxjtxFuxdd3ecYIT49s7aTiAhgbxkPLNzztxzJLhIrzBTRjsYgqy1KFQa%2FgnSmdJCHwZxUDlpJApHjZyZuUsbSQtaaVleYCc7TFd6lhv93%2BhrL80rR2jDYEZUui97e9qW%2FVvWmf5CaWkWrq%2BRgqgvBYmJcBgG5H2j%2FhnSD%2BHlsSrKHL8bTdbkl4JmV5XWaFkxVVllsfcAixlahJ96YoSVKGH4CAHZCgMQWsK50YqMHZOgyjW2bympeWdt6wDvlH6EcFWWiFFvjNJwy1EOc5ySqTiPXtgD%2Fr3IStzrhZP6jcz8q0I61p0jWZUmmGPBUt2ALtO4tJgqh4kqkEMuSjgCkZnw8NNHGTURc7cQmnCDk4OTthruGMvc1C0ud%2BGYSX2tOkXUMbiqKIRV9wjCZteFuAs32WJ4H8GkhhZ2pB0JneIFU3YQpTU3mNKWBzH84BFY1zeVVlQn5zxom1y9qMeV38L0AHhH6JuzDpYhoyg1DRmlKKkOX2WMYiCTG52Fg8GAP7gRSMx9LdV0GgZS1EEM2izC6PXIo2hXQMuRamJ6GesEeUFQQ%2FgB%2Bn3YZ5rAP1I6Y%2BI3XA68y2Dw2TuNyZQlyp1OwyG%2FHPDDC5yj9TGi5cfBL33L6ekgep7ByK0DdBHtTOII9hnqVOQOPWbi18rDrc9B2%2F9tM9HqTnMxNzZe7mJr6j5GciVeoTOVTTGpyyf7pbCoaavpzPJCbLOPdMangzfZD1sMz65HgqJo6Zc78qRZXgpfRm59vH46Vp%2B%2Fed8YOu5uh%2F%2F%2FVymLclxNXGpV6YlPkX0scuIZez63%2BHwTnt%2Bc59Hzx0%2BXK97Vns3acmc2VW2Q%2FwFe23L53QUAAA%3D%3D
+
+let NcRegions = dynamic(['chinan3','usdodeast','usgovsc','usnateast','usnatwest','usseceast','ussecwest']);
+cluster('https://nrp.kusto.windows.net').database('test').GetLatestSimpleControlPathRunnerConfigure
+| where Onboarded =~ 'true' and MonitorStatus =~ 'Active' and Region !in~ (NcRegions)
+| join kind=leftouter
+(
+    cluster('https://aznwsdn.kusto.windows.net').database('aznwmds').MetricTelemetry
+    | where PreciseTimeStamp > ago(365d) and name in~ ('E2ERunnersDeployMetric','DataPathMetric')
+    | summarize arg_max(PreciseTimeStamp, *) by RunnerInstanceName
+    | project RunnerInstanceName, LastRunnerInstanceActivityTM = PreciseTimeStamp
+)
+on RunnerInstanceName
+| extend RunnerInstanceAge = iif(isempty( LastRunnerInstanceActivityTM), tolong(999), datetime_diff('day', now(), LastRunnerInstanceActivityTM))
+| extend RunnerInstanceStatus = iif(RunnerInstanceAge between (0 .. 1), 'Running', iif(RunnerInstanceAge between (2 .. 998), 'Stopped', iif(RunnerInstanceAge == 999, 'Never Runer', 'Unknown')))
+| extend IsRunnerInstanceRunning = iif(RunnerInstanceAge > 1, 'False', 'True')
+| project RunnerName, RunnerInstanceName, RunnerFlavor, MonitorName, MonitorId, MonitorResourceType, MonitorParentResourceType, MonitorGrandParentResourceType, IngestionTime, ControlPathTeamName, DataPathTeamName, MonitorSeverity, MonitorStatus, MonitorVersion, Region, RequiredSubscriptionFeatureFlags, SubscriptionId, TemplatePath, Onboarded, IsRunnerInstanceRunning, RunnerInstanceAge, RunnerInstanceStatus
+
+  
+
+=============== runner pass rate =================
+https://dataexplorer.azure.com/clusters/nrp/databases/test?query=H4sIAAAAAAAAA41TTW8aMRC951e4p12qFZAcKxEpLSFCCs0KVvRs7GFx2LXd8RhKVPW3d5YNXxVVy4Xxm%2FHMm7fPqoqBANNkReTDp15Pvtlt0La7Ztx1t8Zqtw1dC5R0ulqSXMgAadJU1TowNgFCowqooOZod%2FNTbFeAIHIEZQIUpoYZydqLeyFLl97pjpBWCytrEINfInm8e5xGawHDEHzldm2%2FZF%2FUIjVYylc8VnwwVqTJXFaGmcDDdFJA7SsOkyz57BwFQunngGZplCTjLOMzoG8O14DPruRj7nxsbrzMJ05DxcjQhrGfSM%2Fh2LIUG1k13Feg1kmH14EfBMyl5RXEQHBBhFmsRa8Nv7hoiQtDrGuJ5g1E4Yib7CkPhGrSaScTuQwB9AVslumx70DcctFImurvRfdcIxY70So2toGkVfCVteT5Ht0rKLqSbGdPeW3uidxTp7f9frcvPl6Q6p0RbzZ%2Fdaz3mh0wME1Hkd4I%2Fqk%2FHWPR%2F8MtBKEBnoCeZRPPDH821s0SuiqXtGopM7A0ZUTYzzkY6cUunEQNem8XwgitOSbOGnLI5qIY9rkHRWYDyU1HOPs%2FErXSXJOrxUaV3DjMDpPa1PthrI%2FhFIKLqKDY%2BVM%2Bl8i2vZp6QqZ%2FLT%2B2JYvDtm0eTSbO9ClA1u34IYt6iRx0gA0bn3bZpTDHIz%2BLwK15Nyjf%2F79Hg6BncREUGt8MHgHfQeDFS755nmn2Pby2Zn52%2Bi4nd%2F0G5TFzaE0EAAA%3D
+
+cluster('https://aznwsdn.kusto.windows.net').database('aznwmds').MetricTelemetry
+| where PreciseTimeStamp > ago(2d) and name =~ 'E2ERunnersDeployMetric' and DeploymentPhase !in ('ValidateARMTemplate','BootstrapVerification','SetWorkerLog','PopulateOVModel','DnsIpMap','IntervalPrecheck')
+| extend Metrics = valueSum / valueCount
+| summarize TotalPhase = count(), PassedPhase = countif(Metrics == 1), FailedPhase = countif(Metrics > 1) by RunnerInstanceName
+| project RunnerInstanceName, PassRate = round(100.0 * PassedPhase / TotalPhase)
+| join kind=inner (
+    cluster('https://nrp.kusto.windows.net').database('test').GetLatestSimpleControlPathRunnerConfigure
+    | where Onboarded =~ 'true' and MonitorStatus =~ 'Active'
+) on RunnerInstanceName
+| project RunnerName, RunnerInstanceName, RunnerFlavor, MonitorName, MonitorId, MonitorResourceType, MonitorParentResourceType, MonitorGrandParentResourceType, IngestionTime, ControlPathTeamName, DataPathTeamName, MonitorSeverity, MonitorStatus, MonitorVersion, Region, RequiredSubscriptionFeatureFlags, SubscriptionId, TemplatePath, Onboarded, PassRate  

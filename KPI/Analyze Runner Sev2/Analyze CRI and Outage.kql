@@ -1,0 +1,46 @@
+// find ICM detail information and TTE, TTFix, TTR, TTRF, TTRR, TTRRF, TTRRRF, TTROutage, TTROutageFix, TTROutageR, TTROutageRF, TTROutageRRF, TTROutageRRRF
+
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA6VVW2%2FaSBR%2B51eM%2BmJ75WIcwCFbUSki7a6lpa0aa7vSqkIT%2BwDTeGbQzHETr1b97T1jYzAkVR%2Fqh3Dm3K9fSkD2j1A1VxlwmRaWzVlRKy5F7v%2FrxaPp5MoLGRFJEjsiuRyPJ46YXcziC0dMLpKrkSMup1fjRjmZJbNpazWdzCYtNblsWFfj6WTc2TdEMoqThojjyWTWeIrH09F47H0OXg1Kyo%2BX5Q1HTpnlZWURjO9tEXf29ygSuSxIZPQwB4WGk3x4Tzp6%2BCBUoR%2FsUAF6wdAp3XELvrfQUmpFrD8AV2kuV6nKRUHGdvVJ4DbLHgf%2Fs4ctGGBLXYi1gIKCA3vN%2BEb78WxUBAeF9w9KqE3bOCYU8086GTCuiG1B7rD22QduKEoXLS0CxqKooFSQTKmwAhhugaWLJf1yZFtu2Y4bZ3QI2Fln9Q7Y%2FBvzFq5WCeYj7LRBKDymDUvt%2Bwr5Bq5zrHjJ5nMWt40k3%2BmNm%2FC%2Bo%2BTXVlJyI%2F4DdlezY3KvBkcVeESgQhYGqA9NL%2BYMNXUUUEjw19pIjqvD%2B6hHk6zpe7lcviwKLwiOvroMyZMQa%2F%2FQo44fhGzNS0seepzzsp43baVPHRz4f3Kb2c25ecsl8Sg80qm9HSejj1BSMcXTgD1ha3jOSu11hfoGEPJnHfSlnYcT3rFjWfZWPJ57aJitYUdm2Rv1pLiG2em1ZJYtn2otO51lLzKd2F9C3ZO2RZNzPB6fWzleDgkqjLZ6jaQ5zLWMhNxFX6eR6A4rKgC5KG1Et42avNDR%2BL1DoD2J2j2sPRd4Z%2FQXqr%2B3jpSTwJKm2V%2Bu%2FnmGJ6cR9i7zHZe9t%2BIK%2B5yFVshzvC4FtyGjK%2BLCLHSl8PAotYViz8qyG%2Ffn3b6N%2B643DQvZLXwFI7AmqrqzuRE7FFrtLU%2Fner6VIftAbZHuguW%2B0CPjFjlWlFz3224nBeUbe7ZypEQPN62wGxu184smaLonOJyXsEZdEYAOGH1boXBI0yDLTT2322q9LoH5TvQs0O55P8HXNF863PhEaLfVlQUSdqNpweqtgLJ4Q2AtwDZ5nIPbHktbsGpB9IcQ2ziIIqfjxuqw7kVqbQULV5U29Yt9iCPONWWrSq4IXFG4Gdn5dPSDbnCzWUn%2B6J%2Fu2m%2FBKVqGTfBfi9R%2BXdp0bS6su8%2B2LsL6k7rolP6m%2F3YOYwlZ2Wk%2Bg2CgVe%2F9HUWDdD7lBwAA
+
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+let allData = cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+| where ModifiedDate > ago(180d)
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId)  //don't include the ICM that has parrent
+| where IncidentType =~ 'CustomerReported' or IsOutageActual == 1;
+let ICMIDs = allData
+| summarize by IncidentId;
+allData
+| extend CreateDate = todatetime(format_datetime(CreateDate, 'yyyy-MM-dd'))
+| extend IsOutage = iif(isempty( IsOutage), false, IsOutage), IsOutageActual = iif(isempty( IsOutageActual), false, IsOutageActual), HasTsg = iif(isempty( HasTsg), 0, HasTsg), IsS360Related = iif(isempty( IsS360Related), 0, IsS360Related), IsAutoDetected = iif(isempty( IsAutoDetected), 0, IsAutoDetected)
+| extend TTFix = iif(isempty( TTFix), 0, TTFix), TTEng = iif(isempty( TTEng), 0, TTEng), TTM = iif(isempty( TTM), 0, TTM)
+| extend icmLink = strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', tostring(IncidentId), '/summary')
+| project IncidentId, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, Severity, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, Status, HasTsg, Tags, IsS360Related, S360Link, icmLink
+| join kind=leftouter
+    hint.strategy=shuffle (     cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentCustomFieldEntries
+    | where IncidentId in (ICMIDs) and TeamId in (XinyanTeamIds)
+    //and Name == "IssueCategory"
+    | summarize hint.num_partitions=50 hint.strategy=shuffle arg_max(ModifiedDate, *) by IncidentId, Name
+    | summarize hint.num_partitions=50 hint.strategy=shuffle       Category = max(iif(Name =~ 'IssueCategory', Value, ''))  by IncidentId
+)
+on IncidentId  
+
+
+
+//////////// CRI / Outage TTE, TTFix, TTR, TTRF, TTRR, TTRRF, TTRRRF, TTROutage, TTROutageFix, TTROutageR, TTROutageRF, TTROutageRRF, TTROutageRRRF avg
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA21TXW%2BbMBR9z6%2FwGyClKYSPkFWZFCX74IFlapE6aZoiFy7EKrYj7DRhmvbbZ%2FAIJClPx%2Beee%2B6HcQkS%2FSCsxiwBTKNMoAXKaoYpSc2fhmP73twYIwWCwGlAMHNdrwHhNHSmDfCmwdxuwMyfu604CIPQ11m%2BF3oaebOWmru%2B53b5LQhsJ2iB43he2Do5rm%2B7rvHLehiVqj9clmssseosLQ9CQmUaOyn34sP9PUlppkIVn6TAZIVVfPKqNHxyJCzjRzFhIA1r0ohesADTWHFKOVPUF5DbKKXbiKUkU8li%2B0zkLklOoz%2FouIMKUMwzkhPIVHFAHxEuuOmEdmadBZsjI6zQi0OEIfNikxbCTNEC6F7WJvqOK1WlqxYNbDouqfeAFn%2BRsWomoFA9wp5XEjID8QpFYnOQuIBlKg%2B4RIsFcvR6olUcrZt7%2B78n5SsOlOKK%2FAb0UqO%2B5MOol8BJgmpvVYGarp1wgSRXewJJKJg5ryiW2%2FO516n7qdV3F8d3WWZYVu%2FVdaicCMnN8%2BQdb41RjkuhHAbM9Vjvp%2BrorcGZ%2F4pFIorrdM2qsD3ucSSe3MB%2BhFINk90WHAR14jUVieVB8jVISN81GEY7hwuu31iSfCana4eW1IkdTJJP7Ga4lux0GiZJfKuKO008qPykHo3c5M8ArypDNCeeH9VpcNPWxZ%2B0fCu0PX4rTO3aUnoCTepuW1o3rOmmueZPHBQdDx7PN0ybKx28gusL%2Fgf4BSzJpgQAAA%3D%3D
+
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+let allData = cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+| where ModifiedDate > ago(180d)
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId)
+| where IncidentType =~ 'CustomerReported' or IsOutageActual == 1;
+let ICMIDs = allData
+| summarize by IncidentId;
+allData
+| extend CreateDate = todatetime(format_datetime(CreateDate, 'yyyy-MM-dd'))
+| extend IsOutage = iif(isempty( IsOutage), false, IsOutage), IsOutageActual = iif(isempty( IsOutageActual), false, IsOutageActual), HasTsg = iif(isempty( HasTsg), 0, HasTsg), IsS360Related = iif(isempty( IsS360Related), 0, IsS360Related), IsAutoDetected = iif(isempty( IsAutoDetected), 0, IsAutoDetected)
+| extend TTFix = iif(isempty( TTFix), 0, TTFix), TTEng = iif(isempty( TTEng), 0, TTEng), TTM = iif(isempty( TTM), 0, TTM)
+| extend StartOfWeek = startofweek(CreateDate)
+| summarize AvgTTM = avg(TTM), AvgTTFix = avg(TTFix), AvgTTEng = avg(TTEng) by StartOfWeek, OwningTeamName, IncidentType, IsOutageActual  
+
+  

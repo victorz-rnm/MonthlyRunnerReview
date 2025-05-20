@@ -1,0 +1,47 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA6VWbW%2FiOBD%2Bzq%2Bw0Eokq4hcW%2B1%2BaI9KlHb3IrVdVCL2Q7eHTDwEF8eObNOWvb377TeGhCQUdqs7JCD2PDPzzIvHEWCJUGpxQZNFnJEeoanyTj5%2BYP5ZS6As1jz7w2ZioKQFaRHgGatP8ctl6rf%2BahH8OGCyBWjIBU3Aa3faAVn%2FbHeI23E%2FqO%2Bjh1JZg1mKhu7v93%2BeP7w%2Fd3j8FsYLjQ269feGYQo2kglnKL%2FmcuEY8mK9h6bYQFCQUOu159bm5jQMc6UtFd2MJ1oZNbM8ybqJykKe5eHTSVgaNCEDS7kwIZIqN5FiOFcZtMuA0MWZe6gxvIOcch1ZyEqOz0ov3Dpib2fJ4KlLvy81rLllZv0cfpEQTpw5juZMCIxbR69y8BNeIwxQQAw0u6UZOF4S%2F0%2FJa0omFxwTbFyV1s9rJMb%2B7Vt7XyU5n3lUa7qaCJCpnXtbAz45J0dBZfD%2B6CEgztje8o6p4IxarmRMU4OG2QqxPPHuO%2BP%2B9ah7q%2FOxBDtcTs1y%2BllRMbLUQifYSm95cljYN%2BmOEBvdICmQyapu5I24oTCHnd2ppYWYTgUcwphs0B%2F2b2ieY%2FZru0OxNEUiwBXqDhKlWQm4k1mE50NLKq4VZRdUUJmARieCJ2OeX4KFxGWwpoB%2BBYxAP%2FEEImms09gVx1Nmyr1PXLJroAtgg76pxwRGLXUCTnaAMDIoJbFewlAZbvnT1tsnKky1%2BYBNEIbNwrscLZul7w%2FiaHyFJm6iOPrcj68u15pOLxrcRJcOnSAHzIrXwcNcPHf8LpqkU2rA60TJzSUuvlINc7U0gMJykJiRpLmZKzs%2Bbv0gz3PQQAYaMBjUAOzf2sgMQyoZKThy%2BQ%2Fxdpn7xCEi7AydAiO9Hpm5mItdzCAetsTWJOgTXrC1GBlSbYAVnZ%2B7xeTRKOm5HX9LrYaaUzOhclUnUWLNMsuo5t%2BBTFekjDRiZ63%2FkaiLZWq2NG4U4zMO7FWOtojKK2aKeJtS%2BVW4Vy%2BbNo5YMSZfjU6vgvhBEXif4cjDQKlwNJuJasqaaaA6nWRcenXeAXnvu%2FxUboKitq9V6csvVKvA%2Bqkbru40WJ7BBJVmXodRHB2kaWLTZesFxtfHVU7tHHX3hdot5QH5Wkz7eJXDIXQdE5Aqrz%2FTaaLqWpcg8MDq1du06%2BiAjEfxaCCUKXrlgHYTVSWzsvrlWeKgdNcXdlSPWCWUTL1fUKkrYY5LZsWdVS17pH302xHepJ1j8gywwLG3D3G8QWT4ijI%2FADlxkI8VpBT7vmvIXKtHnM%2BNlmsehEZb7HYMtla1dbEKCMYHuuxa58wkmucuFQHZpH9%2F2%2By2xG6ZggOJr%2BLBYB4VHuwFXhY9ATPrLjxNvPW1%2Fh%2BmjLNv1so%2FCMPLFt%2B48I20cFq%2BtLR8oiR559wdKLKrwjvN07ntbjb%2BBcJq4Pf1CgAA
+
+let lookBackTm = ago(365d);
+let TrimHtmlContent = (str:string)
+{
+    let content = replace("'", "'", replace(" ", " ", str));
+    let result = replace("<[^>]*>", "", content);
+    result
+};
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link;    
+};
+let getRepairItemLink = (workItemId:string)
+{
+    let link = strcat("https://dev.azure.com/msazure/One/_workitems/edit/", workItemId);
+    link;    
+};
+let getSimpleTeamName = (name: string)
+{
+    let splitList = split(name, "\\");
+    let result = iif(array_length(splitList) > 1, splitList[1], name);
+    result
+};
+let ValidationTags = dynamic(['VALS.NrpVnetPubsubGoalState','VALS.NrpNicPubsubGoalState','VALS.NrpAsgPubsubGoalStateConsistency','VALS.NrpNsgPubsubGoalStateConsistency','VALS.NrpPlsPubsubGoalState','VALS.NrpRouteTablePubsubGoalState','VALS.NsmCAPAMapping','VALS.NsmPlusValidateNameRecord','VALS.RnmInternalLoadBalancerPublicVipDetection','VALS.RnmStaleServiceInstance','VALS.RnmStaleTbds','VALS.FindLeakedCAs','VALS.NrpResourceLeak','VALS.NsmPlusValidateVip','VALS.TruePositive','VALS.FalsePositive']);
+//let ValidationStatus = dynamic(['ACTIVE','MITIGATED']);
+let ICMIDs = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookBackTm //and Status in~ (ValidationStatus) and IsPurged == false and IsRestricted == false
+| extend ParsedTags = parse_json(Tags)
+| where ParsedTags has_any (ValidationTags)
+| summarize by IncidentId;
+cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+| where ModifiedDate > lookBackTm
+| where IncidentId in (ICMIDs)
+| extend ExternalIdLink = getRepairItemLink(ExternalId), ParsedAdditionalData = parse_json(AdditionalData)
+| summarize arg_min(ModifiedDate, *) by ExternalId, Status
+| summarize arg_max(ModifiedDate, *) by ExternalId
+| extend Age = datetime_diff('day', ModifiedDate, CreatedDate), Areapath = ParsedAdditionalData.Areapath, WorkItemType = ParsedAdditionalData.WorkItemType, RepairItemType = ParsedAdditionalData.RepairItemType, RepairItemDeliveryType = ParsedAdditionalData.RepairItemDeliveryType, VSTSClosedDate = ParsedAdditionalData.VSTSClosedDate
+| extend RepairItemOwningTeamId = tolong(ParsedAdditionalData.RepairItemOwningTeamId), Delivery = iif(Delivery == "101", '2 weeks', iif(Delivery == "102", '2 months', iif(Delivery == "103", '6 months', Delivery)))
+| project ExternalId, ExternalIdLink, CreatedDate, ModifiedDate, Age, ModifiedBy, Owner, Status, Description, Type, Areapath, WorkItemType, RepairItemType, VSTSClosedDate, RepairItemOwningTeamId, Delivery
+| join kind=leftouter (
+    cluster('icmcluster').database('IcMDataWarehouse').Teams
+    | distinct TeamId, TeamName
+) on $left.RepairItemOwningTeamId == $right.TeamId
+
+  

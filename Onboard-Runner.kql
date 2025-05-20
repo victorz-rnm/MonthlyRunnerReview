@@ -1,0 +1,42 @@
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA3WQQU%2FDMAyF7%2FsVvjWVYBMHJCTEaVyQ6Ki2HZAQB3f12ojFQanLKOLH46SdtB04xXkvtt%2BXxQI8Vx5DDaFnpjA7kEAnGGRbwANg483N3W2d3yeDuE4y%2B6OZpFfLA%2FKW0HVq1AOjszvzlpXBfqHQs%2BUPWHqW4A9QHpApu4JstS7TsSlU67tYr1fFhVOO4nJ6N3kgHiRYbCh71wDrlPllJLDcbASl72a%2FcGwpEDxxQ51Yz4%2BaBCqSIxGDOeHN5yNQrg30LVpD5NgOn6Qo1u7NFLxEaaMDVrvPgHPwAXQ2%2FvtAU4%2FXNDlBeL4%2Bl%2BLyrncOg%2F0h%2FameJf7jLhZm5FuhoxyqAQqN06qbAPzexau5gNSFJwSdGxSJAoh1tGu15Q9lMedr7gEAAA%3D%3D
+
+// onboard runner
+let startTM = ago(185d);
+let endTM = now();
+let XinyanTeams = dynamic(['PrivateLink Control Plane', 'NRP', 'NSM Plus', 'RNM', 'NRP', 'NSP', 'RNC', 'NSM', 'NRP to triage']);
+RunnerOnboardingStatus
+| where IngestionDate between (startTM .. endTM)
+| extend TeamType = iif(ControlPathTeam in (XinyanTeams) or DataPathTeam in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+| summarize Count = dcount(RunnerName) by Month = startofmonth(IngestionDate), TeamType
+| render timechart 
+
+
+
+// find new runner or removed runner
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA51SS2vbQBC%2B51fMzTI4CT0EAqGXJJdC7ArblEIoZmyN5E2kWbM7tqrQH59ZaR3ZeZDQk3Zn5nvN6vwccsMZMNXgtszkTkoS8IJO5mP4DljY5NvlRTa8ahvEWVtmWyex9NtwgzwnrLw2soaxMqvkfpA6s0OhO8OPcGNZnC0hLZFpMILBZJq2n9lYa1sfztPJ%2BKiTdsWbOBd7IBbEGSxo8CcauEZPtyio6tM2wk9eWnSZ4WImKFt%2F8g%2FqNTmCH1yQF2NZxwmWJDURQ7JPe3bW5RsqgP6KniHEmjcbUm5j8iTmSFHWoQNG0Qf5h2AdBCsfDmiI7toyt5ksnx6WgvjG2QdaSYwzwYpG8AtLk2EwH%2FyMYKxW1mqrNW%2FzKlyTo4AqtrevnN46gWUTcehX3fJmJHF3%2BzWG2W1VoTNPFB2Eh63wkRaeJDk2MnzhPFKL6%2Bvgs8Ckv5Jz2CxK4kKdRuLDtJEldkYH4M%2BCxBC97sZR71wvu6%2Fo9aAPtSP9hOqeXneyyEye6w%2FGK0reodOHmFJld5R1hbegt9LvOe1lXxH%2Bx9KeAab7WHn5AwAA
+
+// find new runner
+let startTM = ago(185d);
+let endTM = now();
+let XinyanTeams = dynamic(['PrivateLink Control Plane', 'NRP', 'NSM Plus', 'RNM', 'NRP', 'NSP', 'RNC', 'NSM', 'NRP to triage']);
+let BaseData = RunnerOnboardingStatus
+| where IngestionDate between (startTM .. endTM)
+| extend TeamType = iif(ControlPathTeam in (XinyanTeams) or DataPathTeam in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+| project RunnerName, ValidationType, Month = startofmonth(IngestionDate), TeamType
+| sort by Month asc;
+let SetData = BaseData
+| summarize Runners = make_set(ValidationType) by Month, TeamType
+| extend RunnerSize = array_length(Runners)
+| project Month, Runners, RunnerSize, TeamType
+| sort by Month asc;
+SetData
+| extend preRunners = prev(Runners)
+| project Month, Runners, preRunners, RunnerSize, TeamType
+| extend NewRunners = set_difference(Runners, preRunners), RemovedRunner = set_difference(preRunners, Runners)
+| project Month, NewRunners, RemovedRunner, Runners, RunnerSize, TeamType
+| sort by Month asc 
+
+
+
+
+

@@ -1,0 +1,32 @@
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA41UUW%2FaMBB%2B51fceCFoWbtOmjSp4qFr1wqpsAjQNqntKhMuwSU5R7YDpNqP3zkJkLSoW14S333%2B%2FN35uyRoAbdhki9wESyFQRjAoiCRytC76w3JInHmChO0UlHP7%2B0%2Bv9O1kEmukWMzLchESqfiBejCTq3QNs849lUpa6wW2Q%2FUMpLhDjtF%2B1PpFepbFfPSHanXIgk0hksMV46NzDAbiawC59k4lrTlRUlUlKshGSuShIPBt4ss02rtdF3mxqp0GmqZ2RenXmGWqGIaIgkt1ZAmN72H%2FnmHZYNxkmcjboSIlXf25fOiTnAryjCpjVeHfkkqBM1QpKbVuEDLtbB4K2kFl4qsVgkEiSBWBb3xJChf0xHHcuO%2BJ%2BNRKxNUwcsaV%2BfAKrBaihj3YmeK657kRKhHyLnQ6bhBW4Uugzo4EZsrYUXnD2yWqBFmMkWuM81gjnaDSODtyj45qQrt78HSkLKYZrbwKtqxSPGQrlqZItnKQO8ks7U85bC4dVaCAwHr5JgWofW6F89jtDOlElPlzf39iXf3%2B%2Fzhfb%2Frw5kP7XNrrigRa6WZx%2BRzdpakuNZXuoFCdHgfPvog2cRbFR1NN6iPcUsZefUi5IsUkgz0NIXuSqqXQ7wmPqC7DOsC738TtCzmWi7%2BjUtRJ5K4KyUtv8Rz1G0qHzF06Zri7lNFqVt6%2B%2Ftm2xyxDJyeQsRNAl2GIZXGcDuBHVh3gvmfFF8srBg20DJeWpXzpELH6wA%2FFd93miuhF7yV597mpkztfDKkmDXw%2BLET8S3fVZvqctxs1dfQ8GE9U4GwSwfo%2B%2FAi4oPz%2Bz7%2FmnNWZFjzlkc40zammRl71bJElwOo6EMz1G9Vd5SkRpg8Tfk388xVFzzDLa%2BWxvOh0rwT1umDooYzj8%2FPq660GA%2BL5vfZf4z1Qe51eff80%2BVOpWKFjwZtPQ19V0vzDKf9oJP33PLtDrhcSdYTWoviMUGK2Yx71v5BzA4%2FgE%2FAQf6DP2FoWwdUEP8gan%2BmUdo6OW75FwQZfNrRBgAA
+
+let excludedPhase = dynamic(['IntendedDeletion','DeletionOnFailure','Transformation','DeletionAtStartup','BootstrapVerification','SetWorkerLog','IntervalPrecheck','DnsIpMap','SetupNginx','VerifyNginxInstall','PEApprove','CustomScriptVerification','DeployScenarioInRG']);
+let startTM = ago(185d);
+let endTM = now();
+let XinyanTeams = dynamic(['PrivateLink Control Plane', 'NRP', 'NSM Plus', 'RNM', 'NRP', 'NSP', 'RNC', 'NSM', 'NRP to triage']);
+let TotalRunnerMetrics = GetRunnerCPMetricsRawData
+| where Timestamp between (startTM .. endTM)
+| where isnotempty(RunnerName)
+| where DeploymentPhase !in (excludedPhase)
+| extend RunnerName = extract("AzNetToolsRunners\\.([^;]+)", 1, RunnerName)
+| extend flavor = substring(RunnerInstanceName, 0, indexof(RunnerInstanceName, RunnerName))
+| extend flavor = iif(flavor contains 'rnc', 'rnc', iif(RunnerInstanceName contains "rnc" or RunnerInstanceName contains "hybrid" or RunnerInstanceName contains "merlin", "rnc", "azf"))
+| extend Month = startofmonth(Timestamp);
+TotalRunnerMetrics  // find runner missing RNC flavor
+| join  kind=rightouter 
+(
+    RunnerOnboardingStatus
+    | where IngestionDate between (startTM .. endTM)
+    | extend Team = iif(isnotempty(ControlPathTeam), ControlPathTeam, DataPathTeam)
+    | extend TeamType = iif(Team in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+    | where Team in (XinyanTeams)
+    | summarize by tostring(RunnerName), Team, TeamType
+) on RunnerName
+| extend RunnerName == iif(isnotempty(RunnerName), RunnerName, RunnerName1)
+| where isnotempty(RunnerName)
+| summarize FlavorSet = make_set(flavor) by RunnerName, Team
+| extend SetLen = toint(array_length(FlavorSet))
+| where SetLen == 2 
+| project RunnerName, SetLen, FlavorSet, Team
+| sort by Team
+

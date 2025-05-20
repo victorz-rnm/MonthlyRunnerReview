@@ -1,0 +1,28 @@
+https://dataexplorer.azure.com/clusters/s360prodro/databases/service360db?query=H4sIAAAAAAAAA7VVW2%2FiOBR%2B76%2Fw8pIgpeEeYGe7UqedapGWMhrQdKUKVZ74AJ4mNrKdslSj%2Fe17nBByoZ3OjrQICXMu37l99onAkEjKx%2Fc0fFzE5ILQtXR7wYA1351FqPuLiz0VC6DxhGlUs72gMQ%2Fde6fTHvTHjkfwEAQdewiGvV7fHkbdUadrD%2F1uMG7bw3Aw7qXGwSgYDTKvQX%2BUWvfHo94oNeoGwSjT9Yep0bg36PdyxPQQtDtBeuiN%2B%2F2hs8Q0Wy3CRRglDBhRiRCgiMF8CWeosjV8SoVZDVjCwTWrb3I1nVzbwhBAG1CuszFmq39ttXgYH2T%2BI%2F5If8cFkzvtCzBO02fU0C9Ug%2BtMwuk1%2FrmjCjYy0YDKiQg5A2H0XNCt3kjzuXv2jew2oIBcKaAG0API76XWF3qpFETUcClsuv8QZ359m5Wgz%2F%2Fg5komwjhH89lOcLE%2BFMcFcSsTa6KdTuKYKv4M5Mue5JlNWFb%2F3eR%2FLP99stbHRIvIaZpZ45s4om9kq%2BRXCA358DeGEzSaMPRiXBuca1n67uwkzQ7o0%2FxalQQvnxMF1%2FA022qU30n1ODFQ9Hum1lTw57ThtzQGcoEUiTW1XkWbc7dD9mnbbHMBkxOMfNVS2C5gJ7dUaXiwAtdKXjC64RCllykX3DdWqaixLIwzmrCUJxfESG0UztmtYtw35nvsR%2ByXrBvLpkduuOB685bzlIdKarky%2Fuf5Yu7Pww2wJEJLv%2FBP4T4qLhU3%2B%2F8AdiXjWAo%2F90xhZoqvOU7yA042%2Func6igpNIbbIp%2BB2UH9HG4FAkGLWVxidz9Ss%2FmBQeSmaVJIGJXy6gedK%2FYpwqXWfC2ALWSJLgcvJw95tHGW9w5em21E95bJztIjC6rWYN4ggvN6Uwp%2Fp9yRGixeNsBhgFvI7UxqFD5alRSnXD1aFfJS4CnXOg9i6cj5yi1Zkt%2BIkDu3SWg1yVwsFeEa4q3Zu6W4mflRUSoi08yNxfjFXnznWgpwPOcTxPIJmIP5dzzSLmVYKWclFVL04YWacIXt8XM%2BnZ6zFKbS0rpfoTzxq3a57ljSnnhiDZTb7fHGnfkOPSoQFYZkG%2BsGlxXDNXCY1Cu8X9A1vn0klMIgmiaNqnPDIw2jErC%2FKxppaNi35Lj3vpf5IcCtZJDdiNc4bLN7iQAYsjMets%2FbHfw2vKqqMuoKQolbdYSKKl8rf3JhJ4BVhNQU2%2B2whvwnrhMs3CSMSz%2BUcWsmoPWwQ2eOzroFjOPS80pbytaZr9VC6mVUxjK4iaDCnXJi5TK96pUrP0nFXjh92msvco1s3vFJrT2SXo035TlXu%2FUvXpsjJ7kKAAA%3D
+
+let lookBackTm = ago(365d);
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '49838', '72668', '10475', '93543', '82813', '60163', '39447']);
+// included runner team id
+//let RunnerTeamId = '39447';
+let ICMIDs = cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookBackTm
+| where CorrelationId =~ 'SDNRunners-HitCount'
+| where OwningTeamId in (XinyanTeamIds)
+| summarize by IncidentId;
+let WIIDs = cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentBugs
+| where IncidentId in (ICMIDs)
+//| project ExternalId
+| distinct ExternalId;
+cluster('https://1es.kusto.windows.net/').database('AzureDevOps').WorkItem
+| where OrganizationName == 'msazure'
+| where WorkItemId in (WIIDs)
+| extend jsonData = parse_json(Data)
+| extend jsonDataFields = jsonData["fields"]
+| extend CreatedDate = tostring(jsonDataFields["System.CreatedDate"]), FinishDate = tostring(jsonDataFields["Microsoft.VSTS.Scheduling.FinishDate"]), Priority = tostring(jsonDataFields["Microsoft.VSTS.Common.Priority"]), OriginalEstimate = tostring(jsonDataFields["Microsoft.VSTS.Scheduling.OriginalEstimate"]), CompletedWork = tostring(jsonDataFields["Microsoft.VSTS.Scheduling.CompletedWork"])
+| extend AreaPath = tostring(jsonDataFields["System.AreaPath"]), IterationPath = tostring(jsonDataFields["System.IterationPath"]), AssignedTo = jsonDataFields['System.AssignedTo']['displayName'], TargetDate = tostring(jsonDataFields['Microsoft.VSTS.Scheduling.TargetDate'])
+| extend TargetDate = todatetime(TargetDate), CreatedDate = todatetime(CreatedDate), FinishDate = todatetime(FinishDate)
+| extend MissTargetDay = iif((FinishDate < now() and TargetDate < now() or isempty( FinishDate) and isempty( TargetDate)) and State !in ('Done','Removed'), 1, 0)
+| extend FinishDate = format_datetime(FinishDate, 'yyyy-MM-dd'), TargetDate = format_datetime(TargetDate, 'yyyy-MM-dd'), CreatedDate = format_datetime(CreatedDate, 'yyyy-MM-dd'), RemainingWork = tostring(jsonDataFields['Microsoft.VSTS.Scheduling.RemainingWork'])
+| extend RunnerFoundBug = iif(jsonDataFields["System.Tags"] contains "RunnerFoundBug", "true", "false"), OwningTeam = tostring(jsonDataFields['System.NodeName'])
+| extend TargetDate = iif(isempty( TargetDate), "1970-01-01", TargetDate), FinishDate = iif(isempty( FinishDate), "1970-01-01", FinishDate), WorkItemLink = strcat('https://msazure.visualstudio.com/One/_workitems/edit/', WorkItemId)
+| project WorkItemId, State, Title, CreatedDate, FinishDate, TargetDate, MissTargetDay, AssignedTo, Priority, OriginalEstimate, CompletedWork, RemainingWork, AreaPath, IterationPath, RunnerFoundBug, OwningTeam, WorkItemLink  

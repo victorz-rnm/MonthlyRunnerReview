@@ -1,0 +1,111 @@
+
+=================================== 5/20 version
+
+
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA%2B1Y3W%2FaSBB%2F56%2BY8mJz5%2Baj0kmVIh5ScqmQCkWArie1PWmxB9jG3rV21yFEVf%2F2m7XX2BhIcxdU5SF5MTszO5%2B%2F2d3J6SlEOOcCwSwRVCYEKmAiAoMsgZRx1YrRAN6FcRZhNFoyjdCFaC1YwkP%2Fs9cXBgVxrpDkuBRe4JU%2FP4prxuNMIdGmigk9lyphDaFLMzFMmSwl2jspjTaKpX%2Bh4nMelrITNJ%2BkukH1QS5oaU2qWxaPFIZLDG%2BsNqH76YClhXCWDhdc3NEiV7TOV32hDYtjIo7%2BvExTJW%2BtX71MG5lMQsVT07B6hWks15MQBVNc9sX4vfe1c5GnQ1uXpwNKBFtI%2F%2FztH5FjUCpyspAr35H%2B5mLNxJTSqbcSN1L8lhn8wMUN9KQwSsYwipkgr8Abjkf5ZzIgWqbt7%2FFwsMUZFcSek3M8MBKM4myBG2enkuIe55UdIPFC68d7NAWpN3LEMVtdMcNa32G1RIUw5QlSnEkKMzQrRAF%2BGfbJSRFoZyPMtZAGk9Ss%2FULtkCVYsYtUJihMAaBXnLRtYcrK4p2FElQKyE%2BiKRYav315P0QzlTLWBV9%2F%2BXLif%2F7n4uvvnXYA5wFs23W65jG7lYr06GxGyOJi4fzL0SBCtPIBnAXACcR3cr6XXVO9Tzfnc98tQiok40KDp0RoS1J8rMSu4kq6TWJtoP0PCi3XM8Wjn8slqGIuKCu5Wvqw%2B3m77vmARJc2Kbaecp7Ypb%2Bpt4MN4cEh4926XpLWLp5Is86ShNrkHgu49YQh%2FaHMhPE7AYyY1jUSZaPYCd0unBPfnhMY7ZV4ZSVgtq4VISgCIKvfJAHphkrXVXyxNDKjgwGg5beA%2FooNH8VMMhVR5emcMZnOWSUu%2B2JBMVO7E%2FLxIZwXm1z6bC9P1ym60rvmHTGztByw2K41fcfWy3bWQQGCSbHMNeeNLMXrOql0oMpyIyGlSy2yJmqc1iGnaw1bcjqVGsJMw4W2hQ8dmt8wNLulCDZV39S6VtRKb%2B1AamDrUkRjXFAlngfACl9%2BArQXnP16nJWFeSrervPz%2BtlCLnC3ywv0HgM992DZ%2BNzdtvY4RBUJfwqyrt2D4DmgqYzm5QD7NSh6DHoKzFj62Gax29r%2FxNrFyiRL8ids4pfqHWIqhrOW46C8kstQK8cdJyVh2qcIR5Ff6vkNzs%2FOTs7gdGMzgDedJuJL78nhrbPz0HV%2B7GDKfj1CUBMa91Dnz2BFQ59fmfDgNXilpU4z8B6jgbDR7A%2FcLhtkuYRx8QN8L9PItHmDmZ1ZgZY0ZtKkE1eEFTWcI3rVJFUOHT%2FAo1e9Z1tmm2QHjgbVko5Vh%2B3T8olVaFagbKKH838g89elR0eJ8yjxFUouWs2m2Tc25%2FptnZX9d4oCQ%2BNYuKTjFar9%2F3dfLTmH9z8ZX86BAx7Uu%2BY%2FxXGx%2Fzp9udCOcKEdrsJBe%2FPdNnOPGCtZcP8FhhTMIlUUAAA%3D
+
+// define the runner and team pair
+let excludedPhase = dynamic(['IntendedDeletion','DeletionOnFailure','Transformation','DeletionAtStartup','BootstrapVerification','SetWorkerLog','IntervalPrecheck','DnsIpMap','SetupNginx','VerifyNginxInstall','PEApprove','CustomScriptVerification','DeployScenarioInRG']);
+let startTM = ago(185d);
+let endTM = now();
+let XinyanTeams = dynamic(['PrivateLink Control Plane', 'NRP', 'NSM Plus', 'RNM', 'NRP', 'NSP', 'RNC', 'NSM', 'NRP to triage']);
+let TotalRunnerMetrics = GetRunnerCPMetricsRawData
+| where Timestamp between (startTM .. endTM)
+| where isnotempty(RunnerName)
+| where DeploymentPhase !in (excludedPhase)
+| extend RunnerName = extract("AzNetToolsRunners\\.([^;]+)", 1, RunnerName)
+| extend flavor = substring(RunnerInstanceName, 0, indexof(RunnerInstanceName, RunnerName))
+| extend flavor = iif(flavor contains 'rnc', 'rnc', iif(RunnerInstanceName contains "rnc" or RunnerInstanceName contains "hybrid" or RunnerInstanceName contains "merlin", "rnc", "azf"))
+| extend Month = startofmonth(Timestamp);
+let RawMetricsByRunnerName =
+TotalRunnerMetrics
+| summarize TotalCnt = count(), PassCnt = countif(Metric == 1), FailedCnt = countif(Metric != 1) by RunnerName, Month
+| join kind=rightouter  
+(
+    RunnerOnboardingStatus
+    | where IngestionDate between (startTM .. endTM)
+    | extend TeamType = iif(ControlPathTeam in (XinyanTeams) or DataPathTeam in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+    | summarize by RunnerName, TeamType
+) on RunnerName
+| extend TeamType = iif(isnotempty(TeamType), TeamType, "Non-Xinyan Team")
+| project RunnerName, Month, TotalCnt, PassCnt, FailedCnt, TeamType;
+let TotalMetricsByRunnerAndRegion =
+TotalRunnerMetrics
+| summarize TotalCnt = count(), PassCnt = countif(Metric == 1), FailedCnt = countif(Metric != 1) by RunnerName, Region, Month
+| join kind=rightouter 
+(
+    RunnerOnboardingStatus
+    | where IngestionDate between (startTM .. endTM)
+    | extend TeamType = iif(ControlPathTeam in (XinyanTeams) or DataPathTeam in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+    | summarize by RunnerName, TeamType
+) on RunnerName
+| extend TeamType = iif(isnotempty(TeamType), TeamType, "Non-Xinyan Team")
+| project RunnerName, Month, Region, TotalCnt, PassCnt, FailedCnt, TeamType;
+let TotalMetricsByRunnerFlavorRegion =
+TotalRunnerMetrics
+| summarize TotalCnt = count(), PassCnt = countif(Metric == 1), FailedCnt = countif(Metric != 1) by RunnerName, Region, Month, flavor
+| join kind=rightouter 
+(
+    RunnerOnboardingStatus
+    | where IngestionDate between (startTM .. endTM)
+    | extend TeamType = iif(ControlPathTeam in (XinyanTeams) or DataPathTeam in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+    | summarize by RunnerName, TeamType
+) on RunnerName
+| where TeamType == 'Xinyan Team'
+| project RunnerName, Month, Region, flavor, TotalCnt, PassCnt, FailedCnt, TeamType;
+let TotalMetricsByFlavor =
+TotalRunnerMetrics
+| summarize TotalCnt = count(), PassCnt = countif(Metric == 1), FailedCnt = countif(Metric != 1) by RunnerName, flavor, Month
+| join kind=rightouter 
+(
+    RunnerOnboardingStatus
+    | where IngestionDate between (startTM .. endTM)
+    | extend TeamType = iif(ControlPathTeam in (XinyanTeams) or DataPathTeam in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+    | summarize by RunnerName, TeamType
+) on RunnerName
+| where TeamType == 'Xinyan Team'
+| project RunnerName, Month, flavor, TotalCnt, PassCnt, FailedCnt;
+let PassRate =
+RawMetricsByRunnerName
+| summarize TotalSum = sum(TotalCnt), PassSum = sum(PassCnt) by Month, TeamType
+| project Month, pass = round(PassSum * 100.0 / TotalSum, 2), TeamType;
+let PassRateByRegion =
+TotalMetricsByRunnerAndRegion
+| summarize TotalSum = sum(TotalCnt), PassSum = sum(PassCnt) by Month, TeamType, Region
+| project Month, pass = round(PassSum * 100.0 / TotalSum, 2), TeamSeries = strcat(TeamType, ' - ', Region);
+let PassRateByCanaryFlavor =
+TotalMetricsByRunnerFlavorRegion
+| where Region in~ ('useast2euap', 'uscentraleuap', 'uswestcentral')
+| where flavor =~ 'azf' or flavor =~ 'azfrnc' or flavor =~ 'rnc'
+| summarize TotalSum = sum(TotalCnt), PassSum = sum(PassCnt) by Month, Region, flavor
+| project Month, pass = round(PassSum * 100.0 / TotalSum, 2), Series = strcat(flavor, ' - ', Region);
+let PassRateByFlavor =
+TotalMetricsByFlavor
+| summarize TotalSum = sum(TotalCnt), PassSum = sum(PassCnt) by Month, flavor
+| project Month, pass = round(PassSum * 100.0 / TotalSum, 2), flavor;
+PassRateByRegion
+| where isnotempty(Month)
+| render timechart ;
+PassRate
+| where isnotempty(Month)
+| render timechart ;
+PassRateByFlavor
+| where isnotempty(Month)
+| where flavor =~ 'azf' or flavor =~ 'azfrnc' or flavor =~ 'rnc'
+| render  timechart ;
+PassRateByCanaryFlavor
+| where isnotempty(Month)
+| render timechart;
+TotalRunnerMetrics
+| join kind=rightouter 
+(
+    RunnerOnboardingStatus
+    | where IngestionDate between (startTM .. endTM)
+    | extend TeamType = iif(ControlPathTeam in (XinyanTeams) or DataPathTeam in (XinyanTeams), 'Xinyan Team', 'Non-Xinyan Team')
+    | summarize by RunnerName, TeamType
+) on RunnerName
+| where TeamType == 'Xinyan Team'
+| where isnotempty(Month)
+| summarize by RunnerName, flavor
+| summarize count() by flavor
+

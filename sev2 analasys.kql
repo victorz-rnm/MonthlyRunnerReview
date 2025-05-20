@@ -1,0 +1,31 @@
+// compare sev2 
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA31UbW%2FaMBD%2Bzq848WEJVYDwUkrpqDRRTUVaKWqZ%2BqHqJjc5EquJzWynlHXbb985L7xpWqQ4tu%2B55853j5OgAW2YMlfMIIwhpI%2FhKbpdv9tv%2Br1md9C4qCWEQhH%2BA9Nr%2Bt2m3ykxd7ObheIswgWydBoS1hl2h52eszPnBm1ZNoKlPHAfO%2F5pf9j3cmA%2Bdr3BcDA89Tr%2BYNChsX926g3Oer2%2B1zvv988863D%2BVIX8KgSqXbwcUsajXNJrkyYTKQwKQ2ZXGzWil4uoAe81oMcCgy1A4SphAbr1D0r%2FyORF3YO6Q8NuXzzrVb4NNBBVgxKpeBTqLDmg%2Bfj47fLp5NLi6S3jlB4Fuga%2FaWm9IzRTEfCQEF%2B4eLHp8nJd5VyDd4DcOfdIChgZA2bcemzMSo%2Fa7ZVUhiUtqq6SWi4ND9JWINM2T1ft1167ItXtEA3jiW5TatUmJdqOZYr1Msk8xoWdFIkGSaYNKtch0nLeeqGPbK25COVatwQap9EikbBnptF1psENCYc9MIWxzDSSsTqmrsEvWMeoECYKSVa5wi6BRdLt%2BWFjzyyVwoQZLoXt8x9w7q9md5ntvW5eczORmTCOxessTZniPxFiLkyLakOc0Was42y5TMpdkaXfV6R6bgn1uOsDU9H3lAv3RoZ8yTHXuge3ikdcWHWNb9eCOmCnM5YemHLh7czTsDLe4ysqbjbjatLwijjs7SjOSQOeN1CVZRruDn7IBOMxdI%2BNZQ5cgLu7YXnt8I3kFsJUf4oihRGFsqkGti0LbqgY%2BdXXa25icB63oCfHg44H%2Fj7HYrPC%2F%2FjaK6ZkAnNm4pEDUkEBsopnXGhwmpM50TrFeDV3cnLqgcYSmjOdgFN0FWyVR%2BBAsbQru8CIGjbazoBmU0GZiGAPXO3QxjymhEfVZO88nxUxrqV6mWqd2ZNxvnQPezo%2B%2FLnQmfabfGyni1Nx2ts%2Bo%2BS2Mer7lXxALC4tlU8u17Ryd%2BJvHEo4sLJ2c3FYN%2B8obQtWxEnlsj%2FkICbKvwU9kNHSBQAA
+
+let startDate = datetime(2024-03-26);
+let endDate = datetime(2023-02-01);
+let RNMTriageTeamId = '82813';
+let RNMTeamIds = dynamic([105484,82813,82812,68685,10661,10475,67334,39447,10549]);
+let RUnnerTeamId = '39447';
+let TrimHtmlContent = (str:string) {
+    let content = replace("&rsquo;", "'", replace("&nbsp;", " ", str));
+    let result = replace("<[^>]*>", "", content);
+    result
+ };
+ let getIncidentLink = (incident:string)
+ {  
+     let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+     link;    
+ };
+ cluster('icmcluster.kusto.windows.net').database('IcMDataWarehouse').Incidents
+ | where CreateDate > ago(30d)
+ | where CorrelationId =~ 'SDNRunners-HitCount'
+ | summarize hint.strategy=shuffle hint.num_partitions=20 arg_min(ModifiedDate, OriginTeam=OwningTeamName, OriginTeamId = OwningTeamId, OriginSeverity=Severity), arg_max(ModifiedDate, *) by IncidentId
+ | where OriginSeverity == 2
+ | where OriginTeamId in (RNMTeamIds)
+ | extend IsAggregated = case(Title startswith '[Aggregate]', 1, 0)
+ | extend Type = case(Title startswith '[Control Path:' or Title contains '-CP', 'CP', 'DP')
+ | parse Title with * 'Runner Name: ' RunnerName ' Region: ' Region  ' Instance: ' RunnerInstance ' Phase: ' Phase
+ | extend FrameworkIssue = iif(OriginTeamId == RUnnerTeamId or OwningTeamId == RUnnerTeamId, "Framewor", "Non Framework")
+ | extend Week = startofweek(CreateDate)
+ | summarize count() by Week, FrameworkIssue
+ | render timechart 

@@ -1,0 +1,269 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA61TTW+bQBC98yumuQAVcdqqt4hDarcqh7RSipRDVVkb77DeBGbR7iLHVX98B7ADmH6rSEho9s17b94OJXpwXlifZxVCCkKZ6OVrGV8GJZ8gyVx3dTK76FC8aYjQvjMNyTeNypbXjs+DjDZaInkXfIPdFi3C0qLwuOIX7tDvEAmiJ6nF4sAdD3hjLZbCa0OZhI0hLzQ5CD+tPvSS7vy99kvW9eFTUy6UG7BntgMWrbe7Rp0xzDVVJaz+yib2cDSZycvg4gIUT6PbEvGHROYo/8McgwiTQzSPK57YElatK/EYXRupC42yFUrgeTz1ezrJYCoZoRLItS+51MbCLfeGHTxokmmJhTeNRwtbTX5BTbWueQTdpu3SVy/6svOWGdU+ddumKEqEKAB+jgLs33WFvxi1h//ZuG8f2SCJksft25ALJMFXNa8Y+3W4vneGoispO+ei5HYRT9E3WAttM4/Vxx1pUjmKig2m4E1pSEXM9jn8MSj8csJ1a+xDC8r3NXYMnJA+cowPZ53dYp52tMUZcjAww1/xLdfCb4eePvcVuo3VdRsBPBv+FNF4w91CYQiCmX8BO+9wv4XBgW52jZPlTEaZd0kPF5lMIuwXMxmNnEzU+Qli4I9/WPyOeOzjVPonood/5jtRixB/CQUAAA==
+
+let startTIme = ago(14d);
+let endTime = now();
+let RunnerFoundBugICMs = 
+Incidents
+| where CreateDate between (startTIme..endTime)
+| where CorrelationId contains 'SDNRunners-HitCount'
+| where Tags contains "runnerfoundbug"
+| summarize by IncidentId;
+// get incidnet detail
+Incidents
+| where CreateDate between (startTIme..endTime)
+| where IncidentId in (RunnerFoundBugICMs)
+| summarize arg_max(ModifiedDate, *) by IncidentId
+| summarize by CreateDate, IncidentId, Title, Tags
+| join kind=leftouter hint.num_partitions=20 hint.strategy=shuffle (
+    IncidentBugs
+    | where IncidentId in (RunnerFoundBugICMs)
+    | summarize arg_max(ModifiedDate, *) by ExternalId
+    | extend tmp = parse_json(AdditionalData)
+    | extend RepairItemOwningTeamId = tolong(tmp['RepairItemOwningTeamId'])
+    | extend WorkItemType = tostring(tmp['WorkItemType'])
+    | extend Tags = tostring(tmp['Tags'])
+    | extend OwningTeam = tostring(tmp['Areapath'])
+    | where Description !contains 'autotriage' and Description !contains 'auto-triag' and Description !contains 'auto triage'
+    | summarize by IncidentId, RepairItemId = ExternalId, WorkItemType, Tags, OwningTeam, Description    
+) on IncidentId
+| summarize by CreateDate, IncidentId, Tags, RepairItemId, WorkItemType, OwningTeam, Description, Title
+
+
+
+
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA61WbU/jRhD+zq+Y8qFrUychQTpxoUHi5U4XCbgKIlUqULRnb5zl7F13d3wQ2utv76xfYjsBxElFcvDuPDPzzMzOrBOBgClMIOIoUKbCG+2O9nq7w95w3z/YSkgcLriKxfHyKEc9M5LHguDs5GKiBD5o81WquMdJhoWsz59yI/qhTlmpTirpJ0yTE61QKCRdz6IZ00OKPvwN9LflfgpfK5ARWcJD4W3/bOxfuT7YDmCb0U+zr77YrNgG+iFzvn/QsWWEzZOOqV+v/zy83Tl0OvRUvkqtCvz9oNGPBU5VKCPCnEn11RGX1brLvsInJYhEIUdve4GY2fFgkGmDPOmnMjTa6jnKMHXZGcg0G3zbG9Qm7SASyGViB0St3iSig4VOxXZJsuJGfqrl9zLFlyq9zJUSZnpybonCVs3bbv0DDwthBJwYQQU+pQcOqeDNvjZGJBylVtMIJv8Cuzq9KI3Z3ieJJzpXyAhu8zTlRj4J4Ca+S6XyznUk51JEzmgAn42MpboS34SRuCQS9asTkWQmeOo8wOcHRakrl7WaW3VEFzwVflC64o9rrnZ8+LKEOsZptApmnQMd0xFrSRsaUoHHhrvv3g1ZAGx/tD/cY34nyo6Hgx/IaKNVeOnUxt9M5Fuiy7ixAmYSEwEPEhewA6w0Ci5RY2BQLt3KLURM9Ryv3oDepsoiV2ELXO/Qxm8LbgtJ8eI8Gn0vQmwFGbQoBWuVClrFbogEa36Cik1QeglgxmMblGGRy3tN6aJhEk0SMUedI0XnFQe+dnwqbGhk5s6qLQR1ypsitHdfL0QbeVJMuOh46Rpgc9x1sDPxWI4pLpUFdsYtwjnHcCEiuJKx4kjjz45ZpURooaJiCIqIdOmUrw1Ez1ms+VSVXqHrar/oBhqaH6lVo0YG7CiKpEsWT+BcWEuQDt6JnbCSAauGu6sdcwMRr9B0w2hZn7g9w0O840nisQ/GaNMiBjfMu+a9p6PeH7u990Hvbtynrdtf/BtquDMdj+nfi9TrbGy2ygstUiWvOrTtgzqjMNwwWtm+Ht4GreUrLIKmDls+UBd1evK5jNgskei9YpDdsGLMrCsPuxT3bp/BjLqY989hCBJSa9E9FYlHPfcaB+SbtHRuqN9jo/MMIroV9TJ1t+2c7h1qZ0jpCpQZDRn3IWD7zIefJtAbAicf0iqNIs1w2Vgd+a1UjoJ2PP4bhkh1Ya7ds14D8Z8ZNLWL1wfHQirsqzy9o4bCognsZLRbbtMFTVTi5cQu8vmcou1OmeM8tj88R9421D9QuQx13OrEVvXDNKM8FL1/d2+18prOJXXud9GXIuPSTKkY7auUDKBOtIo9snbNngex2zVbv9P3mwPNlpkoLJQfNqWNtnBD0w3vDQ23uYFsCGzgj+hkZBwXjc4LF3DQirqItUll0AmivlUapwG07o3iq2mzmf/fk9o5pW3eHSrVAf4PKenE4IELAAA=
+
+let tm = datetime(2023-01-18);
+let changeByAutoTriage = 'CN=networking-autotriage.azure.com';
+let TrimHtmlContent = (str:string) {    
+    let content = replace("&rsquo;", "'", replace("&nbsp;", " ", str));    
+    let result = replace("<[^>]*>", "", content);    result }; 
+    let getIncidentLink = (incident:string) {       let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");     
+    link;     
+};
+let RnmRunnerICMs = 
+Incidents
+| where CreateDate > tm
+| where CorrelationId =~ 'SDNRunners-HitCount'
+| summarize arg_min(ModifiedDate, OriginSeverity = Severity, OrginTeamId = OwningTeamId, OriginTeam = OwningTeamName), arg_max(ModifiedDate, *) by IncidentId
+| where OriginSeverity == '2'
+| where OrginTeamId in ('10661', '82813')
+| summarize by IncidentId;
+Incidents
+| where CreateDate > tm
+| where IncidentId in (RnmRunnerICMs)
+| summarize arg_max(ModifiedDate, *) by IncidentId
+| parse Title with * 'Runner Name: ' RunnerName ' Region: ' Region  ' Instance: ' RunnerInstance ' Phase: ' Phase
+| project CreateDate, IncidentId, OwningTeamName, Severity, RunnerName, RunnerInstance, Region, Phase, Tags, Title
+| join kind=leftouter (
+    IncidentDescriptions
+    | where Date > tm
+    | where IncidentId in (RnmRunnerICMs)
+    | where ChangedBy =~ changeByAutoTriage
+    | where Text contains 'Last Matched Signatures:'
+    | extend TrimedTex = TrimHtmlContent(Text)
+    | parse TrimedTex with * 'Last Matched Signatures:' AutoTriageFoundSignatures 'Additional Message:' AutoTriageAddionalMessage 'Triage Name' restStr
+    | extend Signatures = extract_all('ErrorSignatures: \'([a-zA-Z0-9,-_:. \']+)\', Log:', AutoTriageFoundSignatures)
+    | summarize arg_max(Date, *) by IncidentId
+    | project IncidentId, Test = Signatures[1], Signatures, AutoTriageFoundSignatures, TrimedTex
+) on IncidentId
+| extend Signatures = split(AutoTriageFoundSignatures, '\'')
+| extend Signature1 = Signatures[3]
+| extend Signature2 = Signatures[9]
+| extend Signature = tostring(case(indexof(Signature1, 'resource group deployment failing multiple times.') != -1 and isnotempty(Signature2), Signature2, Signature1 ))
+| project CreateDate, IncidentId, link = getIncidentLink(IncidentId), OwningTeamName, Signature, Title
+| join kind=leftouter hint.num_partitions=20 hint.strategy=shuffle (
+    IncidentBugs
+    | where IncidentId in (RnmRunnerICMs)
+    | summarize arg_max(ModifiedDate, *) by ExternalId
+    | extend tmp = parse_json(AdditionalData)
+    | extend RepairItemOwningTeamId = tolong(tmp['RepairItemOwningTeamId'])
+    | extend WorkItemType = tostring(tmp['WorkItemType'])
+    | extend Tags = tostring(tmp['Tags'])
+    | extend OwningTeam = tostring(tmp['Areapath'])
+    | summarize by IncidentId, RepairItemId = ExternalId, WorkItemType, Tags, OwningTeam, Description    
+) on IncidentId
+| project CreateDate, IncidentId, link = getIncidentLink(IncidentId), OwningTeam, Signature, RepairItemId, Description, Title
+
+
+// RNM sev2 runner issue
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA61W7U/jNhj/3r/C48OcsLSlRTrdlRUJyp2uEnATVJo0YJUvcVNDYmf2k4Oy3f72Pc5LE7cFcdIQbWM/b7/nPQkHAikZk4gBB5Fyb3gwPOweDPDfP+okSA6XTMb8dHWSg5ppwWKO7HRyOZYcHpV+EDLuMqRBQeux51zzXqhSWoqjSPoZ0mSiJHAJKOsZ0CP8oKBP/ib417Ffha01k+ZZwkLu7f2szV+5OtoLyB7Fr+ZefjVZcU3wC9X5/pGjS3OTJ46qX2/+PL7bP7Yy+KlslVIV8/ejRj7mMJWhiJDnXMgHC1xUZxd9xZ+UTEgKGXh7S4DMjPr9TGlgSS8VoVZGLUCEqY1OX6RZ/9thv1Zp+hEHJhLTR2j1JQLtL1XK90qQFTa0Ux2/lyG+kulVLiXX08mFQQidGrfp/EMel1xzMtEcE3yGH3KMCW/uldY8YSCUnEZk/C+h12eXpTLT/SxgonIJFNlNnqZMi2dOmI7nqZDehYrEQvDIKg3IFy1iIa/5N64FrBBE/WhJSJlxlloL5MujxNCVx1rMnhzSJUu5H5Sm2NOGqX2ffF2R2sdptHZmEwOW6ZC2qA0MIYlHBwfv3g1oQOj74fvBIfUdLx0LR51+3wkyntvMoY2S5/9A3BvdBRZHub8d7rfEIGPacDITkHDyKGBJ9gktlRIbzhGhpDzakz3wGLM+Wj8RfJpKA0yGLeb6Bi9+WzJTUIoHa1Grex5Cy8mgBSnYyGfQKokGSLBhJ6jQBKWVgMxYbILSLTR5rzBcOHKiccIXoHJA77yiLWrDZ9yEWmS2ok1BqEPeJKF9+3oi2pyTYg5GpyvbJttD0eGd8adymDEhDaHnzAC5YBAueUSuRSwZ4JA0I1oJITeXUTEqeYSy2AsbY9OzGms8VabX3HW2XzRDGpifsFSjhkboSRQJGyyWkAtuDLI4/JZsiRWN0GoF2NxROzbhGrTrRkv72N5pFsKcJYlHP2qtdAsYuaXeDes+n3T/OOh+CLrzUQ+v7n7xb7Etz1U8wp8XodfR2G6VF1qkCl5VtO1CnaEbdmStdd8M7oLW8RUUQZOHjk+wi5ye3BURkyUCvFcU0ltaDKNN4YEL8fBuB8/Q5fmwiwdZQJUbzAuxx3CtRfxJLbzGEoJAcZVrbPxYqzwjES5RtUrtcl7gmkJZkuLGFBlOG/veYHrUJz+NSXdAGBoTRirgaQarRuvQb8V0GLQd8/03jJNqwW7sZa9h8XeMnNpGNULc0VMPsl1TZSkk9GSezrHboOgQMx4elNcYPEQXr8ZmmS8WGAF3BJ3msfnhIfO2if8Rc6mxHdflXCUX0gxDUwyG+b1R0mvaGsWZ73Jf8YwJPcUEtbdxUReJwqpAbTd0NxO929D1O74CWqbZKnMqq9DRJm5J2sm+JWEvtzgbAFv8J1gsGYNlI/PCDg9aXhe+NqEMHCfqldMYDUhrqRQvXtud/v8Wr1O4bdwOlFdq2n0/qd4LU/bA54ZD26oNUlt8bbdQUXvFtGarecJlDEuvqNpgt1RQ2PoPMAldf1YMAAA=
+
+let tm = datetime(2023-01-01);
+let changeByAutoTriage = 'CN=networking-autotriage.azure.com';
+let TrimHtmlContent = (str:string) {    
+    let content = replace("&rsquo;", "'", replace("&nbsp;", " ", str));    
+    let result = replace("<[^>]*>", "", content);    result }; 
+    let getIncidentLink = (incident:string) {       let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");     
+    link;     
+};
+let RnmRunnerICMs = 
+Incidents
+| where CreateDate > tm
+| where CorrelationId =~ 'SDNRunners-HitCount'
+| summarize arg_min(ModifiedDate, OriginSeverity = Severity, OrginTeamId = OwningTeamId, OriginTeam = OwningTeamName), arg_max(ModifiedDate, *) by IncidentId
+| where OriginSeverity == '2'
+| where OrginTeamId in ('10661', '82813')
+| summarize by IncidentId;
+//RnmRunnerICMs
+//| summarize count()
+Incidents
+| where CreateDate > tm
+| where IncidentId in (RnmRunnerICMs)
+| summarize arg_max(ModifiedDate, *) by IncidentId
+| parse Title with * 'Runner Name: ' RunnerName ' Region: ' Region  ' Instance: ' RunnerInstance ' Phase: ' Phase
+| project CreateDate, IncidentId, OwningTeamName, Severity, RunnerName, RunnerInstance, Region, Phase, Tags, Title
+| join kind=leftouter (
+    IncidentDescriptions
+    | where Date > tm
+    | where IncidentId in (RnmRunnerICMs)
+    | where ChangedBy =~ changeByAutoTriage
+    | where Text contains 'Last Matched Signatures:'
+    | extend TrimedTex = TrimHtmlContent(Text)
+    | parse TrimedTex with * 'Last Matched Signatures:' AutoTriageFoundSignatures 'Additional Message:' AutoTriageAddionalMessage 'Triage Name' restStr
+    | extend Signatures = extract_all('ErrorSignatures: \'([a-zA-Z0-9,-_:. \']+)\', Log:', AutoTriageFoundSignatures)
+    | summarize arg_max(Date, *) by IncidentId
+    | project IncidentId, Test = Signatures[1], Signatures, AutoTriageFoundSignatures, TrimedTex
+) on IncidentId
+| extend Signatures = split(AutoTriageFoundSignatures, '\'')
+| extend Signature1 = Signatures[3]
+| extend Signature2 = Signatures[9]
+| extend Signature = tostring(case(indexof(Signature1, 'resource group deployment failing multiple times.') != -1 and isnotempty(Signature2), Signature2, Signature1 ))
+| project CreateDate, IncidentId, link = getIncidentLink(IncidentId), OwningTeamName, Signature, Title, RunnerName, Phase
+| join kind=leftouter hint.num_partitions=20 hint.strategy=shuffle (
+    IncidentBugs
+    | where IncidentId in (RnmRunnerICMs)
+    | summarize arg_max(ModifiedDate, *) by ExternalId
+    | extend tmp = parse_json(AdditionalData)
+    | extend RepairItemOwningTeamId = tolong(tmp['RepairItemOwningTeamId'])
+    | extend WorkItemType = tostring(tmp['WorkItemType'])
+    | extend Tags = tostring(tmp['Tags'])
+    | extend OwningTeam = tostring(tmp['Areapath'])
+    | summarize by IncidentId, RepairItemId = ExternalId, WorkItemType, Tags, OwningTeam, Description    
+) on IncidentId
+| project CreateDate, IncidentId, link = getIncidentLink(IncidentId), OwningTeam, Signature, RepairItemId, Description, Title, RunnerName, Phase
+//| summarize ICMs = make_set(IncidentId) by RunnerName, Signature
+//| project array_length(ICMs), RunnerName, Signature, ICMs
+
+
+
+
+
+// updated version
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA61W7U/bOBj/3r/iOT6cEy5taZGmrVyRoGxaJWATVHfSAYe8xE3NEjtnO0C5bX/7Pc5LE7cFMekQbWM/v+f9LQkzYFIYQ0QNMzxl3nBvuN/dG+C/f9BJkBwuqIjZ8fIoN3KmOI0ZwsnkfCyYeZDqKxdxlyLNFLQefcoV64UyJSU7sqQfTZpMpDBMGOT1tFEj/CCjD/8C/nXsV6FrBVIsS2jIvJ1flf4nlwc7AewQ/GruxRedFdeAXyjO9w8cWYrpPHFE/X719+HN7qHlwU+lq+SqwN8PGv6YmakIeYSYUy6+WsN5dXatr/BJCUJSSI23szAm06N+P5PK0KSX8lBJLeeGh6mNTp+nWf9+v1+L1P2IGcoT3UfT6ks0tL+QKdspjaxsQz3V8XsZ4guRXuRCMDWdnGk0oVPbrTvf4GHBFIOJYpjgE/zAISa8uZdKsYQaLsU0gvEPIJcn56Uw3f3IzUTmwhCE6zxNqeJPDKiKb1MuvDMZ8TlnkRUawCfFYy4u2T1T3CzRiPrRkpAyYzS1GuDTg8DQlceazZ4c0jlNmR+UqujjmqpdH74sofZxGq2cWbcBy3RIWtTGDC7AI4O9N28GJADydvh2sE98x0tHw0Gn33eCjOc2OLRR8vyfiHsju7DFEe5vhvs1Mcio0gxm3CQMHrhZwC6QUijYcI6AQHm0J3tgMWZ9tHoCfJoKbagIW+D6Bi8+L6guKMWD1ajkHQtNy8mgZVKwls+gVRKNIcGanqCyJii1BDCjsQ5Kt1DlncRw4ciJxgmbG5kb9M4r2qJWfMJ0qHhmK1oXhDrkTRLaty8noo2cFHMwOl7aNtkcig52xh7LYUa50EBOqTZwRk24YBFc8lhQg0NSj0jFhGgmomJUsgh5sRfWxqZnJdb2VJleoetsP6sGGjM/YKlGDQ3IURRxGyyawBnTGiEO3pItsaIBqVaAzR2xY9NcGuW60ZI+tneKhuaWJolH3islVcswuCbeFe0+HXX/2uu+C7q3ox5e3fzmX2Nbnsp4hD/Pml5HY7NVnmmRKnhV0bYLdYZu2JG1kn01uAlaxxesCJo8dHzALnJ6cltEdJZw470gkFyTYhitMw9cE/dvtmCGLubdNgxCjCw3mBdij+Fai9ijnHuNJjQC2WWusPFjJfMMIlyicpna5TzHNYW8kOLG5BlOG/veoHvEh1/G0B0ARWVcC2lYmpllI3Xot2I6DNqO+f4rxkm1YNf2stdA/C0jp9ZRjRB39NSDbNtUWXBheiJPb7HbTNEhejzcK68xeGhdvBzrRT6fYwTcEXScx/qnh8zrJv57zKXCdlyVc5Vck2YYmmIw3N5pKbymrZGd+i76gmWUqykmqL2Ni7pIJFYFSrsi20HkZk3Wn/gKaEGzZeZUViGjTdzgtJN9g8NebiAbAzbwR1gsGTWLhueZHR60vC58bUIZOE7UK6dRGkBrqRQvXpudXia6tWDt28fR0zkzMykTXb1S9T4rfo/ptIX7R6o1+d/L3in59W5oR8Bx6vnu+A+x/KHRIQwAAA==
+
+let tm = datetime(2023-01-01);
+let changeByAutoTriage = 'CN=networking-autotriage.azure.com';
+let TrimHtmlContent = (str:string) {    
+    let content = replace("&rsquo;", "'", replace("&nbsp;", " ", str));    
+    let result = replace("<[^>]*>", "", content);    result }; 
+    let getIncidentLink = (incident:string) {       let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");     
+    link;     
+};
+let RnmRunnerICMs = 
+Incidents
+| where CreateDate > tm
+| where CorrelationId =~ 'SDNRunners-HitCount'
+| summarize arg_min(ModifiedDate, OriginSeverity = Severity, OrginTeamId = OwningTeamId, OriginTeam = OwningTeamName), arg_max(ModifiedDate, *) by IncidentId
+| where OriginSeverity == '2'
+| where OrginTeamId in ('10661', '82813')
+| summarize by IncidentId;
+//RnmRunnerICMs
+//| summarize count()
+Incidents
+| where CreateDate > tm
+| where IncidentId in (RnmRunnerICMs)
+| summarize arg_max(ModifiedDate, *) by IncidentId
+| parse Title with * 'Runner Name: ' RunnerName ' Region: ' Region  ' Instance: ' RunnerInstance ' Phase: ' Phase
+| project CreateDate, IncidentId, OwningTeamName, Severity, RunnerName, RunnerInstance, Region, Phase, Tags, Title
+| join kind=leftouter (
+    IncidentDescriptions
+    | where Date > tm
+    | where IncidentId in (RnmRunnerICMs)
+    | where ChangedBy =~ changeByAutoTriage
+    | where Text contains 'Last Matched Signatures:'
+    | extend TrimedTex = TrimHtmlContent(Text)
+    | parse TrimedTex with * 'Last Matched Signatures:' AutoTriageFoundSignatures 'Additional Message:' AutoTriageAddionalMessage 'Triage Name' restStr
+    | extend Signatures = extract_all('ErrorSignatures: \'([a-zA-Z0-9,-_:. \']+)\', Log:', AutoTriageFoundSignatures)
+    | summarize arg_max(Date, *) by IncidentId
+    | project IncidentId, Test = Signatures[1], Signatures, AutoTriageFoundSignatures, TrimedTex
+) on IncidentId
+| extend Signatures = split(AutoTriageFoundSignatures, '\'')
+| extend Signature1 = Signatures[3]
+| extend Signature2 = Signatures[9]
+| extend Signature = tostring(case(indexof(Signature1, 'resource group deployment failing multiple times.') != -1 and isnotempty(Signature2), Signature2, Signature1 ))
+| project CreateDate, IncidentId, link = getIncidentLink(IncidentId), OwningTeamName, Signature, Title, RunnerName, Phase
+| join kind=leftouter hint.num_partitions=20 hint.strategy=shuffle (
+    IncidentBugs
+    | where IncidentId in (RnmRunnerICMs)
+    | summarize arg_max(ModifiedDate, *) by ExternalId
+    | extend tmp = parse_json(AdditionalData)
+    | extend RepairItemOwningTeamId = tolong(tmp['RepairItemOwningTeamId'])
+    | extend WorkItemType = tostring(tmp['WorkItemType'])
+    | extend Tags = tostring(tmp['Tags'])
+    | extend OwningTeam = tostring(tmp['Areapath'])
+    | summarize by IncidentId, RepairItemId = ExternalId, WorkItemType, Tags, OwningTeam, Description    
+) on IncidentId
+| where RunnerName == 'AzNetToolsRunners.PrivateLinkVmss'
+| project CreateDate, IncidentId, link = getIncidentLink(IncidentId), OwningTeam, Signature, OwningTeamName, RepairItemId, Description, Title, RunnerName, Phase
+
+
+
+
+
+=================== 5/22/2024 version ================
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA41WbW%2FbNhD%2B7l%2FB5YvsQUVE6h2DB2R2hglInMD2sA3bMLAW47KxqUCimmbYj9%2BRlCXKktsaiEPyHt49d3yO9PU1wl4YpOgdWq0fJ9fXyE%2BDIIbp4u7h1%2BXqdvvXBr7J7boWgpWVQmAvirCNWK%2Fu1XoU%2B35gr6%2Bq4%2BOh1nsSkmACtvVqoaFJlIQwfbzbGI9BrKarjXFE%2FDhR0%2FubPRNycmASLdfLdXZ3h%2BbIaYbOD9rwUEu6Z1lV1UwZrWkDMMx%2FqvfK3E56xp9LemSvRfncQ9mrfXhRi7wPbVYa2E0ti23JgchvsF3B%2BisD2JZWz3e8kgDN3wQ98t30T4dEGPtBHDguckjgJ2maEjOGWnp%2B6rgOCcMwCgnWy2EceiQmzt%2BzMbKjITBJ%2FTSMY%2BM2jJMIx8ptkHqhFzXRUkKSODEh%2FAiOzlOQCIdeihM9JNgjvkFEfoxT4p%2BRuBQfvBAfB02KOIxTvwkakdRLm%2FU4BgLBiUwcRakhAzLxSNAQAxljQyyAkmCih0AQ%2B5EaxhgnSagBMYnCwNfM4wgG%2FqBk1sGP0w6iNExSHQOKRqACrYvfufiDii2jx2xZ9YutGk2x1Q2kBrpj1EC3hxoEwNlTgzhMfQ3WrWJ2hUGi0UGamGpDJlFibNBAGq1ap%2BUCrbtlggqZLZUIsecFYU%2FJYzT1BdC6uDkcDDRb3CtcJnY8h6asJv%2Bh1w%2BsZGhRMirZEv7Qj4jui6kfhfmsMxdlyQ5U8kJkOdoVQlIuKuQAt%2BZOefcLlwtQqXRQUaIt3Vcd7Kov4itwyz5LJnK0Lgq5oHWlup7zp2l%2FXys71x5ewp3cu4P51dVMpVLVxyMt%2Bb8M0XL%2Fz5GL6X2R8yfOcpW3ix5Kvufm0HPg8%2FAquNibqTEqm1iBrHpWtdBt1gdlbzcLfcCZj9PSCfRYvz%2Fw3UWoMRufgN6wT6zk8g1Qp%2BHMNSnSz2cpfj9D79%2Fa48%2FyVh6W4I1EJj3NtEKwi4K4QNNep3RyA2F8m6NTvea2zls3Gbh%2Fa3kZkU8GdHtne5bfGPilLD6ynbRwLtpyeYACmQo%2BqWL2iuuOHdaZBJQo3U7SEOhjASV65iKfw7l%2BkEUtWYmmEwSfU2wQaKUX%2Bp2YD1rRxnTE9RmMFeq04Uz0X1WEi26hNUtBD1k%2BmaFCWLaub7Nq8DoO2%2FIMAtdC59rwHjydIFzsIm9mRxo811%2B7AEYijb%2Bil6N9OdCXYnyT%2B7OfKhcTsmEXkxp556zIRjAbSWVdoe%2FUNmfNjsUnljsz%2BJnWKspOfI48REdPubOcn8rA0ksRrFbfyaKSJbTOtJPWzGocd%2BDetfm5ozHcAVsXwXJf0NCjby%2Bmc1np2q3moiWrdiV%2FUU%2Bci27ynKsRPYCRuk39XLtr7%2BnLC%2BSgnELH6eObN1eAvkvOLyWbxZDqeH6D9O2MewH6G%2FRDDHR26j%2BIa%2By48Mx6VS9tsLAd4yF4KJPOu035Ii9bLGb7%2F6pLzj%2FUDAAA
+
+// 10549 - NRP
+// 39447 - CLOUDNET\SDNE2ERunners
+// 10661 - CLOUDNET\RNM
+// 67334 - CLOUDNET\NsmPlus
+// 82812 - RNC
+// 68685 - PLS
+// 10475 - NSM
+// 62378 - NMAgent
+let DRDRILL = 'DRDRILL';
+let OutageIssue = 'OutageIssue';
+let RunnerBug = 'RunnerBug';
+let RunnerFrameworkBug = 'RunnerFrameworkBug';
+let RunnerFoundBug = 'RunnerFoundBug';
+let AutoTriageWork = 'AutoTriageWork';
+let AutoTriageTaskList = dynamic(['26113474', '24389992', '24812039','25556521', '25750272']);
+let RunnerFoundBugTaskList = dynamic(['12939577', '24578617','24905062', '24922878', '25366860','26150918','26210238', '26371923']);
+let RunnerBugTaskList = dynamic(['26123144', '24157932', '24629094', '24772874', '24927669', '25237024', '25310510','26456512','26918136','27118850','27265438','27643832']);
+let RunnerFrameworkBugTaskList = dynamic(['24695892','25782262']);
+let XinYanTeamIDs = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '49838', '72668', '10475', '62378']);
+let SDNTenantID = '10045';
+let RunnerTeamIDs = dynamic(['39447']);
+let AllRunnerICMs = Incidents
+| where CreateDate > ago(365d)
+| where CorrelationId contains 'SDNRunners-HitCount' or Tags contains "RunnerFoundBug"
+| extend RootCause = iif(Tags contains RunnerBug, RunnerBug, iif(Tags contains RunnerFoundBug, RunnerFoundBug, ""))
+| summarize arg_min(ModifiedDate, OriginTeamId = OwningTeamId, OrignTeanName = OwningTeamName, OriginTenantId = OwningTenantId, OriginTenantName = OwningTenantName, OriginPublicTenantName = OwningTenantPublicId, OrginSeverity = Severity), arg_max(ModifiedDate, *) by IncidentId;
+let AllXinYanTeamICMs = 
+AllRunnerICMs
+| where OwningTeamId in (XinYanTeamIDs);
+let AllSDNICMs = 
+AllRunnerICMs
+| where OwningTenantId == SDNTenantID;
+let AllIXinyanTeamICMIDs = 
+AllXinYanTeamICMs
+| summarize by IncidentId;
+AllXinYanTeamICMs
+| project IncidentId, Title, Severify = OrginSeverity, OwningTenantName, OwningTeamName, Tags, RootCause
+| join kind=rightouter (
+    IncidentBugs
+    | where CreatedDate > ago(365d)
+    | where IncidentId in (AllIXinyanTeamICMIDs)
+    | summarize arg_max(ModifiedDate, *) by IncidentId, ExternalId
+) on IncidentId
+| extend IsAutoTriageWork = iif(Tags contains AutoTriageWork or ExternalId in (AutoTriageTaskList), 1, 0)
+| extend IsRunnerFoundBug = iif(Tags contains RunnerFoundBug or ExternalId in (RunnerFoundBugTaskList), 1, 0)
+| extend IsRunnerBug = iif(Tags contains RunnerBug or ExternalId in (RunnerBugTaskList), 1, 0)
+| extend IsRunnerFrameworkBug = iif(Tags contains RunnerFrameworkBug or ExternalId in (RunnerFrameworkBugTaskList), 1, 0)
+| where Status !in ('Removed')
+//| where IsRunnerBug == 0 and IsAutoTriageWork == 0 and IsRunnerFoundBug == 0 and IsRunnerFrameworkBug == 0
+| project tostring(IncidentId), RootCause, IsRunnerFoundBug, IsRunnerBug, IsRunnerFrameworkBug, IsAutoTriageWork, BugId, ExternalId, Type, Owner, CreatedDate, Description, AdditionalData, Status, IncidentBugMappingId, ICMTags = Tags, Title
+| summarize by ExternalId, IsAutoTriageWork, IsRunnerBug, IsRunnerFoundBug, IsRunnerFrameworkBug
+| summarize RunnerFoundBugCount = countif(IsRunnerFoundBug == 1), RunnerBugCount = countif(IsRunnerBug == 1), AutoTriageCount = countif(IsAutoTriageWork == 1), RunnerFrameworkBugCount = countif(IsRunnerFrameworkBug  == 1)
+

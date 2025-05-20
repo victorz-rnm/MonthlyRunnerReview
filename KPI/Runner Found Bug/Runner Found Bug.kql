@@ -1,0 +1,31 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA7VVbW%2FiOBD%2B3l%2Fh44vDKQ2kBAq315O67VaHdLSrBV1PqqrKGw%2FgbWIj2ylHtbrffuOEkATa7d5Kh5Aw8%2FrMzGNPApYkSj2%2BZ%2FHjLCVnhC2U1xv0efvdUYK6v4TcMDkDlo65QTXfSJaK2LujYbcfjahP8DAYhO4wOO31IncYngzDE3eITgajrjuc9ke93HgwHAz7hVc%2FGkbFKTrNRaNeP%2BqV%2Fvlh0A0H%2BSEMo2iYRwp7%2FW6vR%2B8RX6dDhIyTjAMnOpMSNLEIlAiOKgf%2BUy4swCN22htF0SktChtfTMaXriIMYCxojy6tXZlfOh0Rp1tZ8Ig%2FKlgLydXaBBIsbQecWfaZGfDoOJ5c4p9bpmGpMgOoHMtYcJDWHH0l6yVoIBcamAW0A%2FJbrdOVXmkNCbNCSQfyH0Knl9cFcHP8u7AXKpOWornJ0pRp8QxkKaQNZJY%2BrJi2wnmas5NuITZWY6rF5swss%2Fk8AcL04iEV0psoLuYCuEPik5%2Fb5POGlGjHfAfnZi2FXGxbJiTxGgRoN3A0IhRdvR3%2Fj019ny2qvlaZc5jFONs4%2BK9kpdUXiC358DemkyzJy%2BPCWGRLXfru6ABmCOYQX6cB8Pw503AJTzcrg%2FJbpR%2FHFqp53ugFk%2BI5H%2Bg1S4GcIfFSw5wX3VmVblv0edtccwHBSU6%2BGCVdF7CTOGMDD07gOckLRlcCkvxuloK71jwXte4r44KG%2BfTR0irkCc7Za8a4a0032I80qFm37ts%2BuRJSmOVbzhMRa2XU3AZ%2FTmfTYBovgWcJWgaVfx7uoxZKC7v5D8EuVJoqGZSeeZgbLRYCJ%2FkBJ5v%2BMLb9KHloTLdCPgN3g%2FqxuI0QGLSaxTl29yOzy%2B8YRGmag0LC6JxX3%2BncsM8jnBsjFhL4TNXosvWiZcqdDb2%2Fo3htVgnbOCbTe5%2FM8DkB%2BwYR6OtNqfxpvSN7YfGyAQ4DvEruZrJH4Z1VTXHI1Z1VJa8lnghjyiSOjkLMvZol%2BZVItfbahDVBlmKliTCQruzGq%2BUtzHeKWhGFZmpdjJ%2FcxaeXSgL16SdI1RNwivhDn3RrCBvlzJVGij68UBNuxg1%2BjieTY56HabR0369SHvg1u7zvWNMeeGINTLjt8cad%2BQY9GiEaDCk24hUuQ45rYDupV3g%2FYwt8%2B0ispMVohrSazi2ftKzOwP3OWWKg5d6S3d77FvJtgmvFobgRr3HYoXuJAJgyHJ12j7shflt%2BU9UYdSNCjVv7ERqqcq38IaSbAFYRM1ttt%2B0aCp6EybBwm3GhglilnRsJnYc1Ogt0Nh3gApeeX9tSrs5yrVZSv6AyliFsAg3u1IHVy%2FSbV67%2BJFV74fBp33uR98jm757UvUfS3%2BNNfc7Nbv0LRetk8wgLAAA%3D
+
+let lookBackTm = ago(365d);
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+// included runner team id
+//let RunnerTeamId = '39447';
+let ICMIDs = cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').Incidents
+| where CreateDate > lookBackTm
+| where CorrelationId =~ 'SDNRunners-HitCount'
+| summarize hint.num_partitions=20 hint.strategy=shuffle arg_min(ModifiedDate, *) by IncidentId
+| where OwningTeamId in (XinyanTeamIds)
+| summarize by IncidentId;
+let WIIDs = cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentBugs
+| where IncidentId in (ICMIDs)
+//| project ExternalId
+| distinct ExternalId;
+cluster('https://1es.kusto.windows.net/').database('AzureDevOps').WorkItem
+| where OrganizationName == 'msazure'
+| where WorkItemId in (WIIDs)
+| extend jsonData = parse_json(Data)
+| extend jsonDataFields = jsonData["fields"]
+| extend CreatedDate = tostring(jsonDataFields["System.CreatedDate"]), FinishDate = tostring(jsonDataFields["Microsoft.VSTS.Scheduling.FinishDate"]), Priority = tostring(jsonDataFields["Microsoft.VSTS.Common.Priority"]), OriginalEstimate = tostring(jsonDataFields["Microsoft.VSTS.Scheduling.OriginalEstimate"]), CompletedWork = tostring(jsonDataFields["Microsoft.VSTS.Scheduling.CompletedWork"])
+| extend AreaPath = tostring(jsonDataFields["System.AreaPath"]), IterationPath = tostring(jsonDataFields["System.IterationPath"]), AssignedTo = jsonDataFields['System.AssignedTo']['displayName'], TargetDate = tostring(jsonDataFields['Microsoft.VSTS.Scheduling.TargetDate'])
+| extend TargetDate = todatetime(TargetDate), CreatedDate = todatetime(CreatedDate), FinishDate = todatetime(FinishDate)
+| extend MissTargetDay = iif((FinishDate < now() and TargetDate < now() or isempty( FinishDate) and isempty( TargetDate)) and State !in ('Done','Removed'), 1, 0)
+| extend FinishDate = format_datetime(FinishDate, 'yyyy-MM-dd'), TargetDate = format_datetime(TargetDate, 'yyyy-MM-dd'), CreatedDate = format_datetime(CreatedDate, 'yyyy-MM-dd'), RemainingWork = tostring(jsonDataFields['Microsoft.VSTS.Scheduling.RemainingWork'])
+| extend RunnerFoundBug = iif(jsonDataFields["System.Tags"] contains "RunnerFoundBug", "true", "false"), OwningTeam = tostring(jsonDataFields['System.NodeName'])
+| extend TargetDate = iif(isempty( TargetDate), "1970-01-01", TargetDate), FinishDate = iif(isempty( FinishDate), "1970-01-01", FinishDate), WorkItemLink = strcat('https://msazure.visualstudio.com/One/_workitems/edit/', WorkItemId)
+| project WorkItemId, State, Title, CreatedDate, FinishDate, TargetDate, MissTargetDay, AssignedTo, Priority, OriginalEstimate, CompletedWork, RemainingWork, AreaPath, IterationPath, RunnerFoundBug, OwningTeam, WorkItemLink  
+
+  

@@ -1,11 +1,43 @@
 // find ICM detail information and TTE, TTFix, TTR, TTRF, TTRR, TTRRF, TTRRRF, TTROutage, TTROutageFix, TTROutageR, TTROutageRF, TTROutageRRF, TTROutageRRRF
 
-https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA6VVW2%2FaSBR%2B51eM%2BmJ75WIcwCFbUSki7a6lpa0aa7vSqkIT%2BwDTeGbQzHETr1b97T1jYzAkVR%2Fqh3Dm3K9fSkD2j1A1VxlwmRaWzVlRKy5F7v%2FrxaPp5MoLGRFJEjsiuRyPJ46YXcziC0dMLpKrkSMup1fjRjmZJbNpazWdzCYtNblsWFfj6WTc2TdEMoqThojjyWTWeIrH09F47H0OXg1Kyo%2BX5Q1HTpnlZWURjO9tEXf29ygSuSxIZPQwB4WGk3x4Tzp6%2BCBUoR%2FsUAF6wdAp3XELvrfQUmpFrD8AV2kuV6nKRUHGdvVJ4DbLHgf%2Fs4ctGGBLXYi1gIKCA3vN%2BEb78WxUBAeF9w9KqE3bOCYU8086GTCuiG1B7rD22QduKEoXLS0CxqKooFSQTKmwAhhugaWLJf1yZFtu2Y4bZ3QI2Fln9Q7Y%2FBvzFq5WCeYj7LRBKDymDUvt%2Bwr5Bq5zrHjJ5nMWt40k3%2BmNm%2FC%2Bo%2BTXVlJyI%2F4DdlezY3KvBkcVeESgQhYGqA9NL%2BYMNXUUUEjw19pIjqvD%2B6hHk6zpe7lcviwKLwiOvroMyZMQa%2F%2FQo44fhGzNS0seepzzsp43baVPHRz4f3Kb2c25ecsl8Sg80qm9HSejj1BSMcXTgD1ha3jOSu11hfoGEPJnHfSlnYcT3rFjWfZWPJ57aJitYUdm2Rv1pLiG2em1ZJYtn2otO51lLzKd2F9C3ZO2RZNzPB6fWzleDgkqjLZ6jaQ5zLWMhNxFX6eR6A4rKgC5KG1Et42avNDR%2BL1DoD2J2j2sPRd4Z%2FQXqr%2B3jpSTwJKm2V%2Bu%2FnmGJ6cR9i7zHZe9t%2BIK%2B5yFVshzvC4FtyGjK%2BLCLHSl8PAotYViz8qyG%2Ffn3b6N%2B643DQvZLXwFI7AmqrqzuRE7FFrtLU%2Fner6VIftAbZHuguW%2B0CPjFjlWlFz3224nBeUbe7ZypEQPN62wGxu184smaLonOJyXsEZdEYAOGH1boXBI0yDLTT2322q9LoH5TvQs0O55P8HXNF863PhEaLfVlQUSdqNpweqtgLJ4Q2AtwDZ5nIPbHktbsGpB9IcQ2ziIIqfjxuqw7kVqbQULV5U29Yt9iCPONWWrSq4IXFG4Gdn5dPSDbnCzWUn%2B6J%2Fu2m%2FBKVqGTfBfi9R%2BXdp0bS6su8%2B2LsL6k7rolP6m%2F3YOYwlZ2Wk%2Bg2CgVe%2F9HUWDdD7lBwAA
+https://dataexplorer.azure.com/clusters/nrp/databases/test?query=H4sIAAAAAAAAA8VX627bNhT%2B76fgPKCWO9my40ucpi7QOu1qoE6LRmgHNJ3BSLTNhhI1kkri7oK9xl5vT7JDUbJE203TdtgM2KYOj75z%2B3hIMqIQ4%2FzyCQ4u%2FQiNEV5ypzvqhM3jGoM5X9DouYrYhMeKxAoUHKnEA%2FjSeNms%2FVpD8NGKUpGkC9OCJAwHxKn%2F%2FedfdRfVG%2FCzkSEt0T%2FwfrN5jDwPvTZzSEZYKPRLyhWRCMchinncuhAEX4IhJBPQkWDKsndQtXcvvpDJcWkA3LEtPPdnL%2FagIgiLqrUF3LOAcWRw7%2BW4BzYuTBMhtct7kPoWkg4vgzqv51g9GyuLfx%2FOwMJhBuVhDtK3QRiRsqVWON4HNLSAlgboUQ40sIGWkChFxCexDi2s73tHx0XFM0tbBYaMs1siHFXBHr77%2BdH7%2B9qtIlGHBVrEr%2FJaKryUFsSRBfFdq5WhtFpVnNEuTsCjCByysbqdKtj5ufyhSq0jg3LKRYQZ%2FUhQlDJFE4jvekWBwYauiiNcxJ2JMgsGvfa7WWBLoqZxQENw4AWNL%2FUCo%2FnznlXGjApMBFg59ZVSiXzgeQkXCrN2RAPBJV8oGkRtiMqjUeJd9bwCUHohUZgy6UEYhRCi8lY8InVY8ZkZMHGsBxUPoYaYiqkiUeHjNReX%2Bnka3t3LkFy18cdUkMy3SGZj72VMvLmGg7xF0iMhVdq90sAtfp1BgIz4BEenOCLarxj%2BH6A97SlhFBIsdQfLxpmmXonnm8BBTRAJhQQdShcOFgKv54zES7VyNgBN9Ah13RLwXfe9izRYDmMgCid%2FovEax9rDaSgBN1yDKg2cd41uZ9A%2FargIBsNhVw%2BGh71eXw9GB6PugR70D4ZHHT04HBz1MuXhaDgamLcG%2FVHfjPqHmeioN%2Bj3ivezwbDTHWaDbrffH2VI3d6g0%2Bs13uf9HTN2ghUGzwKWAjOF0yjKBSQKYUrwdgA0ERjm25egw9vXNA75tWzHRDWaba10gSVxGhNYSDwG0Y9EzadBNC%2BYLedvqVr5%2Fk3tN1ggRBA04yFdUBKCcQIJLbegjcbL6xhqaDIHZEWOlcpmtkdQSaJErR30CgswU5gDztSAbuCK0jRnaUiQWhE0nczgHyu0whIlUF7Q3dgrXvbXCTDpD9SY6FgjIoD8sLxI2EBcoKl8mULfIY8DlWKGxmPUNYkE7OmJrnCeUcCVaQSbmu4OF2tU%2BnZcK1XIDeyqIZpkjTbLxRi6BmSUKBoRZ6H7i5pvnks9qOQaPq3ZrBWGjWazxCo8zEm8SVEhb7pogZkEhIpkO6z9r5rZXYCN%2FDmWvlxuv26kMN1xy%2FFUnvWGndeEQTDhrsHKpHlxWzSVj1PFT4giwV6A6myBYMnKjPn%2BM3qzjZAJzYvF0PefxjvBZcJCzwx9f7arNSt0ZhXLsMReWL2ycaeOPtjT0WFtK276nlNZB8ATz%2FBw3dCGE8E%2FQPwVOoJPVDGoZpVc1eXpWkvDrSzMvOnuNGLHVmmW78Q4VqdZ4zUSfazEgXrMKJYuMtvMhKd6V8ofGJckzEW%2Bf6J%2FTvNU55XJkuqiM3JFBBwqYJReyEDQRFEe52%2Fatd9mroteQeoivcqjPBml4ExhlYJzxb9hMBiF08cWLUEJHnRF3aK0kPIPHLoXnDfDMSMLxVNosmhFY9WO02gOXQhOQuCoHA86RgxFBLDleixX6WLBzKFh7wxy9NTezp3LPtOwp8FMN6K30D1XPJUEJotam%2B73jBIWPoXuT4k5Hm13y7w3m%2B5nmvInW3YG4HlaxzBnjOpTKVMy0VFxsa7nJsrG%2BSV5Qlgs5xG%2BcWzy3m%2Fa7dfNjH%2BbJfMp3IYloM3qBW%2Figs3DigvW5hvYPnXThlaNbH9qzRqPq8%2Ffzhjk1CxelHy4a%2FXlWYwTueLqzYFV9spGZW3ad6TGLfu1QdjXnl5zriYY%2FNO5Qv92rmpfnauNXzInNlqAG0iAGAVavsOx2whajdLORWUGkjF5nHUo4FzeqUByAhe%2BouHpCfvO7sB0MZttnBlY%2BGQ9gWvdkhj%2BVc3%2Fn0ktavskXW7SCvtLdh1A%2Boawh457DpGf5%2BMXFadKx6ewdYsYs506lROutbx3KFsc1Oxr39ZF0N7EywvYVJ91qqZ27mY79zWnVLfOiTMq9eUUCLR1XKmQwV63FSBXX4I6nzpSlJtxNSY7jm3XXcul3T26oP4O5Xc5%2FY1nmv%2FmvPL5U8pXnErs80h5HCm2Iqud%2FgOm3Rrr%2FRMAAA%3D%3D
 
+let lookBackTm = ago(180d);
+let TrimHtmlContent = (str:string)
+{
+    let step1 = replace("’", "'", replace(" ", " ", str)); // Replace smart quotes and non-breaking spaces   
+    let step2 = replace("&nbsp;", " ", step1); // Replace HTML non-breaking space entity
+    let step3 = replace("&amp;", "&", step2); // Replace ampersand entity
+    let step4 = replace("&quot;", "\"", step3); // Replace quote entity
+    let step5 = replace("&lt;", "<", step4); // Replace less-than entity
+    let step6 = replace("&gt;", ">", step5); // Replace greater-than entity
+    let step7 = replace("&#39;", "'", step6); // Replace single quote entity
+    let step8 = replace("<[^>]*>", "", step7); // Remove HTML tags
+    let step9 = replace("<!--[^>]*-->", "", step8); // Remove HTML comments
+    let step10 = replace("\\s+", " ", step9); // Normalize multiple whitespaces to a single space
+    step10
+};
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link;    
+};
+let getRepairItemLink = (workItemId:string)
+{
+    let link = strcat("https://dev.azure.com/msazure/One/_workitems/edit/", workItemId);
+    link;    
+};
+let getSimpleTeamName = (name: string)
+{
+    let splitList = split(name, "\\");
+    let result = iif(array_length(splitList) > 1, splitList[1], name);
+    result
+};
 let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
 let allData = cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
-| where ModifiedDate > ago(180d)
-| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId)  //don't include the ICM that has parrent
+| where ModifiedDate > lookBackTm
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId)
+//don't include the ICM that has parrent
 | where IncidentType =~ 'CustomerReported' or IsOutageActual == 1;
 let ICMIDs = allData
 | summarize by IncidentId;
@@ -14,17 +46,41 @@ allData
 | extend IsOutage = iif(isempty( IsOutage), false, IsOutage), IsOutageActual = iif(isempty( IsOutageActual), false, IsOutageActual), HasTsg = iif(isempty( HasTsg), 0, HasTsg), IsS360Related = iif(isempty( IsS360Related), 0, IsS360Related), IsAutoDetected = iif(isempty( IsAutoDetected), 0, IsAutoDetected)
 | extend TTFix = iif(isempty( TTFix), 0, TTFix), TTEng = iif(isempty( TTEng), 0, TTEng), TTM = iif(isempty( TTM), 0, TTM)
 | extend icmLink = strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', tostring(IncidentId), '/summary')
-| project IncidentId, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, Severity, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, Status, HasTsg, Tags, IsS360Related, S360Link, icmLink
-| join kind=leftouter
+| project IncidentId, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName = getSimpleTeamName(OwningTeamName), OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, Severity, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, Status, HasTsg, Tags, IsS360Related, S360Link, icmLink
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle
     hint.strategy=shuffle (     cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentCustomFieldEntries
     | where IncidentId in (ICMIDs) and TeamId in (XinyanTeamIds)
     //and Name == "IssueCategory"
     | summarize hint.num_partitions=50 hint.strategy=shuffle arg_max(ModifiedDate, *) by IncidentId, Name
     | summarize hint.num_partitions=50 hint.strategy=shuffle       Category = max(iif(Name =~ 'IssueCategory', Value, ''))  by IncidentId
 )
-on IncidentId  
-
-
+on IncidentId
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle (
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where CreateDate > lookBackTm
+    | where IncidentId in (ICMIDs) and isempty( ParentIncidentId)
+    | project IncidentId, RootCauseId
+) on IncidentId
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle
+(
+    cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    // find root cause
+    | summarize arg_max(ModifiedDate, *) by RootCauseId
+    | project RootCauseId, RCATitle = Title, RCADesscription = TrimHtmlContent(Description), IsCausedByChange
+)
+on RootCauseId
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle
+(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    // get work item
+    | where CreatedDate > lookBackTm
+    | where IncidentId in (ICMIDs)
+    | summarize arg_max(ModifiedDate, *) by IncidentId, ExternalId
+    | project ExternalId, IncidentId
+) on IncidentId
+| extend IncidentLink = getIncidentLink(IncidentId), RepairItemId = ExternalId, RepairItemLink = getRepairItemLink(ExternalId)
+| extend IsMissingRCA = iif(isempty(RootCauseId) and isempty(ExternalId), 1, 0)
+| project IncidentId, Severity, IncidentLink, RepairItemId, RepairItemLink, IsMissingRCA, IsOutageActual, RCATitle, RCADesscription, IsCausedByChange, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, PostmortemTitle, PostmortemStatus, Status, HasTsg, IsS360Related,S360Link, Category, RootCauseId  
 
 //////////// CRI / Outage TTE, TTFix, TTR, TTRF, TTRR, TTRRF, TTRRRF, TTROutage, TTROutageFix, TTROutageR, TTROutageRF, TTROutageRRF, TTROutageRRRF avg
 https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA21TXW%2BbMBR9z6%2FwGyClKYSPkFWZFCX74IFlapE6aZoiFy7EKrYj7DRhmvbbZ%2FAIJClPx%2Beee%2B6HcQkS%2FSCsxiwBTKNMoAXKaoYpSc2fhmP73twYIwWCwGlAMHNdrwHhNHSmDfCmwdxuwMyfu604CIPQ11m%2BF3oaebOWmru%2B53b5LQhsJ2iB43he2Do5rm%2B7rvHLehiVqj9clmssseosLQ9CQmUaOyn34sP9PUlppkIVn6TAZIVVfPKqNHxyJCzjRzFhIA1r0ohesADTWHFKOVPUF5DbKKXbiKUkU8li%2B0zkLklOoz%2FouIMKUMwzkhPIVHFAHxEuuOmEdmadBZsjI6zQi0OEIfNikxbCTNEC6F7WJvqOK1WlqxYNbDouqfeAFn%2BRsWomoFA9wp5XEjID8QpFYnOQuIBlKg%2B4RIsFcvR6olUcrZt7%2B78n5SsOlOKK%2FAb0UqO%2B5MOol8BJgmpvVYGarp1wgSRXewJJKJg5ryiW2%2FO516n7qdV3F8d3WWZYVu%2FVdaicCMnN8%2BQdb41RjkuhHAbM9Vjvp%2BrorcGZ%2F4pFIorrdM2qsD3ucSSe3MB%2BhFINk90WHAR14jUVieVB8jVISN81GEY7hwuu31iSfCana4eW1IkdTJJP7Ga4lux0GiZJfKuKO008qPykHo3c5M8ArypDNCeeH9VpcNPWxZ%2B0fCu0PX4rTO3aUnoCTepuW1o3rOmmueZPHBQdDx7PN0ybKx28gusL%2Fgf4BSzJpgQAAA%3D%3D

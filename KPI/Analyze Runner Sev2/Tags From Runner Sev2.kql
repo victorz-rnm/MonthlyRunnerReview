@@ -1,0 +1,30 @@
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA6VTbW%2FaMBD%2Bzq%2Bw%2BiVhoi2QEEAVkzpQu0hjQ5R1k6YJuckRXBw7sk0p07TfvrMTXiJV2ofxAZ3vnrvnuZdwMIRLuflAk80iJyNCM%2BkHUS9t3jQ4xr4zsadiATSPU43hdC9ozhL%2Fh9dp98Kh1yJoRFHHGlE%2FCEJrDLqDTtcaYTcatq3R7w0DB44G0aBXZvXCQVhaYd%2B5hkEvDA75zojancgZnU4YDlylTtBrB4H3s9I33woBqtSH8rxgGIZ97zx2p2gOO6k2szXVUO9hDisFej3mDIRZyA2IW70XidfyZgomUHC5zzFymxgmhT6SniJv1BwroAbmGRaJBTOM8hMcffN7B8B69gHpeeyRcpZi8u18uoC84GieceI%2FE9k8c5w1SheD%2BT2WqMzsmBePp%2FHEKkz4VhtQvseSvLK95hXS0Ses53txMp3g4xtVsJZbDRiMRcJSlKYbv8luDQpI2RzigLw%2Fu5tTXCoF3LVn9%2FGHeA%2BTz%2BUe9OVHZsZyi502rq%2BJck4ynlmFmK%2B3eU4V%2BwVkzYS5Ett8WVBlmJv8qNsu3doo5M72I73erlYcCFXZMmfCn8qUrRikVlqLvGuSpz05yI9TS5jhMCjnRCqWCcor2lL2A7yAYmZPRiPStWANL12LOHX%2BZSdw%2BtWhMUH82pfRrHVQ476x9VZMpI6dHUf6P%2Ft4ELTQa2keu%2F%2FaDKFIfBLjlJcnYSXDqwGMz6jSkC5oZu%2BksI%2Fls5bCtx4Ly18u4bWgNSS6CyWfITHkDpdqfZhsJG4I5%2BSfgGc8n%2BQOv9UKyO3DP%2BQ2Ww1S%2Fb4WBagxzsAdC2KxJAfhK%2FxUaALLiuGQ2XqjFrm4aNZX4u6Evvr14q2jdncwB31v9PYXuOdL%2BCgFAAA%3D
+
+let lookBackTm = ago(365d);
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+let RunnerTeamId = '39447';
+let RunnerFrameworkPhases = dynamic(['RefreshClientTokenAsync','PreDeploymentActions']);
+let DeploymentPhases = dynamic(['CreateRg','InitialDeployment','RGCreation','Redeployment','ValidateARMTemplate']);
+let DeletingRgPhase = dynamic(['DeleteRG','DeleteRg']);
+let ICMIDs = cluster('icmcluster').database('IcMDataWarehouse').Incidents
+| where CreateDate > lookBackTm
+| where CorrelationId =~ 'SDNRunners-HitCount'
+// runner CP ICM
+| summarize hint.num_partitions=20 hint.strategy=shuffle arg_min(ModifiedDate, *) by IncidentId
+// get all orignal ICM
+| where Severity == 2
+// sev2 ICMs
+| where OwningTeamId in (XinyanTeamIds)
+| summarize by IncidentId;
+// find all incidents
+cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookBackTm and IncidentId in (ICMIDs)
+| extend ParsedTags = parse_json(Tags)
+| mv-expand ParsedTags
+| project FoundTag = tostring(ParsedTags)
+| extend LowerTag = tolower(FoundTag),
+        UpperCaseCount = strlen(replace_string(FoundTag, tolower(FoundTag), ""))
+| summarize arg_max(UpperCaseCount, FoundTag) by LowerTag
+| project FoundTag
+
+  

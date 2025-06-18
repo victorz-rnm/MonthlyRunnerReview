@@ -1,0 +1,80 @@
+https://dataexplorer.azure.com/clusters/nrp/databases/test?query=H4sIAAAAAAAAA71XW2%2FbNhR%2B969g8yKpUOOmxfbQLgUcO20F5IbESB%2FSzGCkY5sNRQokncTd1t%2B%2Bc3SxqNhe0xVbACsiz5Ufz%2FlISXBMan17wNPbcc72GZ%2Fp8PWvv2TR255E2diI%2FKPL5VArB8qhQmideYM%2FoWZR748ewz9STFcKBgrJUwh3gp2YlY%2FVDKMZeqB9hBEaYwN2ITu2v139%2Fu76%2BTvSx1%2FtvLaotHt%2FVRnOwCUqFRnKj4S6pQxFPd6QpqxUUJByF%2B7MnSvsm36%2F0MZxuZuL1Girp06k%2BW6q877Ii%2F7d637j0PYzcFxI28ekmklMsT%2FXOew0C8IQb%2BnFy%2FAcCi5M4iBvcrzX5pbGSfb0LDO42%2BVfFwbK3HJbvvdPFfQn5E6gO9uHTDhKrw3wD3ld4AIljIHnJzwHykvh%2FzdsPSVbSIEAW9ql8r3UxLV%2F%2FryzaSeFmIbcGL6cSFAzNw9XDiL2ju3FrcOrveuYkbON23vJpci4E1qN%2Bcyi42yJuiINr4LLwdHF7okpLhW4s8WNXdx80FxeOO4giFfSE5FuFw7s7JEQC91iUqDSpe%2FkiXpn0m4Pdq4XDsb8RsI2HZsPB2eDY14UiL43eyYXtgYCaKPOIdUmaxTOVZ5gfxjF5ZHm2QGXXKVgMIgU6aUoRuAgJQQ9A4wr4QLMnUghUdaRxWPx%2BCazzdx7obIj4LeQDQfWXxNYvTApkGxLwphBIxmbBZxpK5y4W0V7z6VtJ6%2BxCPr97sYTRovu1g%2BG4%2BTyEF0cJ%2BPkw2B8OCotyS4ZHicj0k4xB0QlDLCZ6%2Fcg2kWX%2FIZbCIMkPR7h4BM3MNcLCyhsiMReKF7YuXaXr3p%2Fsvs5GGBDA7gYtACsX48yucpYgrtuZpCx%2FX02pfXUs4gONlLqPAn6gwcsm4ydcWMhq6u6oMHki9UqpJloFdbTmnM74WrJwm5PkK5d5Dk34iuwmyVrVpFkb3v%2FJwirsEiNLKz2IWrXi1B0%2BKPm%2BknFNeFYOIl8ElwF%2BAgifFwHnrVE06OSSeiQ6hBL5dfTTaxdwKhkalRG93kYMHTrdB2rNrnynL5ge9dRhLVHtMgEeWAV2T%2FyO8TFz7RZkufGX5WPxXaDxnfMXsab88RQr9pIae1uvi19IlJhIS%2FcMvRFhBCuyZ9BF180Yn%2BLzbovYeqIcEwvLEmfHnXMqTC4D5gVp5p1IodS%2BhO1MgKbGlFQSdrSV1MwW4rCVxly9MX2v7GAji7IgrKahnOuMLuDJXsm1DcWBjO%2BQLzvUmz64ck%2BUn555KnZC5rHbcC1tIdj0IRoG4Ob2SQXKqTijdnzqNsptXph9BfkSk8Qs%2FeE1mEF1liUpyT56EU9rXwPW8D%2FWWgPFjPrbx4tm9FR3wWxbMzshzpzI0L8ITzWmZiKytk6UjE7fKgOmxVqrYv2nkOkluN5MbHgwtbi6bB7rv5rqM%2B1dmUVroCeomdmcBr7E%2Bd%2FCKqVt7XleRJc33BQUh7iVFMfzmAfrRqJBN3bd%2Bi1Gbb%2FEbcObfwc0MYfVsD5CbUko3hKJ26iRnxpa55pTlrsxUqKBENHOFHEBN1OwyDjeN9hSt%2BHmIEfC4cvPQ5GV8adTj8BVDdZHOnpPY7C9gzpUPYxci62My6oSoaFTkt9jztZZRWxZ%2FsswMuhlndIEiW%2F%2BtzorRJT2aNsPP%2BXQkuMeJ7yi6PBI1bdgGPlgZQ2gfyiew6%2BzrbGq2ljPeYaq7QR1%2FjmCeFW8A1Gp%2F8OPr%2Ff2lw6B1hHBRN5WTrZi%2FxEvnepaeDhcrwsoAZl0x1nw4WRTrzuDfI71t2rJZl3Z3DipD8IIuZldnqvEEbvi6i6rHSn688e%2FHLpbSavJG0%2B9B59noatVhR3qj7ubGK8XkFxt4jjBsS4ey%2FpXAlivw9jr466vbt%2ByG1kFzJSwmlDS2wQUbxasj%2BuMGox8%2BUNgtWYmA2pZiAFt5gs3IERblmmjUUbP6KpeEWVm5h0jUHbo4qgt0O9oK91vJQX9PF20374rk2SW6qomAqadsvb24%2F6%2Fr14AHw7xjKa8S1c3Qoj7%2BbZ7bL2uwE1BBo1E%2BWdXhtH54nX%2FNymfwMCJdFhsREAAA%3D%3D
+
+let lookBackTm = ago(365d);
+let TrimHtmlContent = (str:string)
+{
+    let content = replace("'", "'", replace(" ", " ", str));
+    let result = replace("<[^>]*>", "", content);
+    result
+};
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link;    
+};
+let getRepairItemLink = (workItemId:string)
+{
+    let link = strcat("https://dev.azure.com/msazure/One/_workitems/edit/", workItemId);
+    link;    
+};
+let getSimpleTeamName = (name: string)
+{
+    let splitList = split(name, "\\");
+    let result = iif(array_length(splitList) > 1, splitList[1], name);
+    result
+};
+let ValidationTags = dynamic(['VALS.NrpVnetPubsubGoalState','VALS.NrpNicPubsubGoalState','VALS.NrpAsgPubsubGoalStateConsistency','VALS.NrpNsgPubsubGoalStateConsistency','VALS.NrpPlsPubsubGoalState','VALS.NrpRouteTablePubsubGoalState','VALS.NsmCAPAMapping','VALS.NsmPlusValidateNameRecord','VALS.RnmInternalLoadBalancerPublicVipDetection','VALS.RnmStaleServiceInstance','VALS.RnmStaleTbds','VALS.FindLeakedCAs','VALS.NrpResourceLeak','VALS.NsmPlusValidateVip','VALS.TruePositive','VALS.FalsePositive']);
+//let ValidationStatus = dynamic(['ACTIVE','MITIGATED']);
+let ICMIDs = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookBackTm and IsPurged == false and IsRestricted == false
+| extend ParsedTags = parse_json(Tags)
+| where ParsedTags has_any (ValidationTags)
+| summarize by IncidentId;
+cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookBackTm and IncidentId in (ICMIDs)
+| extend strList = split(replace_string(Title, '[', ''), ']')
+| extend listLength = array_length(strList)
+| extend IssueDetail = trim(' ', tostring(strList[listLength - 1]))
+// get issue detail
+| extend IssueCategory = tostring(array_slice(strList, 0, array_length(strList) - 2))
+// get categoryh
+| extend IssueDetail = iif(isempty( IssueDetail), '', IssueDetail)
+| join kind=leftouter
+(    
+    // get first engaged time
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentDescriptions
+    | where IncidentId in (ICMIDs)
+    | where Cause =~ 'edited' and ChangedBy !in~ ('gautosvc','CN=networking-autotriage.azure.com')
+    | summarize arg_min(Date, *) by IncidentId
+    | project IncidentId, FirstEngagedTime = Date
+)
+on IncidentId
+| join kind=leftouter
+(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    // get work item
+    | where CreatedDate > lookBackTm and IncidentId in (ICMIDs)
+    | summarize arg_max(ModifiedDate, *) by IncidentId, ExternalId
+    | summarize RepairItems = make_set(ExternalId) by IncidentId
+    | project IncidentId, RepairItems
+)
+on IncidentId
+| join kind=leftouter
+(
+    cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    // find root cause
+    | summarize arg_max(ModifiedDate, *) by RootCauseId
+    | project RootCauseId, RCATitle = Title, RCADesscription = TrimHtmlContent(Description), LastRCAModifiedDate = ModifiedDate
+)
+on RootCauseId
+| extend InactiveInDays = iif(Status =~ 'active', datetime_diff('day', now(), ModifiedDate), 0)
+| extend StartOfWeek = startofweek(CreateDate)
+| extend IsMissingRCA = iif (tolower(Status) != 'resolved', 0, iif(isempty(RootCauseId), 1, 0))
+| extend ViolateRcaSLA = iif(isempty(LastRCAModifiedDate), 1, iif(LastRCAModifiedDate - CreateDate > 3d, 1, 0))
+| extend ViolateEngagedSLA = iif(isempty( FirstEngagedTime), 1, iif(FirstEngagedTime - CreateDate > 3d, 1, 0))
+| extend IsMissingADO = iif (tolower(Status) != 'resolved', 0, iif(isempty( RepairItems), 1, iif(array_length( RepairItems) > 0, 0, 1)))
+| extend ParsedTags = parse_json(Tags)
+| extend ValType = iif(ParsedTags has_any ('VALS.TruePositive'), 'TruePositive', iif(ParsedTags has_any ('VALS.FalsePositive'), 'FalsePositive', 'N/A') )
+| extend OwningTeamName = split(OwningTeamName, "\\")[1]
+| project IncidentId, IcmLink = getIncidentLink(IncidentId), IsMissingRCA, IsMissingADO, ViolateEngagedSLA, ViolateRcaSLA, ValType, IssueCategory, IssueDetail, StartOfWeek, CreateDate, ModifiedDate, FirstEngagedTime, LastRCAModifiedDate, MonitorId, OwningTenantId, OwningTenantName, OwningTeamId, OwningTeamName, OwningContactAlias, Severity, Status, InactiveInDays, Title, RootCauseId, RCATitle, RCADesscription, ExternalLinksCount, ResponsibleTeamName, ResponsibleTeamId, Tags, ParentIncidentId, HowFixed, Mitigation = TrimHtmlContent(Mitigation), tostring(RepairItems), IsPurged = toint(IsPurged)
+| sort by CreateDate asc  

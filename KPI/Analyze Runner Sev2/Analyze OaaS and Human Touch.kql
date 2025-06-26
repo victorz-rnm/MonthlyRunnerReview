@@ -1,0 +1,14 @@
+https://dataexplorer.azure.com/clusters/genevaactions/databases/Production?query=H4sIAAAAAAAAA5VTTW%2FbMAy971ewutgZ7HXYbSs6oBiyITs0QZwsx4GzmESbIxkSnazAsN8%2B2rLz0aIo5pP4%2BPhEPlNl1QQmnyYbsrRHLNk4G5LRG42MPzBQmsy8002HC3zXaMPw6g8ctuQJyO6%2Fs9kRfLwF3Lj0%2FVs9ArQaxlbXzli%2BR0ne%2FoVzlUj4zWSDhAND3c9nqkt1d4z3ZHnxUBMYC6kqmrIk0qRVBuozmkpOo1Mfk1CQ35uSJlrKDD90d66xCpSA87AM5M9TyiGGnF1ufZ1jaUJOQz95iVWlWukO0o9qwZh1%2Bt9y0vQUseibvBOzWbBzmdFxlmlNHnlw5qp0ltHYAGpDHA16luEJ9QuUygRWL%2FjGvom2PVIRN8LB8DYOo%2BD6Gr5OFtBBbqAGaGkRbGmAcs%2BWKsmfSNJAjT4QzNCLtGxgX%2FEaVNiR2OhpI7y6TX9QMO8iUDc3SijyydVRgLcEkXscqidftYuTjDHwsng3brBOsuSTTOmxWhZ9HLPF4oucC9fw9kiI2Ira%2FDesjMb4Ak57UTB6nq5XRL9kLUIbufVBonR4FS259u4nlQwzT7IXtBBYCne1lAy07FwquzQ966e5XJbs6Y9roWPlXPZg5Q1L%2BeVj%2BgccTlgo7wMAAA%3D%3D
+
+cluster('genevaactions').database('Production').Audit 
+| where env_time >= ago(90d) and EndpointName =~ 'Production' and ExtensionName =~ "NRP" and AuditEventType in ("Succeeded", "Failed") 
+| where IsServiceIdentity =~ 'false' or UserIdentity =~ "oaas-to-nrp-acis-extension-call" 
+| extend UserIdentity = iif(UserIdentity =~ "oaas-to-nrp-acis-extension-call", "OaaSServiceAgent", UserIdentity)
+| where OperationName !contains "get" and OperationName !contains "read" and OperationName !contains "list"
+| where IsServiceIdentity =~ 'true' or OperationName !endswith "OaaS" // JIT with operations ends with OaaS are helper operation
+| parse Parameters with * "smenrpregionparam:" Region ";;" *    // parse the region
+| where Region !in ('EastUS2Euap','CentralUSEuap','EastUSSTG','SouthCentralUSSTG','WestUSValidation')
+| extend StartOfWeek = startofweek(env_time)
+| project PreciseTimeStamp = env_time, StartOfWeek, OperationName, Region, UserIdentity, IsServiceIdentity, IsOperationReadWrite, AuditEventType
+
+  

@@ -1,0 +1,62 @@
+{
+  "account": "AzNetToolsRunners",
+  "content": {
+    "guid": "e1752ba4-dedc-462d-a4a5-fa2a3749b2d4",
+    "layout": {
+      "children": [
+        {
+          "element": "787ca630-b6b6-4cfb-9a40-cd6f8b547b96",
+          "width": "50%"
+        }
+      ],
+      "layoutConfig": {
+        "seriesColorScheme": []
+      },
+      "managerClassName": "FlowLayoutManager"
+    },
+    "path": {
+      "name": "MDMSavedProfile",
+      "path": "./mdm"
+    },
+    "wires": {
+      "globalEndTime": 0,
+      "globalStartTime": 0,
+      "literalDashboard": {
+        "description": "Analyze Runner ICMs and Signals",
+        "seriesColorScheme": [],
+        "sharedWith": [],
+        "tags": [
+          "Runner"
+        ],
+        "templateSettings": []
+      },
+      "pendingWidgets": [],
+      "pinGlobalTimeRange": false,
+      "presentationMode": false,
+      "refreshTick": 1761364088804,
+      "widgets": [
+        {
+          "guid": "787ca630-b6b6-4cfb-9a40-cd6f8b547b96",
+          "path": {
+            "name": "TableOfContentsWidget",
+            "path": "./tableOfContents"
+          },
+          "wires": {
+            "description": "",
+            "path": [
+              "AzNetToolsRunners",
+              "NCP Quality Dashboard"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "description": "Analyze Runner ICMs and Signals",
+  "path": "NCP%20Quality%20Dashboard",
+  "sharedWith": [],
+  "tags": [
+    "Runner"
+  ],
+  "templateSettings": []
+}

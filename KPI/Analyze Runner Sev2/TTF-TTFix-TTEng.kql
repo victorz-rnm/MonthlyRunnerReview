@@ -1,0 +1,29 @@
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA4VU247aSBB95ytaecFeOQQP4GESsdLszF6QQiYK1s5KSYR67MJ0sLut7nIY9vLvW%2B02thm0Wh6g%2BtTpU%2BVThXNAliu1%2F4kn%2B7hgC8Yz5YXzceq%2FG%2BSU%2B0PII5cx8GKZGkqnR8kLkXifh%2BF4Nr0ZBoyCKAptEF1PJlMbzK%2Fm4ZUNplfRzdgG17ObSU2O5tF85m7NpvOpi6bXNXQzmU0np%2Ft1EI3DqA7CcDqd10rhZDaeTIZfm%2F4ywLUoyhxsix94AdSjRy3CW2ZQC5n5g78GjD6WbMpc4HthkEh1XDMD9urLl1ekd6JpMFVuOUJsPa41P25ykBnuvFbAZz%2ByMOgEP4dfA2bFGhknMfjHNcnz%2FJ4jJ8UkrwyC9oYiKZp46I9SSj5xA95wmaws85Fr2KnKACWXMhEpSDRryUuzU%2Fj71eBvdtiBBrZSqdgKSOkOUEfdIFvGw0GSCW5%2BTEjmnQ3UZ1wSbKAo8eixj1RW4qngMvVJBp4RiNPpNCZfGO%2BdU5r5LO9Wy3u7OI0HpGiqouBa%2FAns6ci6Yu8GHeWbolb3QqaLHLaoKrKJ7YTEkayKTck1ChRKmsVs7GAaNTmQHRdmV223OTCvnkLr9g6xNG%2FfvCHXrddajRKqqTnlR3viqNGBiqmDGUnAs4HcqaJQkqBfATfLpNi049g8CtzF8XNd6X8HUhvdPWw9CueN3wh0tnCdbQr%2B7PXFAvaDf%2B5Xc63U6hsk2EsE7BOUXOg7VUlsD7kykDZQHN%2Fbrw%2F262eZ2Z9fxLP9WQVsXT2ZRIvSOtzwl%2Ba2QnUPSIUgteeHCnkGtwlWPA%2FYR2WwUBqhiAXm0AfWyLEyAfuNm9hk9up6Eo0%2FQc5rJXt4L%2BR%2B4A%2BU7D9cu3h3Goha%2B7lgqGgygIK2bat0wXHTnjsevSSO9Hm9Wr1O06HfW%2BJT381fu937E%2B4HbMtzA0EfOX%2FY%2F7rqspcCLe4MeHndoZQeB1185tFlwV7SXXwJnY%2FrUqCfPSmcYZ1j9WK8VKhBd%2FEU1nt0ySPwxHMhbdgla3XirHqVaXE0PmwfAfb2bW1PanugU2%2FS%2Ftnb5PZ75uT598xzqjXknsCBrtsadg072DZn%2F129osGLV17Qbmd8LC8G%2FC8sPZ8GRwcAAA%3D%3D
+
+let lookBackTm = ago(180d);
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+let getSimpleTeamName = (name: string)
+{
+    let splitList = split(name, "\\");
+    let result = iif(array_length(splitList) > 1, splitList[1], name);
+    result
+};
+let allData = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where ModifiedDate > lookBackTm
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId)
+| extend OwningTeamName = getSimpleTeamName(OwningTeamName);
+let ICMIDs = allData
+| summarize by IncidentId;
+allData
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle (
+    cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+    | where ModifiedDate > lookBackTm and IncidentId in (ICMIDs)
+    | summarize arg_max(ModifiedDate, *) by IncidentId
+    | project IncidentId, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, HasTsg, IsS360Related, S360Link
+)
+on IncidentId
+| extend CreateDate = todatetime(format_datetime(CreateDate, 'yyyy-MM-dd'))
+| extend IsOutage = iif(isempty( IsOutage), false, IsOutage), IsOutageActual = iif(isempty( IsOutageActual), false, IsOutageActual), HasTsg = iif(isempty( HasTsg), 0, HasTsg), IsS360Related = iif(isempty( IsS360Related), 0, IsS360Related), IsAutoDetected = iif(isempty( IsAutoDetected), 0, IsAutoDetected)
+| extend TTFix = iif(isempty( TTFix), 0, TTFix), TTEng = iif(isempty( TTEng), 0, TTEng), TTM = iif(isempty( TTM), 0, TTM)
+| extend StartOfWeek = startofweek(CreateDate)
+| summarize AvgTTM = avg(TTM), AvgTTFix = avg(TTFix), AvgTTEng = avg(TTEng) by StartOfWeek, OwningTeamName, IncidentType, IsOutageActual  

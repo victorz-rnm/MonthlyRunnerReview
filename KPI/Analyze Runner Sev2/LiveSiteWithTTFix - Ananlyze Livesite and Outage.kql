@@ -100,3 +100,113 @@ on IncidentId
 | project IncidentId, Severity, IncidentLink, tostring(RepairItems), IsMissingRCA, IsOutageActual, RCATitle, RCADesscription, IsCausedByChange, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, PostmortemTitle, PostmortemStatus, Status, HasTsg, IsS360Related,S360Link, Category, RootCauseId, TsgId, IncidentClass, MonitorId, MonitorName
 
   
+
+
+
+================================= update in 8/12/2025
+
+https://dataexplorer.azure.com/clusters/aznwsdn/databases/aznwmds?query=H4sIAAAAAAAAA%2B1Ye2%2FbOBL%2F35%2BCm12s5T3Fj%2FiRpG0KpE6yNRCn3sRtD2hzBiPRMjcSqSWpJN57fPYdknpaTtpe0b074AwkoobD3ww5TyokCoWc377C3u08QkcIB9zpHXT91vNGCHNzQaPXKgrHnCnCFDA4Uoln8EdZ0Gr8vYHgpxmlInEPpgWJQ%2BwRZ6e54yLzL6cgTdH%2FYHUL8PXSTgdd2nkkIywU%2Bi3hikiEmY8YZ7s3guBbEIVkDDyyIm6vLO5HdiPj54UE0KYu4vV8er4FFsHOqFpXwPsVcBxZ7B9T7L06NrAQIbXeW9AGFTS9RwP3cSfF69fxzEFswxpWsEKL9CIFGtSBQiLlrlphtg1sVAELLNjLFGxYBwvg4BQRj%2BLtV%2FC%2B7x8%2Bz9zASNtidbBC%2BMRuD8qALz787eX1T1q97OD2y4gRv0ttrHBQ9ZXDCsx3u7sGaXe3jHWwHcvjUQSKVfF63TLgx4%2FyL2XXOyyQLriIcEh%2FJyhKQkVj2Ov9ioKLG39GiiOcnYEhmXVWQuOfNgYDoibMoz4ocU7ZrY5Bmr5vCcTQssCEh5Wzs1Iqls86nZgLhcN2RD3BJV8q6kVt2FmHRnHnrt%2FJAGXHJwrTUHZgKxkRdtZZ8YjspNvSIkrKgSkxFRNFoky9ey5u9fvE%2F3wFfXLXxr8nghi1ImnGnTeMdBYaDo4skh3iU6U1KwRsV%2BkKthWSOcHRBY6IVonB8xnakrfikMKxSp3azNhw6tj8mG8X2ASRYD7goXTpYCHwehESFqiVkwO00EvUcwvAD71rF2mwFMZCZEr%2BlbI1ZlrDiS8B118DK%2FWcD81edzg4bLoIBqNRTw9G%2B%2F3%2BQA8O9g56e3ow2BsddvVgf3jYN8yjg9HB0K4aDg4GdjTYN6TD%2FnDQz9abwajbG5lBrzcYHBikXn%2FY7feb12nix2F4ghUGzbwwAX8UThNcJh03W20fJm%2BwJE5z4k0153ssyIonksBk5q7yiuFYrrh6t4c2fhAaOXDmAiBAwwre9mCxwDDfvgUe3r6nzOf3ss2IqsgeQ2xyBqSfiVpMvGiRS168p2o1nz80%2FgHxRgRBU%2B7TJSU%2B6ErAUkXRyzne3DNwDmsS8H3kVGzUMjWJShLFau2gGWyX5XEJfmimr8gdEZDC0IsjtNcApwbllI6jMPEJUiuCJuMpPLFCKyxRDJ4Eq3MNMrj5Ogan%2FRdqntM7cgWu30RcoIl8k0Big5kj1LNWArTJiXaf1FyAJJMICqlOODdrVOj3vFGw%2FMphd1D%2B%2FKOQLBVPwAhoRZlqsyRagE6QhCln8mjYtWSIGji0YH0kV8lyCZnKMQ7959hPS%2FqkDc3hF5s11rNn00oBfIhIsIMqcbnIZq4xT3SOS19CLomfkubzE%2F3vQv87ZYF%2BnNEH%2FZi66Cq5kZ6gsT6rlH8ijxPFT4giniK%2Bm1vs2FMJDl0041JFkIhJNKcqJGXClcIqkS56jeVcBnrpVX%2FUvSQhNkj6RWfXRqvBWWkPYE3yAJ2Zj8amMpuTOYKyAmdMFI2Is9QFSC3y94IPgn4Nv93pdNf3m61WgVV4msl3udNn9JaLljiUxC1Tqpt9bKmdrQPkdHsAm8stFaa7bjGunFFdYGnSLtwkVc1VByjPZggVWnFixjE2EQzRLsyGxo%2FqfEDM%2BOwQPKzONc14piXJEHTnlYra%2FKySP9xS8qEMKG5LpFPKbOAnHZtV1k0tOBb8V7IRSak%2Fl52rHKxuJbW5pVSb1udazXaqLK1iDcNMXZgabSn6aoI9dRxSLL82pNP0%2Fa2CezPI59CmPhrqbmba7Rnb5LUvy9rosayd0j6RrJ8o9GO9MDqjJPRPIfPT9Ka2Wdeqmdkk7UfLbQpQlLMv2isWwSLCD07VCX9qVYuii7QjfZ0k%2BxtrIhdrcGUtVgeu9Wwo4hMpE5IxQIy9g8Koky%2BkXFTVZ0t2%2FxaW%2F6pG7nMN%2B3inlCJsSyOXnKsxBtn6ZcoZVVyY9CID%2FagH%2FH%2FdieU7kNkNcAmqIAFk5Gl6zduectXSeWycWuWkLsfHJueA96W5BygncO%2FPUpieqH7JcWA6mzWl0ID5r9ZjuNkHxJ5rWfx%2F%2BmAzG79KgvxooWqYqyDSt8PPcMwvOvuyX55CrRUMh7kZCoji9itN8N%2BShSTKKVZsgD3l%2FQXU433eRE6p1F8MwMS2RUCO4iG%2Fh%2BO09aWFvjtCTbhu8vCO%2BE3TM5Q7iZJVwfJwZe22WkWBTpuJjY8O5X4A7jWFNlkBCLHU%2B%2Fe0%2BYyJrUPqW87OcUzfMvIQm8J5Bq0G3Owl3OKb48vZ8WwCGm4suLic%2FcINhx1tZfoAE9dQsgXUbHQFWqBTIeCadKlb4Nc0WF3vuDuCBOCPIdT10CJugJzzgHo4PKHyFo3RmSDkynwRHEMboCf0Vx09ma6srH1v6%2BQZvhHUm2W%2Bf8LvGQjeeK%2FcfUsYOdsvCRdJdM6lzDqMCdN7ox6xAp7ELCGeUBww6DyoJ2eC%2B7CsRqksQDu6TwR7rsAlNDis0JQCvwQ%2B9SNzjPmgZmo4bz2fPjcknb%2BbnMyI0LfDxf4Q2KAdhePOZZWte3w5vUaC%2FJYQqfR3Mm0JoIEr1KWClyDAXZpOjYjUccazt3WvOX2IQ%2BpRhc65d6s1TZ81BS4TxgxUMdr4lbW1PPpyfxwE4HTYZN3xrL6%2B%2BUZBhmpCECGfLLH%2BqnSnGwIEgcwI1ZPI48w3hoYqiiKigPmxxrtoWcvhWmrkS0nF5Pkie9Rb2KyO1OpHvUB8Zcv%2F57Tzn27i%2F42mvdquF9161uF9oov5Bt9fAsLIHa4UUEtaERyqFXjTkgYS5lNdxoaQtXSVukkl4ypt3FLunxPq1yvn16ifVd1zLNXb2C%2B5Ty7QRZF9WZgvqLqElmYbLQSx8YMW387PV38W%2B0FA3s9phvXRUmVLYrHdisCqfLfGnEttVSycBnf5W0o6m95zNU5VEV2r7Sq3qqK5Ifw%2F6v83oz69sGwYtOQpJbf4A8wE9YiEHQAA
+
+let lookBackTm = ago(180d);
+let TrimHtmlContent = (str:string)
+{
+    let step1 = replace("'", "'", replace(" ", " ", str));
+    // Replace smart quotes and non-breaking spaces
+    let step2 = replace("&nbsp;", " ", step1);
+    // Replace HTML non-breaking space entity
+    let step3 = replace("&amp;", "&", step2);
+    // Replace ampersand entity
+    let step4 = replace("&quot;", "\"", step3);
+    // Replace quote entity
+    let step5 = replace("&lt;", "<", step4);
+    // Replace less-than entity
+    let step6 = replace("&gt;", ">", step5);
+    // Replace greater-than entity
+    let step7 = replace("&#39;", "'", step6);
+    // Replace single quote entity
+    let step8 = replace("<[^>]*>", "", step7);
+    // Remove HTML tags
+    let step9 = replace("<!--[^>]*-->", "", step8);
+    // Remove HTML comments
+    let step10 = replace("\\s+", " ", step9);
+    // Normalize multiple whitespaces to a single space
+    step10
+};
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link
+};
+let getRepairItemLink = (workItemId:string)
+{
+    let link = strcat("https://dev.azure.com/msazure/One/_workitems/edit/", workItemId);
+    link
+};
+let getSimpleTeamName = (name: string)
+{
+    let splitList = split(name, "\\");
+    let result = iif(array_length(splitList) > 1, splitList[1], name);
+    result
+};
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+let allData = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2                // cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+| where ModifiedDate > lookBackTm
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId) and Severity <= 2
+//don't include the ICM that has parrent
+| where IncidentType =~ 'LiveSite' or IsOutage == 1;
+let ICMIDs = allData
+| summarize by IncidentId;
+allData
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle (
+    cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+    | where ModifiedDate > lookBackTm and IncidentId in (ICMIDs)
+    | distinct IncidentId, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, HasTsg, IsS360Related, S360Link
+)
+on IncidentId
+| extend CreateDate = todatetime(format_datetime(CreateDate, 'yyyy-MM-dd'))
+| extend IsOutage = iif(isempty( IsOutage), false, IsOutage), IsOutageActual = iif(isempty( IsOutageActual), false, IsOutageActual), HasTsg = iif(isempty( HasTsg), 0, HasTsg), IsS360Related = iif(isempty( IsS360Related), 0, IsS360Related), IsAutoDetected = iif(isempty( IsAutoDetected), 0, IsAutoDetected)
+| extend TTFix = iif(isempty( TTFix), 0, TTFix), TTEng = iif(isempty( TTEng), 0, TTEng), TTM = iif(isempty( TTM), 0, TTM)
+| extend icmLink = strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', tostring(IncidentId), '/summary')
+| project IncidentId, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName = getSimpleTeamName(OwningTeamName), OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, Severity, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, Status, HasTsg, Tags, IsS360Related, S360Link, icmLink
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentCustomFieldEntries
+    | where IncidentId in (ICMIDs) and TeamId in (XinyanTeamIds)
+    | summarize hint.num_partitions=50 hint.strategy=shuffle arg_max(ModifiedDate, *) by IncidentId, Name
+    | summarize hint.num_partitions=50 hint.strategy=shuffle       Category = max(iif(Name =~ 'IssueCategory', Value, ''))  by IncidentId
+)
+on IncidentId
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where IncidentId in (ICMIDs) and isempty( ParentIncidentId)
+    | project IncidentId, RootCauseId, MonitorId, TsgId, OwningContactAlias
+)
+on IncidentId
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    // find root cause
+    | summarize arg_max(ModifiedDate, *) by RootCauseId
+    | project RootCauseId, RCATitle = Title, RCADesscription = TrimHtmlContent(Description), IsCausedByChange
+)
+on RootCauseId
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    // get work item
+    | where IncidentId in (ICMIDs)
+    | summarize arg_max(ModifiedDate, *) by IncidentId, ExternalId
+    | summarize RepairItems = make_set(ExternalId) by IncidentId
+    | project IncidentId, RepairItems
+)
+on IncidentId
+| extend IsMissingRCA = iif (tolower(Status) != 'resolved', 0, iif(isempty(RootCauseId), 1, 0)), IncidentLink = getIncidentLink(IncidentId)
+//| extend IncidentClass = case(     Title has "ApiUnexpectedFailures", 'CRPAPI',     Title has "NRPQos", 'NRPQosAPI',     Title has "[Qos] Server Side Error Rate High]","regionlevelQos",     Title has "LogicalDisk C FreeSpace Critical", "Disk",       Title has "WindowsFabricPartitionDown","PartitionDown",             Title has "PartitionQuorumLossDetectedInServiceFabric","PartitionDown",           Title has "DiagnosticsProd","DiagnosticsProd",   Title has  "port exhaustion","port",        Title has "MdmQos","MdmQos",     Title has "Aegis","Aegis",   Title has  "LVIDPercent_75","compact",      Title has "[ARM] requests to", "ARMAPI",     Title has "NRP PerfCounter", 'NRPCPU',     Title has "Explicit Locks","Locks",      Title has "Runner", "Runner",                Title has "[RunnerICM Aggregation CP", "Runner",      'Other'
+// default value if neither condition is met
+//)
+| project IncidentId, Severity, IncidentLink, tostring(RepairItems), IsMissingRCA, IsOutageActual, RCATitle, RCADesscription, IsCausedByChange, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, PostmortemTitle, PostmortemStatus, Status, HasTsg, IsS360Related,S360Link, Category, RootCauseId, MonitorId, TsgId
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle (
+    cluster('geneva').database('genevahealthconfigs').MonitorConfigSnapshot
+    | where isnotempty( MonitorGuid)
+    | summarize kind=leftouter hint.num_partitions=50 hint.strategy=shuffle arg_max(LastUpdateDate, MonitorGuid, monitor_name) by MonitorGuid
+) on $left.MonitorId == $right.MonitorGuid
+| extend IncidentClass = iif(isnotempty( monitor_name), monitor_name, iif(isnotempty( MonitorId), MonitorId, 'Other'))
+| extend MonitorName = iif(IncidentClass != 'Other', IncidentClass, '')
+| project IncidentId, Severity, IncidentLink, tostring(RepairItems), IsMissingRCA, IsOutageActual, RCATitle, RCADesscription, IsCausedByChange, Title, CreateDate, ModifiedDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, PostmortemTitle, PostmortemStatus, Status, HasTsg, IsS360Related,S360Link, Category, RootCauseId, TsgId, IncidentClass, MonitorId, MonitorName  

@@ -1,0 +1,42 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA51WbW%2FbNhD%2Brl9B%2BIulQYlsS1bsBh6QOQNmYEmLxtgGDEXASrTNWiIN8lxPW%2FvfexT1ZitttxkwcCSPd%2Fc895BUxoBsGaxEwlMm4Fcu9mRBXF6NX2lQXGw95x%2BH4C9D78y64EJCwR3sAA76VRAcpAKaXec8UVLLDfAkv05kHvD8EHwMgzqgDlIGlGc6GPiknvTJINjJnA28W5sGU9waw%2Fl865icf3BRULFmNF%2BlGpOnhaCYyf1zOB5No%2FnQJ2jE8dgY8U0YRsaYTWbjiTGiSTwfGeNmOg9L53gWz6Z21zSaRdaKbsqpeTiNwnp%2FacSjcVwa43EUzcpI43A6CnFuGM6j6Gb4zrN1ZlLu39Nk%2FzsXqTxhoXQr3TCepl4Px%2FJhdW%2BgODX12vlETjumGFkqRoHd45%2F8eBkSnfQxz6nifzOy4wKuxTF%2FPlAFHLgUejEd2WnsDwbYFgu9O242GSNUbZ9zLtwHmfINZ6mJ75MfPPK%2BIHUNq5Q0Vbw%2BCey85Rw7RdyzJngkCKQiS6kUy6hJjV4asA594rAjg6f7x7dHIZjSV79wWMqjgEET%2B4l9ZIpDQRYLMjmDdFaMJe0uy9AfCTN0NWw9CXrQOwm%2FTf4Nb41PB%2BkFprIhVZ%2Fukv1PVDOT8FEC0pWUENsWdUn8%2F8kaxzeKI%2F5ijT1isC4OzBAzXP98h25DQgXu10ICyw9QuOfeXm8ZixfylLF0y5ZSAE3gLuNUW0eEg7ASM8%2BFJoO6RLJWVOgNw3ampk8p14DHE7rRrGIqRSwISHs5uOf1%2BF8rwO%2FwgRk%2BSORkj4QtMrYBeQSmiFsef5NBl1bNTxeezd%2BHbeYfac5eWhFUQLlWRW31Vu8yeOiePVNRuE0kv7P13KEJaATbZ6Sq0fGIFNUyIj4o%2BYEhpS0Nfp%2FezkQT1xq9taqs2uxW%2B40mXGRciVLDC7KRKqfwnOIIeM7cXmXDAn9XDw9XaTo00pUqxZYh%2FgtPQnVy67Sn1mn7%2BN0DYVwbYWBR3NwglSzqQ4mDkteOmsw29hcw3NO5BPqY2sVLOJ0IqyS3R5BwvnH%2F2w2HL5mdM1fcxDxxGKIutIzaHr3kqAEfPQxv3k48drh5%2BXZV7xy8UTK1A8%2FrcNgXSP9yLt1fkluXgAqn39zGaAGFI2qkvfutmOz4XEdrDtlLen1Rpl%2BR3bf1f3F5JHn1dXLxveK2AC1wjXQaXXakgJL8AhCjcD%2FqCAAA
+
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link;    
+};
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033','39447']);
+let lookbackWindow = ago(365d);
+let XinyanTeamICMIDs = 
+Incidents
+| where CreateDate > lookbackWindow 
+| summarize hint.num_partitions=50 hint.strategy=shuffle arg_min(ModifiedDate, *) by IncidentId 
+| where OwningTeamId in (XinyanTeamIds) //or CorrelationId startswith "SDNRunners-HitCount"
+| where Severity == 2
+| summarize by IncidentId;
+let AllSevICMs = IncidentsSnapshotV2
+| where CreateDate > lookbackWindow
+| where IncidentId in (XinyanTeamICMIDs);
+let AckBases = Notifications
+| where ModifiedDate > lookbackWindow
+| where IncidentId in (XinyanTeamICMIDs)
+| where PrimaryTargetType == 'TEAMID' and isnotempty( PrimaryTarget) and isnotempty( AcknowledgeContactAlias) and Notes contains "Incident Transferred"
+| distinct AcknowledgeDate, TeamId = tostring(PrimaryTarget), AcknowledgeContactAlias, IncidentId
+| join kind=leftouter (
+    Teams
+    | where isnotempty( TeamId) and isnotempty( TeamName) and isnotempty( TenantName)
+    | summarize TeamName = take_any(TeamName), TenantName = take_any(TenantName) by TeamId = tostring(TeamId)
+) on TeamId
+| project IncidentId, AcknowledgeDate, AcknowledgeTeamId = TeamId, AcknowledgeTeamName = TeamName, TenantName, AcknowledgeContactAlias, AcknowledgeDateInDate = format_datetime(AcknowledgeDate, 'yyyy-MM-dd')
+| order by AcknowledgeDate asc;
+AllSevICMs
+  | where IncidentId in (XinyanTeamICMIDs)
+  | join kind = inner (
+    AckBases
+  ) on IncidentId
+  | extend CreateDate = format_datetime(CreateDate, 'yyyy-MM-dd')
+  | extend IcmType = iif(CorrelationId startswith "SDNRunners-HitCount", "Runner Sev2", iif(IncidentType contains "customerreported", "CRI Sev2", "Prod Sev2"))
+  | where AcknowledgeTeamId in (XinyanTeamIds)
+  | project IncidentId, CreateDate, IcmType, Severity, Status, OwningTeamName, OwningContactAlias, Title, AcknowledgeTeamId, AcknowledgeTeamName, AcknowledgeDateInDate, AcknowledgeDate, AcknowledgeContactAlias, IcmLink = getIncidentLink(IncidentId)
+  | sort by CreateDate asc
+

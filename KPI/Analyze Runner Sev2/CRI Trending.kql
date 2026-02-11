@@ -1,0 +1,13 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA11SyW7bMBC9%2ByvmJglIbclaLDdIL25Q%2BNAFjdEUKAqDFscRYZEUSKqqgKDf3qEUu0554ePMm3mzsEEHD44ZtxMS4Q7Ykw7TIufRLYxnsYCkjIGzwYKwYLAR7NAgGRybNRR8r%2FhLqNJ9GN2Oxu9CDUztkMktt%2BTig2JSVOGPIInzbB3cAIGiSDwoVmmaeVAuy2TpQbYs1rEHq3ydjuSiLMp8isqzMptQthpN6zTP0nP8CIo4KUaQJFlWjpmSNI%2FTNPhJ9VVNZx2aMBCVfMFBNPf9HJjFMNhWH9%2FT45EZrHVnkZxbVQmOytkHxVpba%2FdtCf8dmtMlce1ca98uFiTg0xo9ryjYMPLPT8TR814orns7V%2BheaW%2B0lFqR6QO6%2FbaS%2B4vy%2FlG4erf7PXuGvkaDsDHIHFKlCO%2F%2BbfDi%2FtwroZ6mDYBQEL5aSQRMkdmibN0QwhfqVbmz1pZP7vN7N7S03j8QbHztEs1XbLVxyANSk%2ByEbywagRbufxF7ozvlaOWVv8MIOB5Z17i7eBqS54MU1lJ14ycCZiGe2DOtrtqaHY2WV3%2FT6ctfozG3kOScEh6Gq1Y%2FMXKSiDhCj6AQOTgygx8uQWqSE%2FMGOnVodHXyJbgaSVxKqpy68Qw04Eikqkn4LwMhEIEeAwAA
+
+let StartTime = ago(365d);      // 180 days is reliable data
+let EndTime = now();
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2                // cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+| where CreateDate > StartTime
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId) and IncidentType =~ 'CustomerReported'
+| make-series EventCount = count() default=0   // make missing data as 0 count
+on CreateDate
+from StartTime to EndTime step 15d //by OwningTeamName // if we need team based trending, unblocking the comment
+| render timechart
+

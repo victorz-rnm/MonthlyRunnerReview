@@ -1,0 +1,20 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcMDataWarehouseRestricted?query=H4sIAAAAAAAAA5VUTW%2FbMAy951dwvtgenDUbsEMXZEARZFt3aIM4XY8DazGJVlkyJDldgGG%2FfZSVz65F0UscUe89UvxS5KH0aP1c1gQjwKXJzgciHwLA2RkYrTbg2qYx1sP5AAR6BKm77x066inmT7TYsrV5yPJhr1Kt82SzdEma1oiVl0a7NH%2B3o2Xp1BrRdnY2X7RCeuj9gYcVWQLS658%2BCH4%2BxAOoRXDUGKn9FQZvf%2BFYJQJ%2Be9KOjztEcjWbJt1V52OyJu3nm4bCG7KkbKuKSJBICki%2BoFT8Lz%2FEcelKsmtZ0aVgmvSbzucClaMUjIUbR%2Fb4KjGIru9NX9umj5V0fdrF069QqSRIdybxiAtSLrJXy3HQ14jlNsgLTrZn27FM%2FgqHoyfVnrR9a2vUc9NWqyTfZ%2Bu6IYt%2Bl%2Fs3ldEepXaQLMnHEjyLsITiBYiSzicvVMbbNhYmeyTD73cP0q%2Fia570dIDMyflZq7kRuP%2B%2FX86hM5sd3EGARmNQA%2BR4VqT4%2FgDiQBu0jmCKluV5FraMt5C4mriglpaMa8L1pwRm3QmS4TBhSBy9KOBXBBF7KGVEd20cC7mlh55OJ%2Bj8Tflh0mKTFumY02NR3ZTdOS8gHaNGu0mLZ4jl%2FCvTStP61Z4bbbcU7n%2BgkgLj3LIar46l1EuW62YxzY86rlsr14tbonuO04WTWTzwKdsNeAA31vyiysPUErc4hUXCxLphyg5WHEsVp5Urttk47fvi%2Fw4Jpj1zxg13a6Vn%2BuleKI6Sy8HVeE991pXkoMOMTas9h1aFb5aDoAW2yo8GXckCHGrpHKckrkp0MIjgHuf58Rt7C2vqo%2FXrzX6X8v5s4P1HAXC3OXkaR2U5u9xtITXVirmxtbJNZVRbazc6RFpADH50mhz%2BVTQKu5GT6YKH%2FRyN0dPS2A2PuSKedzFaSyfvFEH%2BDzCv3mwrBgAA
+
+let StartTime = ago(90d);   // only support 90 data in database
+let EndTime = now();
+cluster('genevaactions').database('Production').Audit 
+| where env_time >= ago(90d) and EndpointName =~ 'Production' and ExtensionName =~ "NRP" and AuditEventType in ("Succeeded", "Failed") 
+| where IsServiceIdentity =~ 'false' or UserIdentity =~ "oaas-to-nrp-acis-extension-call" 
+| extend UserIdentity = iif(UserIdentity =~ "oaas-to-nrp-acis-extension-call", "OaaSServiceAgent", UserIdentity)
+| extend UserIdentity = iif(UserIdentity == "OaaSServiceAgent", "OaaSServiceAgent", "HumanTouch")
+| where OperationName !contains "get" and OperationName !contains "read" and OperationName !contains "list"
+| where IsServiceIdentity =~ 'true' or (OperationName !endswith "OaaS" and OperationName !endswith "TestRun") // JIT with operations ends with OaaS are helper operation
+| parse Parameters with * "smenrpregionparam:" Region ";;" *    // parse the region
+| extend RegionType = iif(Region in ('EastUS2Euap','CentralUSEuap'), 'Canary', iif(Region in ('EastUSSTG','SouthCentralUSSTG','WestUSValidation'), 'Staging', 'Prod'))
+| extend StartOfWeek = startofweek(env_time)
+| project PreciseTimeStamp = env_time, StartOfWeek, OperationName, Region, UserIdentity, IsServiceIdentity, IsOperationReadWrite, AuditEventType, RegionType
+| make-series EventCount = count() default=0  // make missing data as 0 count
+on PreciseTimeStamp
+from StartTime to EndTime step 15d  by UserIdentity
+| render timechart with (ycolumns=EventCount, series=UserIdentity, title="NRP Ops by Identity Category", legend=visible )
+

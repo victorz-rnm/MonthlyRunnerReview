@@ -1,0 +1,12 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA11STY%2FTMBC991fMLakEaVInaQoql7JCOaBF2opFQqgy8WxjbW1X9oRQiR%2FPJGnLLrnk%2Bb35eOPxEQkeSHraaYOwAXlwsSgLNX8%2FO7J0Z9VFsK6PL%2BQ3bc%2FS7lCaWgWW1NlKo5v4e5SlRb6O3gCDsswGUK6EyAdQLatsOYB8Wa7TAayKtRiDy6qsiimryKt8QvlqpNaiyMU1fwRlmpUjyLI8r8ZKmShSIaIf7K85doHQx5FuzAVH80RJkj9lwDiqm88f%2BfAoPbauC8hibRut0FJ4sPIUWkdfl%2FDft1jArXBLdArvFgtuMJT1Lmk42UvWk2eOcUmvrXJ9SCzSq95bZ4yzTH1C2teN2d867x81tbvd79kf6Fv0CFuPkpCdInz4t5%2BbfN9bbQ%2FTBkBbiF%2BtZA7SMh3QnOgcwxee1dK1V60muQ73HckDr3YDGRc28hnfBvQaA9z94sCt6yzxdpvhH89B4ZPsjrRJrzcyZIDRIbAVGKYEGSCd4mfOvphh9uSdefHMyN0eFt%2FpCbJCsQN2qdADMd20HPoXErnWUZsCAAA%3D
+
+let StartTime = ago(365d);
+let EndTime = now();
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2                // cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+| where CreateDate > StartTime
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId) and IsOutage == 1
+| make-series EventCount = count() default=0     // make missing data as 0 count
+on CreateDate
+from StartTime to EndTime step 15d
+| render timechart

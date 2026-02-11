@@ -1,0 +1,163 @@
+{
+  "account": "AzNetToolsRunners",
+  "content": {
+    "guid": "523cc7d9-4872-4b03-8089-970a0debf3a0",
+    "layout": {
+      "children": [
+        {
+          "element": "ef492534-6848-4794-b5ee-4c84d8e6da74",
+          "width": "100%"
+        }
+      ],
+      "layoutConfig": {
+        "seriesColorScheme": []
+      },
+      "managerClassName": "FlowLayoutManager"
+    },
+    "path": {
+      "name": "MDMSavedProfile",
+      "path": "./mdm"
+    },
+    "wires": {
+      "globalEndTime": 0,
+      "globalStartTime": 0,
+      "literalDashboard": {
+        "description": "",
+        "seriesColorScheme": [],
+        "sharedWith": [],
+        "tags": [],
+        "templateSettings": []
+      },
+      "pendingWidgets": [],
+      "pinGlobalTimeRange": false,
+      "presentationMode": false,
+      "refreshTick": 1761364088804,
+      "widgets": [
+        {
+          "guid": "ef492534-6848-4794-b5ee-4c84d8e6da74",
+          "path": {
+            "name": "SuperGrid",
+            "path": "./canvasgrid"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "kusto": [
+                {
+                  "aggregateAs": "Average",
+                  "conditions": [],
+                  "connection": "https://azdeployer.kusto.windows.net/",
+                  "db": "AzDeployerKusto",
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": [
+                        {
+                          "above": "above",
+                          "color": "#C94332",
+                          "label": null,
+                          "value": null
+                        }
+                      ]
+                    },
+                    "units": ""
+                  },
+                  "expanded": true,
+                  "index": 0,
+                  "query": "let ICMLink = (incidentId:long)\n{\n    strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', tostring(incidentId), '/summary')\n};\nlet RTOLink = (RTOId:long)\n{\n    strcat('https://azdeployer.trafficmanager.net/release/', tostring(RTOId))\n};\nlet ICMs = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2\n| where Summary has 'Your deployment might be blocked due to failed deploymenet health check for following RTOs' and Summary has 'resource://AzNetToolsRunners/'\n//| extend AllResourceTypes = extract_all(@\"resource://AzNetToolsRunners/([^/]+)/\", Summary)\n//| mv-expand AllResourceTypes\n//| extend ResourceType = tostring(AllResourceTypes)\n| extend ResourceType = extract(@\"resource://AzNetToolsRunners/([^/]+)/([^/]+)</td>\", 1, Summary)\n| extend DetectedRegion = extract(@\"resource://AzNetToolsRunners/([^/]+)/([^/]+)</td>\", 2, Summary)\n| extend DetectedRegion = tostring(split(DetectedRegion, '_')[0])\n| extend RTOId = extract(@\"https://azdeployer.trafficmanager.net/release/([0-9]+)\", 1, Summary)\n| project CreateDate, IncidentId, tolong(RTOId), ResourceType, Severity, OwningTeamName, Status, Summary, Title, DetectedRegion;\nlet RTOIDs = ICMs\n| summarize by tolong(RTOId);\nICMs\n| join kind=leftouter (\n    cluster('https://azdeployer.kusto.windows.net/').database('AzDeployerKusto').DeploymentAuditEvent\n    | where RTOId in (RTOIDs)\n    | summarize arg_max(PreciseTimeStamp, *) by RTOId\n)\non RTOId\n| project CreateDate, IncidentId, RTOId, ResourceType, DetectedRegion, OwningTeamName, VeName, Template, Title, Severity, Status, IcmLink = ICMLink(IncidentId), RTOLink = RTOLink(RTOId)\n| sort by CreateDate asc "
+                }
+              ],
+              "minTimeWindow": 60000,
+              "refreshTick": 1761366323223,
+              "startTime": -3600000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "",
+            "view": {
+              "biggerIsBetter": null,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        }
+      ]
+    }
+  },
+  "description": "",
+  "path": "NCP%20Quality%20Dashboard/Deployment%20Health%20Signal",
+  "sharedWith": [],
+  "tags": [],
+  "templateSettings": []
+}

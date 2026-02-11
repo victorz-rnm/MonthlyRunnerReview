@@ -1,0 +1,2146 @@
+{
+  "account": "AzNetToolsRunners",
+  "content": {
+    "guid": "50dfcce6-9679-47a6-bb21-b96881f71d0f",
+    "layout": {
+      "children": [
+        {
+          "element": "d3a4bf64-fd04-44e5-a8f6-2c9d530a1fa6",
+          "width": "50%"
+        },
+        {
+          "element": "b6c063a8-d88a-43fb-8d72-32ab300ceb35",
+          "width": "50%"
+        },
+        {
+          "element": "4df9999a-1067-4901-866b-7012930a6222",
+          "width": "50%"
+        },
+        {
+          "element": "223f0433-b33b-49c6-af9f-64cb83936d0c",
+          "width": "50%"
+        },
+        {
+          "element": "c457a01d-316f-40fd-844e-dd61a09a2eea",
+          "width": "50%"
+        },
+        {
+          "element": "8b85eb0c-3879-4ae3-b7da-08aa3ac1c642",
+          "width": "50%"
+        },
+        {
+          "element": "b33261bb-45eb-4cf1-b0d2-4bef9f8ed84b",
+          "width": "50%"
+        },
+        {
+          "element": "a1442f3e-1691-4435-99f9-b020ff6a136e",
+          "width": "50%"
+        },
+        {
+          "element": "b07b6ce8-ae3d-4674-a2a7-8bdfe286b760",
+          "width": "50%"
+        },
+        {
+          "element": "40a5e358-d90b-4ba8-b58c-e4f136cd21c5",
+          "width": "50%"
+        }
+      ],
+      "layoutConfig": {
+        "seriesColorScheme": []
+      },
+      "managerClassName": "FlowLayoutManager"
+    },
+    "path": {
+      "name": "MDMSavedProfile",
+      "path": "./mdm"
+    },
+    "wires": {
+      "globalEndTime": -1,
+      "globalStartTime": -86400000,
+      "literalDashboard": {
+        "description": "",
+        "seriesColorScheme": [],
+        "sharedWith": [],
+        "tags": [],
+        "templateSettings": []
+      },
+      "pendingWidgets": [],
+      "pinGlobalTimeRange": false,
+      "presentationMode": false,
+      "refreshTick": 1761364088804,
+      "widgets": [
+        {
+          "guid": "d3a4bf64-fd04-44e5-a8f6-2c9d530a1fa6",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "previous day",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azfHybrid,azfHybrid1,azfHybrid2,azfHybridRncPe,azfHybridRncPls,azfMerlinCreatePEFirst,azfMerlinIplb,azfMerlinIplbplb,azfMerlinPLSnat,azfRNC,azfRNCLargeNsgPayload,azfRNCNRP,azfRNCPl64k,azfRNCRNM,azfRnc,azfRncBasic,azfRncOvl"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "",
+                        "baseValue": 0,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": null
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "zero",
+                      "preAggregation": "$MSTORE_PREAGGREGATE",
+                      "samplingType": "NullableAverage",
+                      "useMetricsStore": false,
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#adaeff",
+                    "decimals": null,
+                    "name": "Layer 0",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": [
+                        {
+                          "above": "",
+                          "color": "",
+                          "label": "",
+                          "value": null
+                        }
+                      ]
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [],
+              "profile": "",
+              "title": "",
+              "widgets": [
+                "73e3bde0-2404-4a5f-bed3-b8bfd4e1a3a2"
+              ]
+            },
+            "threshold": {
+              "thresholds": [
+                {
+                  "above": "",
+                  "color": "",
+                  "label": "",
+                  "value": null
+                }
+              ]
+            },
+            "title": "Overall RNC Sev2 Health in Public Regions (Public and Non Canary Regions)",
+            "view": {
+              "biggerIsBetter": null,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "displayAsGraph": true,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": true,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisColumn": "Time",
+              "xAxisDimensions": [
+                "RunnerInstanceName",
+                "RunnerName"
+              ],
+              "yAxisColumns": [
+                "Value"
+              ],
+              "yAxisDimensions": [
+                "Region"
+              ],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": ""
+            },
+            "width": 1,
+            "workflow": []
+          }
+        },
+        {
+          "guid": "b6c063a8-d88a-43fb-8d72-32ab300ceb35",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "previous day",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azf,azfLargeNsgPayload,azfLinux,azfNRP,azfNonSpdSlbv1,azfOverlake,azfOverlake2,azfPON,azfRNM,azfSLBv1,azfSpdSlbv1,azfTestSlice"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "",
+                        "baseValue": 0,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": null
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "zero",
+                      "preAggregation": "$MSTORE_PREAGGREGATE",
+                      "samplingType": "NullableAverage",
+                      "useMetricsStore": false,
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#adaeff",
+                    "decimals": null,
+                    "name": "Layer 0",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": [
+                        {
+                          "above": "",
+                          "color": "",
+                          "label": "",
+                          "value": null
+                        }
+                      ]
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [],
+              "profile": "",
+              "title": "",
+              "widgets": [
+                "73e3bde0-2404-4a5f-bed3-b8bfd4e1a3a2"
+              ]
+            },
+            "threshold": {
+              "thresholds": [
+                {
+                  "above": "",
+                  "color": "",
+                  "label": "",
+                  "value": null
+                }
+              ]
+            },
+            "title": "Overall Azf Sev2 Health in Public Regions (Public and Non Canary Regions)",
+            "view": {
+              "biggerIsBetter": null,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "displayAsGraph": true,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": true,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisColumn": "Time",
+              "xAxisDimensions": [
+                "RunnerInstanceName",
+                "RunnerName"
+              ],
+              "yAxisColumns": [
+                "Value"
+              ],
+              "yAxisDimensions": [
+                "Region"
+              ],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": ""
+            },
+            "width": 1,
+            "workflow": []
+          }
+        },
+        {
+          "guid": "4df9999a-1067-4901-866b-7012930a6222",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azfHybrid,azfHybrid1,azfHybrid2,azfHybridRncPe,azfHybridRncPls,azfMerlinCreatePEFirst,azfMerlinIplb,azfMerlinIplbplb,azfMerlinPLSnat,azfRNC,azfRNCLargeNsgPayload,azfRNCNRP,azfRNCPl64k,azfRNCRNM,azfRnc,azfRncBasic,azfRncOvl"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "Average",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 10
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "zero",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 RNC Sev2 Failures by Deployment Phase",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        },
+        {
+          "guid": "223f0433-b33b-49c6-af9f-64cb83936d0c",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": true,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azf,azfLargeNsgPayload,azfLinux,azfNRP,azfNonSpdSlbv1,azfOverlake,azfOverlake2,azfPON,azfRNM,azfSLBv1,azfSpdSlbv1,azfTestSlice"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "Average",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 10
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "zero",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 Azf Sev2 Failures by Deployment Phase",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        },
+        {
+          "guid": "c457a01d-316f-40fd-844e-dd61a09a2eea",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": true,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azfHybrid,azfHybrid1,azfHybrid2,azfHybridRncPe,azfHybridRncPls,azfMerlinCreatePEFirst,azfMerlinIplb,azfMerlinIplbplb,azfMerlinPLSnat,azfRNC,azfRNCLargeNsgPayload,azfRNCNRP,azfRNCPl64k,azfRNCRNM,azfRnc,azfRncBasic,azfRncOvl"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 10
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 RNC Sev2 Failures by Runner Name",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        },
+        {
+          "guid": "8b85eb0c-3879-4ae3-b7da-08aa3ac1c642",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": true,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azf,azfLargeNsgPayload,azfLinux,azfNRP,azfNonSpdSlbv1,azfOverlake,azfOverlake2,azfPON,azfRNM,azfSLBv1,azfSpdSlbv1,azfTestSlice"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "Average",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 10
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 Azf Sev2 Failures by Runner Name",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        },
+        {
+          "guid": "b33261bb-45eb-4cf1-b0d2-4bef9f8ed84b",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": true,
+                          "id": "RunnerInstanceName",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azfHybrid,azfHybrid1,azfHybrid2,azfHybridRncPe,azfHybridRncPls,azfMerlinCreatePEFirst,azfMerlinIplb,azfMerlinIplbplb,azfMerlinPLSnat,azfRNC,azfRNCLargeNsgPayload,azfRNCNRP,azfRNCPl64k,azfRNCRNM,azfRnc,azfRncBasic,azfRncOvl"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "Average",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 10
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 RNC Sev2 Failures by RunnerInstance ",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        },
+        {
+          "guid": "a1442f3e-1691-4435-99f9-b020ff6a136e",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": true,
+                          "id": "RunnerInstanceName",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "azf,azfLargeNsgPayload,azfLinux,azfNRP,azfNonSpdSlbv1,azfOverlake,azfOverlake2,azfPON,azfRNM,azfSLBv1,azfSpdSlbv1,azfTestSlice"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "Average",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 10
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 Azf Sev2 Failures by RunnerInstance ",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        },
+        {
+          "guid": "b07b6ce8-ae3d-4674-a2a7-8bdfe286b760",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "maxTimePoints": 360.875,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": true,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": "azf,azfLargeNsgPayload,azfLinux,azfNRP,azfNonSpdSlbv1,azfOverlake,azfOverlake2,azfPON,azfRNM,azfSLBv1,azfSpdSlbv1,azfTestSlice"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "Average",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 5
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "zero",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 Azf Sev2 Failures by Flavor",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        },
+        {
+          "guid": "40a5e358-d90b-4ba8-b58c-e4f136cd21c5",
+          "path": {
+            "name": "XTSGrid",
+            "path": "./xts"
+          },
+          "wires": {
+            "__ignoreOverrides": false,
+            "data": {
+              "compareTimeframe": "",
+              "cutoffTime": false,
+              "endTime": -1,
+              "mdm": [
+                {
+                  "aggregationMethod": "automatic",
+                  "dataSources": [
+                    {
+                      "account": "AzNetToolsRunners",
+                      "conditions": [
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "BootstrapVerification,SetWorkerLog,DnsIpMap,IntervalPrecheck,PopulateOVModel"
+                            }
+                          ],
+                          "free": false,
+                          "id": "DeploymentPhase",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [
+                            {
+                              "free": false,
+                              "regex": "*",
+                              "value": "usdodeast,uscentraleuap,useast2euap,chinan3,usgoveast,usgovsc"
+                            }
+                          ],
+                          "free": false,
+                          "id": "Region",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerInstanceName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerName",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": "AzNetToolsRunners.ASGRunner,AzNetToolsRunners.AksRunner,AzNetToolsRunners.AnmIpamPublic,AzNetToolsRunners.AsgNicCaUpdateRunner,AzNetToolsRunners.AzsmApiMgdRsvdVip,AzNetToolsRunners.AzsmApiMgdVip,AzNetToolsRunners.AzsmApiMgdVipIlb,AzNetToolsRunners.AzsmSvdPsdVip,AzNetToolsRunners.AzsmSvdVip,AzNetToolsRunners.BasicILPIPIMDSRunner,AzNetToolsRunners.BasicILPIPRunner,AzNetToolsRunners.CaReuseRunner,AzNetToolsRunners.CreatePEForMultiPrefixSubnet,AzNetToolsRunners.CreatePLForMultiPrefixSubnet,AzNetToolsRunners.CreateUDRForMultiPrefixSubnet,AzNetToolsRunners.CreateVMNicWithDeleteOptionsRunner,AzNetToolsRunners.DNSRunner,AzNetToolsRunners.DSRLBILBILPIPSTenant,AzNetToolsRunners.DSRLBILBILPIPXTenant,AzNetToolsRunners.DSRLBILBSTenant,AzNetToolsRunners.DSRLBILBXTenant,AzNetToolsRunners.DefaultLBILBILPIPSTenant,AzNetToolsRunners.DefaultLBILBILPIPXTenant,AzNetToolsRunners.DefaultLBILBSTenant,AzNetToolsRunners.DefaultLBILBXTenant,AzNetToolsRunners.DualStackUDRRunner,AzNetToolsRunners.ExplicitNicWithSecondaryCA,AzNetToolsRunners.ForceDeleteVM,AzNetToolsRunners.GlobalVnetPeeringNsg,AzNetToolsRunners.HotswapDpVM,AzNetToolsRunners.ILBHAILPIPSTenant,AzNetToolsRunners.ILBHAILPIPXTenant,AzNetToolsRunners.ILPIPRunner,AzNetToolsRunners.IcmpNsgRunner,AzNetToolsRunners.IpConfigVmLimit,AzNetToolsRunners.LbMigrPsdVip,AzNetToolsRunners.LbMigrPubIPILB,AzNetToolsRunners.LbMigrPubIPLB,AzNetToolsRunners.LongRunnerNicTestSuite,AzNetToolsRunners.MgmtNic_VMSSWithEnicPnic,AzNetToolsRunners.NicReuseRunner,AzNetToolsRunners.NrpCreateNic,AzNetToolsRunners.NrpCreateVM,AzNetToolsRunners.NrpCreateVMForMultiPrefixSubnet,AzNetToolsRunners.NrpCreateVMSS,AzNetToolsRunners.NrpCreateVMSSPIPPrefix,AzNetToolsRunners.PEAzureSearch,AzNetToolsRunners.PECosmosDB,AzNetToolsRunners.PECosmosDBDualStack,AzNetToolsRunners.PEMerlin,AzNetToolsRunners.PENSGWithEnableSubnetRunner,AzNetToolsRunners.PENSGWithPeCreationRunner,AzNetToolsRunners.PEPeering,AzNetToolsRunners.PERunner,AzNetToolsRunners.PERunnerPLNSG,AzNetToolsRunners.PrefixOnNicDatapath,AzNetToolsRunners.PrivateEndpointASGRunner,AzNetToolsRunners.PrivateEndpointNatGatewayPLNSGRunner,AzNetToolsRunners.PrivateLinkAkS,AzNetToolsRunners.PrivateLinkChain,AzNetToolsRunners.PrivateLinkConPro,AzNetToolsRunners.PrivateLinkDeleteInboundNatRule,AzNetToolsRunners.PrivateLinkDeleteRg,AzNetToolsRunners.PrivateLinkGlobalPeering,AzNetToolsRunners.PrivateLinkGlobalPeeringPLNSG,AzNetToolsRunners.PrivateLinkIPBasedPLSAliasing,AzNetToolsRunners.PrivateLinkIPBasedPLSDestinationIPChange,AzNetToolsRunners.PrivateLinkIPBasedPLSNatCAUpdate,AzNetToolsRunners.PrivateLinkIPbasedPLSRunner,AzNetToolsRunners.PrivateLinkMultiple,AzNetToolsRunners.PrivateLinkPeering,AzNetToolsRunners.PrivateLinkProxy,AzNetToolsRunners.PrivateLinkProxyAccelnet,AzNetToolsRunners.PrivateLinkProxyLoopback,AzNetToolsRunners.PrivateLinkRegionalPeeringPLNSG,AzNetToolsRunners.PrivateLinkRunner,AzNetToolsRunners.PrivateLinkRunnerPLNSG,AzNetToolsRunners.PrivateLinkServiceMerlinRunner,AzNetToolsRunners.PseudoVip,AzNetToolsRunners.RapidVMSSScaleTest,AzNetToolsRunners.RncVMwithENicAndManagementNic,AzNetToolsRunners.RnmAsgUpdateAfterDeletingVMRunner,AzNetToolsRunners.RnmNicUpdateTest,AzNetToolsRunners.RnmNsgRunner,AzNetToolsRunners.RnmPublicIpAddressVirtualServiceTagRunner,AzNetToolsRunners.SLBDefaultNATGatewayRunner,AzNetToolsRunners.STPoliciesStorage,AzNetToolsRunners.ServiceTagDiscovery,AzNetToolsRunners.SharedVNetNicCaUpdateRunner,AzNetToolsRunners.SiriusVnetPeering,AzNetToolsRunners.StandaloneVMWithEnicPnic,AzNetToolsRunners.StandaloneVMWithManagedLB,AzNetToolsRunners.UdrNsgServiceTag,AzNetToolsRunners.UpdateAddressSpaceInPeeredVnets,AzNetToolsRunners.VMNetworkOperationsRunner,AzNetToolsRunners.VMOperationsRunner,AzNetToolsRunners.VipMigrationRunner,AzNetToolsRunners.VipMobilityRunner,AzNetToolsRunners.VipSpanningIlb,AzNetToolsRunners.VipSpanningLb,AzNetToolsRunners.VnetInjectionV2_VMFlex,AzNetToolsRunners.VnetInjectionV2_VMSSFlex,AzNetToolsRunners.VnetInjectionV2_VMSSWithManagedLB"
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "SubscriptionId",
+                          "isOutput": false,
+                          "regex": "*",
+                          "value": ""
+                        },
+                        {
+                          "exclusions": [],
+                          "free": false,
+                          "id": "RunnerFlavor",
+                          "isOutput": true,
+                          "regex": "*",
+                          "value": "azfHybrid,azfHybrid1,azfHybrid2,azfHybridRncPe,azfHybridRncPls,azfMerlinCreatePEFirst,azfMerlinIplb,azfMerlinIplbplb,azfMerlinPLSnat,azfRNC,azfRNCLargeNsgPayload,azfRNCNRP,azfRNCPl64k,azfRNCRNM,azfRnc,azfRncBasic,azfRncOvl"
+                        }
+                      ],
+                      "filter": {
+                        "aggregator": "",
+                        "baseValue": 1,
+                        "filter": "GreaterThan"
+                      },
+                      "limit": {
+                        "metric": null,
+                        "order": "Descending",
+                        "top": 5
+                      },
+                      "metric": "E2ERunnersDeployMetric",
+                      "name": "s0",
+                      "namespace": "E2ETestsSlbv2",
+                      "nullDataBehavior": "zero",
+                      "preAggregation": "",
+                      "samplingType": "NullableAverage",
+                      "vips": null
+                    }
+                  ],
+                  "displayOptions": {
+                    "axisSide": "left",
+                    "color": "#095fb0",
+                    "decimals": null,
+                    "name": "",
+                    "seriesStyle": "Solid",
+                    "seriesType": "",
+                    "threshold": {
+                      "thresholds": []
+                    },
+                    "units": ""
+                  },
+                  "expression": "",
+                  "index": 0,
+                  "layerType": "",
+                  "queryExemplars": false,
+                  "resolution": 1,
+                  "seriesNaming": ""
+                }
+              ],
+              "minTimeWindow": 1800000,
+              "refreshTick": 1761364838443,
+              "startTime": -86400000,
+              "timeOffset": 0
+            },
+            "description": "",
+            "drilldown": {
+              "account": "",
+              "dimensions": [
+                ""
+              ],
+              "drilldownType": 0,
+              "link": "",
+              "namespace": "",
+              "path": [
+                "AzNetToolsRunners",
+                "NCP Quality Dashboard",
+                "NC Runner Health",
+                "Chinan3"
+              ],
+              "profile": "",
+              "title": "",
+              "widgets": []
+            },
+            "title": "Top 5 RNC Sev2 Failures by Flavor",
+            "view": {
+              "biggerIsBetter": true,
+              "chartType": "line",
+              "colorMapping": {
+                "colorStopType": "percentile",
+                "colorStops": [
+                  {
+                    "color": "#FFAA00",
+                    "value": 0
+                  },
+                  {
+                    "color": "#C94332",
+                    "value": 100
+                  }
+                ],
+                "defaultColor": "#FFFFFF"
+              },
+              "compareInline": false,
+              "comparisonType": "both",
+              "decimals": 2,
+              "gridSorting": {},
+              "groupTooltip": true,
+              "hiddenColumns": [],
+              "mergeLayers": false,
+              "onSelectColumnName": "",
+              "rotateColumns": false,
+              "separateYAxes": false,
+              "showLegend": true,
+              "showSource": false,
+              "showSparklinesSummary": true,
+              "showTooltip": true,
+              "showValues": false,
+              "sortType": "nameAsc",
+              "splitDimensionColumns": false,
+              "stacking": "",
+              "summarize": false,
+              "textSize": 0.5,
+              "threshold": {
+                "thresholds": [
+                  {
+                    "above": "",
+                    "color": "#c94332",
+                    "label": "",
+                    "value": null
+                  }
+                ]
+              },
+              "tooltipSum": true,
+              "xAxisDimensions": [],
+              "yAxisDimensions": [],
+              "yAxisMax": null,
+              "yAxisMin": null,
+              "yAxisType": "linear"
+            },
+            "workflow": []
+          }
+        }
+      ]
+    }
+  },
+  "description": "",
+  "path": "NCP%20Quality%20Dashboard/Public%20Runner%20Health/Public%20non-Canary%20Regions",
+  "sharedWith": [],
+  "tags": [],
+  "templateSettings": []
+}

@@ -1,0 +1,31 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/ACM.Backend?query=H4sIAAAAAAAAA6VVUU%2FbMBB%2Bz6%2BweEmyhYYh8TAY0yq6h2gDplIxTYgh41wbUzuO7EtLO%2Fbfd0nT0HRsMK1SFKd3ue%2B7%2B%2Fw5CpAlJ6efZT5lxyyQuZAp5Jikh8rkk9D74TH6ObSCY%2BBniIU7jOPCWOSqp6WwxpkxSqF7wuhY6iKeHcTrKi5OAblULvYjhoaqyHyygRFGzI9dqTW3Cz%2F0fh55iugMR%2BdrOrR8hglfplAoswDbQ8vHY2LCcz6hxxwwtqCAO%2BjA1zXDFo2adwQlVOkQbOBTgWbth72UI7%2BlAoGfiNMBPXzlFjJTOqBgsu7yIueFywxe7nsPbJ6BBXaxaopl3DH%2FmyktW9HUlM%2B0nGTIboHdKiOmkLK0BOLHxjSq6mmdSewy4AozJjIQUzY2li6lzJz6qMbkfMbztAtmwRGcAJpNf3kGODJGuWGZ52BJBi%2BOHxjcI9BrfaWGTfJoUUA1BYpYLvCGKxV82PlrqeDqe3z9Oox3ojV%2BWBfXs124L%2FgT9TexNwOE24qz%2FU7o%2FemVhupLaTb3dzGm74nymw3WLcIAEARCOoSJNPl%2FY%2By%2FCKNt3RVKYtCNkz9u%2FPBq73pzDtX%2B7ZD7Ny8EV3u7b4nmb1MorLkjbHZigSPQboeIJa1XKwdVRmz8E3X0oDowAytxEbHzeU7tjIDrM66rCHIsXYsUsZFERf93O22tnwyqjVi5kiitzga5JKssuvhHXpNyZ2TOpjJPjxWM0ZRkXBbUR0Vr6SfmM6WQ6ZGPUjN39Xg6bu8vB03mpyqRYoPWvv0ylfhxRqsaZe34lSzEJVg1ETbRxxa4ndxofh98sSCkg5HUQLPRRcRehVV%2FdQUv9GhbrJbPS1LnbUuxvYW2BbmE1X0EulB1yUaRRw3XmiVCN0dx840Iks3DuzmpG0kqvei7ULXyyJdxJ34B9NPRR2QGAAA%3D
+
+let ICMLink = (incidentId:long)
+{
+    strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', tostring(incidentId), '/summary')
+};
+let RTOLink = (RTOId:long)
+{
+    strcat('https://azdeployer.trafficmanager.net/release/', tostring(RTOId))
+};
+let ICMs = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where Summary has 'Your deployment might be blocked due to failed deploymenet health check for following RTOs' and Summary has 'resource://AzNetToolsRunners/'
+//| extend AllResourceTypes = extract_all(@"resource://AzNetToolsRunners/([^/]+)/", Summary)
+//| mv-expand AllResourceTypes
+//| extend ResourceType = tostring(AllResourceTypes)
+| extend ResourceType = extract(@"resource://AzNetToolsRunners/([^/]+)/([^/]+)</td>", 1, Summary)
+| extend DetectedRegion = extract(@"resource://AzNetToolsRunners/([^/]+)/([^/]+)</td>", 2, Summary)
+| extend DetectedRegion = tostring(split(DetectedRegion, '_')[0])
+| extend RTOId = extract(@"https://azdeployer.trafficmanager.net/release/([0-9]+)", 1, Summary)
+| project CreateDate, IncidentId, tolong(RTOId), ResourceType, Severity, OwningTeamName, Status, Summary, Title, DetectedRegion;
+let RTOIDs = ICMs
+| summarize by tolong(RTOId);
+ICMs
+| join kind=leftouter (
+    cluster('https://azdeployer.kusto.windows.net/').database('AzDeployerKusto').DeploymentAuditEvent
+    | where RTOId in (RTOIDs)
+    | summarize arg_max(PreciseTimeStamp, *) by RTOId
+)
+on RTOId
+| project CreateDate, IncidentId, RTOId, ResourceType, DetectedRegion, OwningTeamName, VeName, Template, Title, Severity, Status, IcmLink = ICMLink(IncidentId), RTOLink(RTOId)
+| sort by CreateDate asc 

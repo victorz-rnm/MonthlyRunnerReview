@@ -1,0 +1,59 @@
+{
+  "account": "AzNetToolsRunners",
+  "content": {
+    "guid": "18d12481-c476-40d5-a614-79feac60e23f",
+    "layout": {
+      "children": [
+        {
+          "element": "d7abdbd5-19fc-46e9-b713-3f5ca55553f4",
+          "width": "50%"
+        }
+      ],
+      "layoutConfig": {
+        "seriesColorScheme": []
+      },
+      "managerClassName": "FlowLayoutManager"
+    },
+    "path": {
+      "name": "MDMSavedProfile",
+      "path": "./mdm"
+    },
+    "wires": {
+      "globalEndTime": -1,
+      "globalStartTime": -86400000,
+      "literalDashboard": {
+        "description": "",
+        "seriesColorScheme": [],
+        "sharedWith": [],
+        "tags": [],
+        "templateSettings": []
+      },
+      "pendingWidgets": [],
+      "pinGlobalTimeRange": false,
+      "presentationMode": false,
+      "refreshTick": 1761327494840,
+      "widgets": [
+        {
+          "guid": "d7abdbd5-19fc-46e9-b713-3f5ca55553f4",
+          "path": {
+            "name": "TableOfContentsWidget",
+            "path": "./tableOfContents"
+          },
+          "wires": {
+            "description": "",
+            "path": [
+              "AzNetToolsRunners",
+              "NCP Quality Dashboard",
+              "NC Runner Health"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "description": "Analyze Runner Health Metrics in National Cloud Regions",
+  "path": "NCP%20Quality%20Dashboard/NC%20Runner%20Health",
+  "sharedWith": [],
+  "tags": ["NC Regions"],
+  "templateSettings": []
+}

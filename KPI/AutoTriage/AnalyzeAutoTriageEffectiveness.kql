@@ -1,0 +1,77 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA%2B1X227jNhB991ewebG0VRzf4zRwgSS7wBpFkkXXaAsURcBItM2NRLoktYnTy7d3hrQlUVaSok1RoGieqOFcz5wZOikzJJXy7pzGd%2FOMTAldyqA36SbhaSuFux%2B42FAxZzSbJRquk42gGY%2BDH9u97mh40o4IHMbjHh7Gx4PBEA%2BT%2FqTXx8OwPz7p4uF4dDKwyuPJeDJyVqPhZOhOw2MrOhmMhoOdvT2Mu72xPfR6w%2BHEeuoNRt3BoP3TNr9vcyGYcvlBeu3ByXB43HZ3M31J12sultfq3c85TVELawhM7yvChYmI6dtD2PqlReCP80VgD%2FgHWmQ6BZWwEEm1k7rsCRUJKKDAltykaYuqKFrYmhRt0Z4iwBpGhWavPHbtKWz9dto6OiI0TYlmn%2FtkdnGpwSFfCmpYAoVh9%2BhGtDUxULrF5CxNP4KuVZ2SOM21YSpo8zjbntthJ6GG3lLNgvYsvnwLH99TxVYy1wwuZyLmCRPmPddGqk3rV3K%2FYoqRixUVSwbajHxdZRQWxLWQhmVrswnI9b2AjriGhXu3kBtT3GxC8KvzLKOKPzKygh51RJ7drKky3HAp9LTfdWJtFMRcbqZ6lS8WKSNULW8yLoIyoYi8CcnthuxSnyUI2xLQQOgcYCmiVxSzSwP70EflAt9CpVoHQh14k4L5r5X8xGJTCRuRawgGPUkLwlbdlNel9IpmzFNDgW07wOPQ4WVZlvUXl7O32NxWpdcenB4UblTOIOjmkc0Vp0uWvD47yngWK5cjgvRJwvcdF8k0ZQsjc4jR2O7RU%2B12A1stNSRS1HoNhd8RviBQCNCNgA%2BhF5BXgvOXyHuxVDSBL0CG5kYeGosDpMceDAOKzrcG2AAABveEo1dyDhz5nbTPHq%2BYOZembRnt7i4wUWAX0ySWwlAuNDk40xrohn4OrGrjjgpqPIlqUwOs7EawEEg3jMjbXfolaRsSvLiaCmbupQKsl4dYpKuxQx9zxTqxzF5Mfee%2FCHiwzcFjI0BYAIro7rD2GJjRh6CKKZSBor1S6mPbPFR7ZlP0drMnjup9RK2qyFKFqSWrsoAg4ck9NyscLfvVeT3i%2Fo0Z0x8FXeuVNN%2F1rasXZg1VtmvvVkIxca4UaNmuyy3diLQ8s88FEbh67IJOtv5fqeb6wNrHrDa0LuBzK9RfifXVGpG9e2%2FTzrlJQbijxt7S2Bv969xouCy3%2FHbMvHfgi%2F2HoDIj7AE6DFOxGwlyCxPJmCBKZDdbsiHe8BkRodaHFRl8RnAR%2B3rxsyuqebe8uFowX39UwjLMGQyGeyXes3S9DeTHBg84%2BA17yfp2cDT31vfuJxE93YqGFfBXeNLEmhpP7Mu7Vly43w44p639t9NqSbBAneoq%2BebDrEHdW41zaWg6jWUuTFD59UfcxR78VhFaUL8AqD3rAqCaXXOX%2FMBb2GuWe02vsARVP0Bvp0SBdhI05f4GfuF2O11y5CqLSD8sW%2BwZV%2BM3WhVFVM38ihvsynSvofSUrpuCouxLP8DhrjzfyTucbs0%2Fs%2BdqcPZlPJd%2FYfp8IU3GlUEqsqoE87GJPOOmhJ%2FIxf2f4RMZn%2Bbi3bD%2FX%2Fx3mY21%2Frl98v8M%2FKsz8FST%2FsHZQI5LZZAiu5YnTMd%2BH1Fy%2Bge8Fz4PbBEAAA%3D%3D
+
+let lookBackTm = ago(180d);
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+let RunnerTeamId = '39447';
+let IsMappingOrEqualTeams = (t1: int, t2: int)
+{
+    iif(
+        (t1 == t2)
+        or (t1 == 105484 and t2 == 82812)
+        or (t1 == 93543 and t2 == 10549)
+        or (t1 == 82813 and t2 == 10661),
+        1,
+        0
+    )
+};
+// all sev2 ICMs orignated in Xinayn's team
+let AllSev2ICMs = cluster('icmcluster').database('IcMDataWarehouse').IncidentHistory
+| where ChangeDate > lookBackTm and isnotempty( OwningTeamId) and isnotempty( Severity)
+| summarize hint.num_partitions=20 hint.strategy=shuffle arg_min(ChangeDate, *) by IncidentId
+// get all orignal ICM
+| where Severity == 2
+// sev2 ICMs
+| where OwningTeamId in (XinyanTeamIds)
+| project IncidentId, OriginalTeamId = OwningTeamId, OriginalOwningTeamName = OwningTeamName;
+// sumarize incidentId
+let ICMIDs = 
+AllSev2ICMs
+| summarize by IncidentId;
+let AnalyzeTriagedICMs = cluster('icmcluster').database('IcMDataWarehouse').IncidentHistory
+| where IncidentId in (ICMIDs)
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle (
+    AllSev2ICMs
+) on IncidentId
+// mark if icm is transfered or downgraded by auto-triage
+| extend TransferTeam = iif(ChangedBy =~ 'AzNetBot' and ChangeCategories contains "AssignTeam" and IsMappingOrEqualTeams( OriginalTeamId, OwningTeamId) == 0, 1, 0), DowngradeSeverity = iif(ChangedBy =~ 'CN=networking-autotriage.azure.com' and ChangeCategories contains "SeverityDowngrade", 1, 0)
+// sumarize by downgrade or transfer
+| summarize max(TransferTeam), max(DowngradeSeverity) by IncidentId
+| project IncidentId, DowngradeSeverity= max_DowngradeSeverity, TransferTeam = max_TransferTeam
+// merge auto-triage data with ICM data.
+| join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle (
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where IncidentId in (ICMIDs)
+    // get both current and original owning team name and id
+    | join kind=leftouter hint.num_partitions=50 hint.strategy=shuffle (
+        AllSev2ICMs
+    ) on IncidentId
+    | project IncidentId, OriginalOwningTeamName, OriginalTeamId, OwningTeamName, OwningTeamId, Title, Severity
+) on IncidentId
+| extend TransferOutsideXinyanTeam = iif(OwningTeamId !in (XinyanTeamIds), 1, 0)
+// exclude transfer between rnm_triage and rnm, nrp-triage and nrp, rnc_triage and rnc
+| extend TransferTeam = iif(IsMappingOrEqualTeams(OriginalTeamId, OwningTeamId) == 1, 0, TransferTeam)
+| extend AutoTriageHelp = iif(TransferTeam == 1 or DowngradeSeverity == 1, 1, 0)
+| project IncidentId, AutoTriageHelp, TransferTeam, TransferOutsideXinyanTeam, DowngradeSeverity, OriginalOwningTeamName, OriginalTeamId, OwningTeamId, OwningTeamName, Title, Severity;
+// print all data
+AnalyzeTriagedICMs;
+// overall auto-triage KPI
+AnalyzeTriagedICMs
+| summarize Total=count(),
+          TotalAutoTriageHelp = countif(AutoTriageHelp == 1),
+          DowngradeHelp = countif(DowngradeSeverity == 1),
+          TransferHelp = countif(TransferTeam == 1)
+| extend HelpPct = round(TotalAutoTriageHelp * 100.0 / Total, 2), TransferPct = round(TransferHelp * 100.0 / Total, 2), DowngradePct = round(DowngradeHelp * 100.0 / Total, 2)
+| extend OverlapPct = round(TransferPct + DowngradePct - HelpPct, 2)
+| extend ExclusiveTransferPct = round(TransferPct - OverlapPct, 2), ExclusiveDowngradePct = round(DowngradePct - OverlapPct, 2)
+| project HelpPct, TransferPct, DowngradePct, OverlapPct, ExclusiveTransferPct, ExclusiveDowngradePct;
+// auto-triage KPI by original team
+AnalyzeTriagedICMs
+| summarize Total=count(),
+          TotalAutoTriageHelp = countif(AutoTriageHelp == 1),
+          DowngradeHelp = countif(DowngradeSeverity == 1),
+          TransferHelp = countif(TransferTeam == 1) by OriginalOwningTeamName, OriginalTeamId
+| extend HelpPct = round(TotalAutoTriageHelp * 100.0 / Total, 2), TransferPct = round(TransferHelp * 100.0 / Total, 2), DowngradePct = round(DowngradeHelp * 100.0 / Total, 2)
+| extend OverlapPct = round(TransferPct + DowngradePct - HelpPct, 2)
+| extend ExclusiveTransferPct = round(TransferPct - OverlapPct, 2), ExclusiveDowngradePct = round(DowngradePct - OverlapPct, 2)
+| project OriginalOwningTeamName, HelpPct, TransferPct, DowngradePct, OverlapPct, ExclusiveTransferPct, ExclusiveDowngradePct
+| sort by HelpPct desc, TransferPct desc;

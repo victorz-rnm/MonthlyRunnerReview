@@ -40,3 +40,58 @@ AllSevICMs
   | project IncidentId, CreateDate, IcmType, Severity, Status, OwningTeamName, OwningContactAlias, Title, AcknowledgeTeamId, AcknowledgeTeamName, AcknowledgeDateInDate, AcknowledgeDate, AcknowledgeContactAlias, IcmLink = getIncidentLink(IncidentId)
   | sort by CreateDate asc
 
+============================================= 2026-01-13 =========================================================
+
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA6VX227jNhB991cQfpFcOPHdcRK4QOq0qIFNmsZut8BiETASbXMjkS5JJ1Wb9tt7SEqyfMmi3fWDTZGj4ZkzM4d0wgxZMjMVEY%2BZMO%2B4eCJjEvL8%2BUIbxcWyUfurRvBJYJ14EyxE1IT1lTFrfdFqraUyNDlNeaSklgvDo%2FQ0kmmLp%2BvWc69VONStmBnKE92qN0kx2ST11kqmrN649NvYLfCp%2FX1Za7WIkAQo6JIRw2hKHllENxoPK67J7xumMoIBgjBACmPDFxzQuBSECppkmuuaBf4bFxkVc7iYxhoRxJmggBt%2BCDrtQf88aBIMhsOOHQzPer2%2BHYy6o07XDvrd4XnbDs4G5z1nPBwNRwP%2FVv%2FMDYbtzrDnZjr9%2FshZd3qDdg9zQe%2B83z%2FDb2fQ7o7sRAe7tnvBR8TsaJXy6ZFGT%2B%2B5iOUL4NGlDHvDQdxwHNAkIdPJDZleawRODWHPTIEKJohmz92m%2Bx6A0TzMQDuy9gKfwQherJMxIVGy0YapMECu8nHQOI2poY9UszCYRjfXeHhPFVtJMI7Fok507ZW8rJhiZKIYNQx2jHy7FwRwvxK9SVOq%2BJ%2BMrLgwp2KTPqypMtzmR48HbT%2BNaoKHZTbWq81ikTBC1fIh5SK8kTHSyWK7QZN80yCPGSlATOMSxU8vAsn3ubUkhDvJbhQMWpKIVG%2BRVXibWXK5yZwncNsdNGrVSHYwuPQsbQYBURs0huVCLmy6fOFdJUlOvKX9a1ifCbrWK2l%2B7f4n%2FgubLdg9brb10CjDsDx5C0cKuLF152puRUGUokIvmFIs9sFFT98B9xdGdlvp1m1NVZP%2BdVGVxneKI3nZHHXFzDxbMzIek2D%2B%2FRXMAugEfGhIB0vXJgt3rRsHy4hZyJeExUs2kcLQyFwlnGpviJDAhkVULxCS%2BZY0yF69rK9f1ktFY0y%2BAfRYKb%2BSmGtIXWSqOHx%2F5A0wJkZ64Q53I2m%2BBb1ZYdMZeYp8MNjykwSSJ%2FA%2FTtjCyA1SWwudVvuqWXpphqACBTORW%2FqCerABaPdywUeVdx%2FeYT7s%2FC22PrYiqDBuLfe67eLiLUsXfWIPVGRh6alZeXXXoHRoZeCQ8BxjrVHD%2BeMfwN9ayU8MGdtjeTd7lYnSrx8crOWwimEV7WdyvLfjVLgGG5OFVCk1D8gMMzxl4QGyIMPn5ObmJI6DRlkfiEuq2B5D2b5rQnV0WasInzsL%2FlffliUHgFyIsuAKwfEMHzkLDmk82kXsD8PgvKKfh0RsF%2Fc42L4%2FjdK8VzhfhBOJHk%2BcnGFfHAXK6BduVuj569v7jQ1Dn%2FzIzURuhKnbo2jODY47KOuDFd4w8EbEZvICt4R7toQvO5oKuBMRZpGBujezdyjs6n1Ud%2Fswi0Xu6U5JVAB%2FZh%2FJD7h4sZjM%2BFJQs1HsworR7eTu5w1NIEcnpWnutyDXB%2FgPqU%2FQxLinqXtmr3vQLRvBvlVQWJHCDBeh%2BuR%2Band7B%2B8zbnDVa2w1r%2BDQ5iknwN6d8Ir9KV4JfHuX4oSdjgls4DBVPR6LcM%2BZszvqrRkcqLVL%2F7GOrpZLjqBZXiYwws1ggzacrHgSuwpoVi4uvnf9827buvQekYejqvBGl39ebvaOgijN%2Fwfs%2FTMIt8HuqIBGlq0IVHoJ%2Ff8vI8RElVsMAAA%3D
+
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link    
+};
+// no triage team because this query is getting notification analysis
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '10475', '60163', '114480', '135033','39447','150283','110503']);
+let lookbackWindow = ago(365d);
+// all ICM IDs that ever been sev2, sev25 in Xinyan's team
+let XinyanTeamSev2ICMIDs =  cluster('icmcluster').database('IcMDataWarehouse').Incidents
+| where CreateDate > lookbackWindow
+//| summarize hint.num_partitions=50 hint.strategy=shuffle arg_min(ModifiedDate, *) by IncidentId
+| where OwningTeamId in (XinyanTeamIds)
+// all sev2 or sev25 in Xinyan's team
+| where Severity in (2, 25)
+| summarize by IncidentId;
+// get latest state of ICMs
+let AllSev2ICMs = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookbackWindow
+| where IncidentId in (XinyanTeamSev2ICMIDs);
+// get all Xinyan team's ICM that has transferred
+let AckBases = cluster('icmcluster').database('IcMDataWarehouse').Notifications
+| where ModifiedDate > lookbackWindow
+| where IncidentId in (XinyanTeamSev2ICMIDs)
+| where PrimaryTargetType == 'TEAMID' and isnotempty( PrimaryTarget) and isnotempty( AcknowledgeContactAlias) and Notes in ("Incident Transferred", "Severity Upgraded")
+| where PrimaryTarget in (XinyanTeamIds)
+| distinct AcknowledgeDate, TeamId = tostring(PrimaryTarget), AcknowledgeContactAlias, IncidentId, AckType = Notes
+| join kind=leftouter
+(
+    // getg team name, etc
+    cluster('icmcluster').database('IcMDataWarehouse').Teams
+    | where isnotempty( TeamId) and isnotempty( TeamName) and isnotempty( TenantName)
+    | summarize TeamName = take_any(TeamName), TenantName = take_any(TenantName) by TeamId = tostring(TeamId)
+)
+on TeamId
+| project IncidentId, AcknowledgeDate, AcknowledgeTeamId = TeamId, AcknowledgeTeamName = TeamName, TenantName, AcknowledgeContactAlias, AcknowledgeDateInDate = format_datetime(AcknowledgeDate, 'yyyy-MM-dd'), AckType
+| order by AcknowledgeDate asc;
+AllSev2ICMs
+//| where IncidentId in (XinyanTeamSev2ICMIDs)
+| join kind = inner
+(
+    AckBases
+)
+on IncidentId
+| where AcknowledgeTeamId in (XinyanTeamIds)
+| extend CreateDate = format_datetime(CreateDate, 'yyyy-MM-dd')
+| extend IcmType = iif(CorrelationId startswith "SDNRunners-HitCount" or Title has_all ('Runner Name:','Region:','Instance:'), "Runner", iif(Title startswith "[SdnRunner Proactive] Failed Signature:", "NCPQuality-Proactive", iif(IncidentType =~ "CustomerReported" or IncidentType =~ 'Customer Reported', "CRI", "LiveSite")))
+| where IcmType in ('Runner', 'CRI', 'LiveSite') and AckType =~ 'Incident Transferred' or IcmType in ('NCPQuality-Proactive') and AckType in ('Incident Transferred','Severity Upgraded')
+| project IncidentId, CreateDate, IcmType, Severity, Status, ChildCount, OwningTeamName, OwningContactAlias, Title, AcknowledgeTeamId, AcknowledgeTeamName, AcknowledgeDateInDate, AcknowledgeDate, AcknowledgeContactAlias, IcmLink = getIncidentLink(IncidentId), AckType
+| sort by CreateDate asc
+

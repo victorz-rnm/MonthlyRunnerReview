@@ -1,0 +1,88 @@
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA8VY627bNhT%2BHyDvwOmPpMKuE9u5ufCAzGlRA0mWOe46oCgCRmJsNhIpkHQy74Y9xJ5wT7JDipJoWU6TBmuNAKHEw3M%2F3zlUQhRKOL%2B9xtHte8pifo%2BGCM94cLQTh6%2B2txLYnxE1ZhGNCVOnlN0CQUDt80AqQdks3N76fXsLwU%2FTJzkRbEVYBd5cqUwOOp2MC4WTlymNBJf8RtEofRnxtEPTrHPX6xQsZScmCtNEdrwWKl62kNeZ85R4WicjR8uA3%2FbWn1bLXyhbYjYlOB3HEsTHS4ZBVvDB393Z6x%2F5LQSL%2Ff1dvdg%2F6PX6enHYPdzt6kW%2Fu3%2B0oxcHe0c9Q7x%2FuH%2B4l5%2FqH%2BSL3X7%2F0BDt9vZ2ej296h31%2Bwf%2BR61Wp4P%2B%2Fedv%2BEMXguNI0TvS1mqSGI1HZ9Ju%2Ft9%2FuTNKDcZROj7R7oiShVREBD643a798GWMFb7GkgT%2BODo7gYf3WJA5X0gCm0XQ5SXDmZxz9XN3e%2BsPdD8ngqCRIFgROELQ9%2FUMwixGU6oSAjmAhZL3VM2R9%2BEyZpMFY0RU6n1EbyDU4KFLOmNYLQQZeI6MOU3iEV8wBTJ29Hu5SFMs6G8EXS9Rod84tilwarydywDDn2t2pcgZj%2BkNJfFmc0dcCJJgRTkbxyjiDFKYSeTJmAmjj2zPqYq0LZ45cAESmapMgFRHQS1s4arJWMyuUsqCS3JHBFXLFnoRrvqh0rigMWy7LdTdM8wywT%2BRSDlHWk4kW6hibeLXQj%2FeM6hvXVXnOIXnutorni%2BTbS0Qn4tcaXh%2B8vWd9v%2FzwveWSsXF0s0mzGYPZGwtFq5JYR5jw2AEDGZcUCKdME9s7OWcZsdx7OSwu2Od95hYGw9oXYc64pXqDQH%2FxIHdLdgxpKa4grr3Q8RZ7Qz5VRGwKMdSI2u6zAg43KtFwms5NCd4CSTXoFCpXgvtxqGlOY5udaJoLp6bbMXZFnKOuRlYKtCQgG521pPRClzB3pPJuM24MuX6NXF3HYOrhgRGdUGV5wPx4%2BH3yXiU43VJ6OuV4AnKsJr7ldwqBDaNV9pu%2BFkAehgGjpPE%2Buort6yKqIYCTUEs5iJIvx9AkS9U9dwkaZSDwyNbzdPUrKgvBAWvL6fQQYit9CHyp6%2BPgc434acSioakmVoGK8RhfReMZvweWjYgoU6WSB0nFFuEBJvAHVohr1AQTQVm8oZAOgKYIK%2FMi3fZTOAYXm7Sc0N6xYDrMBYa9xea5PBgs3KIFM%2FH0popq6CjwSPHPKN1I5LmuPYFwdWqyPx0YZvjw1zRNdcWwNawwTBTZqvgWdVRcUrbjW%2FJFWYuJ6iydbdY%2BdtbpjPkT5umgzUvOy8c0augDH61NQJwfG7RuGzqTpU3er2oq4a%2BlbuyNMRFo3BDvthWB43QhpvSm2AVHt0p9fLkfGIB8i1VoxwgubD4OMfyCicJCnw7yWqbB37Ln5AZ8NKrMQN2LIK3kHBeTqZvMiD1y2di4HQ%2BuvhpgRMonXZJavkWPsoN%2FAt5I0hSuC2JCdGXLqgxbUGdyi%2BoUEEGFxpvNBlraafA%2FZIquHCFTn0WTtSeth7QlyA4o%2F8VZ%2Fw8gcsCA1FNaOAbpVyOTSbWmBm6Rm4tfw1a%2FFrLqeWyGa1q78LGBB%2BWldWwWRvJnjTDPDyLOcWzYQ5bq85qGitnLV1xNbL6vNZg1Tcb4PTceawM8pEYzB%2FxNAMkIfFAQ3%2B0kBIKDUm8lMjerq8XCjGOIF8geVBtFEfuSLbC%2B%2Fk3xBMiI0GzWgd%2F9A3jM017ComhAQd50zmV5acQaAyF4YrDeKavFHrQHdg5rjz1lPs2sJFWogGmF6hq4N7q14QYXgzQY5kjlWYP3Ww23GnWhpzv1q5krxpCWraYtUCvNpqE3Ci%2BUM9q8Y2jptvwHxw3c8Kmhvsk9Nh4tWtAk42F9a3ueMOI4wRKiDhfNHZCa3e1ad3geaHri2rf9U8pPKz7qqKvg5Bh3IRE75hGGt3u1VwQ8g0ukgV2NX4e0e5fGBXXhqxqq6E8nJ5TRM22iRsuUqyuIO2JoikJqqD6S%2Fi1z87asW2q1VRlPwnXPhIHVezdD09tQbiIiSgO6q38BUBAmX9YRk7C6Mf%2FAA%2FrY2enFgAA
+let lookbackWindow = ago(90d);
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link    
+};
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '10475', '114480', '135033', '39447']);
+// ── Proactive-linked ICMs ──────────────────────────────────
+let ProactiveIcmIDs = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookbackWindow and Title startswith "[SdnRunner Proactive] Failed Signature:"
+| where ChildCount > 0
+| summarize by IncidentId;
+let LinkedRunnerIcms = cluster('icmcluster').database('IcMDataWarehouse').Incidents
+| where ModifiedDate > lookbackWindow and CorrelationId contains "sdnrunners-hitcount" and ParentIncidentId in (ProactiveIcmIDs)
+| summarize arg_min(Severity, *) by IncidentId
+| where Severity in (2, 25)
+| project IncidentId, CreateDate, Severity, Title, OwningTeamName, ParentIncidentId;
+let LinkedIcmIDs = LinkedRunnerIcms | summarize by IncidentId;
+let ProactiveLinkedEvents = cluster('icmcluster').database('IcMDataWarehouse').IncidentHistory
+| where ChangeDate > lookbackWindow and IncidentId in (LinkedIcmIDs) and ChangeCategories contains "RelationshipAdd"
+| where RelationshipParentId in (ProactiveIcmIDs)
+| summarize EventDate=min(ChangeDate) by IncidentId
+| join kind=inner (LinkedRunnerIcms) on IncidentId
+| extend 
+    EventType = "ProactiveLinked",
+    EventDay = bin(EventDate, 1d),
+    AckTeam = ""
+| project EventDay, EventDate, IncidentId, EventType, Severity, Title, CreateDate, OwningTeamName, AckTeam;
+// ── DRI-notified ICMs ──────────────────────────────────────
+let XinyanTeamSev2ICMIDs = cluster('icmcluster').database('IcMDataWarehouse').Incidents
+| where CreateDate > lookbackWindow and CorrelationId contains "sdnrunners-hitcount" and Title contains 'control path'
+| where OwningTeamId in (XinyanTeamIds)
+| where Severity in (2, 25)
+| summarize by IncidentId;
+let AllSev2ICMs = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+| where CreateDate > lookbackWindow
+| where IncidentId in (XinyanTeamSev2ICMIDs);
+let AckBases = cluster('icmcluster').database('IcMDataWarehouse').Notifications
+| where ModifiedDate > lookbackWindow
+| where IncidentId in (XinyanTeamSev2ICMIDs)
+| where PrimaryTargetType == 'TEAMID' and isnotempty(PrimaryTarget) and isnotempty(AcknowledgeContactAlias) and Notes in ("Incident Transferred", "Severity Upgraded")
+| where PrimaryTarget in (XinyanTeamIds)
+| distinct AcknowledgeDate, TeamId = tostring(PrimaryTarget), IncidentId, AckType = Notes
+| join kind=inner (
+    cluster('icmcluster').database('IcMDataWarehouse').Teams
+    | where isnotempty(TeamId) and isnotempty(TeamName) and isnotempty(TenantName)
+    | summarize TeamName = take_any(TeamName) by TeamId = tostring(TeamId)
+) on TeamId
+| project IncidentId, AcknowledgeDate, AcknowledgeTeamName = TeamName, AckType;
+let DRINotifiedEvents = AllSev2ICMs
+| join kind=inner (AckBases) on IncidentId
+| where tostring(OwningTeamId) in (XinyanTeamIds)
+| extend IcmType = iif(CorrelationId startswith "SDNRunners-HitCount" or Title has_all ('Runner Name:','Region:','Instance:'), "Runner", iif(Title startswith "[SdnRunner Proactive] Failed Signature:", "NCPQuality-Proactive", iif(IncidentType =~ "CustomerReported" or IncidentType =~ 'Customer Reported', "CRI", "LiveSite")))
+| where IcmType in ('Runner', 'CRI', 'LiveSite') and AckType =~ 'Incident Transferred' or IcmType in ('NCPQuality-Proactive') and AckType in ('Incident Transferred','Severity Upgraded')
+| summarize AcknowledgeDate=min(AcknowledgeDate), AcknowledgeTeamName=take_any(AcknowledgeTeamName) by IncidentId, Severity, Title, CreateDate, OwningTeamName
+| extend 
+    EventType = "DRINotified",
+    EventDay = bin(AcknowledgeDate, 1d),
+    EventDate = AcknowledgeDate,
+    AckTeam = AcknowledgeTeamName
+| project EventDay, EventDate, IncidentId, EventType, Severity, Title, CreateDate, OwningTeamName, AckTeam;
+// ── LinkAttemptedNotCompleted: discussion says linked but no actual RelationshipAdd ──
+let LinkAttemptedIcms = cluster('icmcluster').database('IcMDataWarehouse').IncidentDescriptions
+| where Date > lookbackWindow and IncidentId in (XinyanTeamSev2ICMIDs)
+| where Text has "This incident is linked to parent ICM:" and Text has "[SdnRunner Proactive] Failed Signature:"
+| parse Text with * "Incident " ProactiveIcmId " : [SdnRunner Proactive] Failed Signature:" tmp
+| summarize EventDate=min(Date) by IncidentId
+| where IncidentId !in (LinkedIcmIDs);
+let LinkAttemptedEvents = LinkAttemptedIcms
+| join kind=leftouter (
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where CreateDate > lookbackWindow
+    | project IncidentId, Severity, Title, CreateDate, OwningTeamName
+) on IncidentId
+| extend
+    EventType = "LinkAttemptedNotCompleted",
+    EventDay = bin(EventDate, 1d),
+    AckTeam = ""
+| project EventDay, EventDate, IncidentId, EventType, Severity=coalesce(Severity, 0), Title=coalesce(Title, ""), CreateDate=coalesce(CreateDate, EventDate), OwningTeamName=coalesce(OwningTeamName, ""), AckTeam;
+// ── Union all three ────────────────────────────────────────
+ProactiveLinkedEvents
+| union DRINotifiedEvents
+| union LinkAttemptedEvents
+| extend EventDayDate = format_datetime(EventDay, 'yyyy-MM-dd')
+| extend IcmLink = getIncidentLink(IncidentId)
+| project-reorder IcmLink
+| order by EventDay asc, EventType asc

@@ -86,3 +86,93 @@ ProactiveLinkedEvents
 | extend IcmLink = getIncidentLink(IncidentId)
 | project-reorder IcmLink
 | order by EventDay asc, EventType asc
+
+
+
+============================= 4/14/2026
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA9VY227bRhB911cM%2BCIxoCyJsSxbhQrElyBC48Sw1fQhCIwluRI3JpfE7sqO0gvyIe3P5Us65JIUJZKy3ARoyweB3J2dneuZGQVUQRBFd6fEvZuFMAGPKKpYSDt23z7q9p93%2BwPzh1aAZFM3fM34HdJ0mBuOpRKML0z4FfDNJarT9pWK5bjXiyOhSHAQMldEMporpD5wo7DHwrh3P%2Bwx7jKPciV7HlWEBbLXtgBpLGj35DIMiVi1TfhdX%2BpGXIkouCLKv15yTsWZzwJvmrMAmLRClFgwErDPtNMCfNxgKXGp00am2XvbPEDFiEMk7bSn7uU5fvxCBPWjpaS4WTC84SSWfqTe2Smr3%2BDBp4LCmaB4C56i8GPJXps0kRA0IIpFfOqBTyQY0uMilVp2fabcaMmVARtPrwexoHMq0gPRPb4kKhPGJbwffOjkNqV8cRDKHkrZO%2BqPhvYRId1jxyHdQ%2FfI7jr2wOkeOo479Jy%2B7Yz6vTkS2v3RqD8anMwd27aJe0QpmZPjY%2FuEnBweHzouJUdz4o6cAXVHIzLq49l%2Bfzgix8PnlNjOibmh3oypgGq1MqcYQLhXXo%2FRS8b%2FSbOYCJlr9sCUD8%2BgrcMM3pCQjuHF5zdUzaIokHpZHrRBvyX7gB90gf4eF2%2F4MuVSEe7SdDGlzVdw4QqNke6kLxsGZpJHioaxWnXSzUJIEX2krip46UjFEJvA%2BqNl7pMvU0%2FiqUdzqvlOfYmk9%2FZbcYO%2FwxIDQTkyL2UjfHM6vmJSRWK1mWY%2B4YtqKqaxWDIO49B51BhmegoVQZHVKj1jW%2FYwtzz9pCjux4JF6f4EGJt3CvLJxLaeW5W1oQW2BQMz56IxLbEHEYvbkHzq5AwteGaCsyq7cdPllY2PEcp4x7g3YWmUagt%2FZ9DbF%2FjKdE%2B2fIlDVVtL56QFVyguLpQ21gKlHEzAnCtdjk%2FFVAGdq2ipNsyVHzmn0hUsTkBbfrtSGhAxbFLMa18sBb0jiX7EVeyeApZMskgyHeZY%2BKinQQc1kogh7dL9WeQl9faaymWgsthb836H8TZfwU%2Fo6Sh3fi93N5B75E8cFiQxmQjlCpoIiYkpsdq2zzPC8%2BiBJ99XuYgvU7naj7lnLVidFzbT5xWRF58wkbFb0O7MdCnhXcXPJiaQBf0nQaBVvcmCqSxUC1aJ1DQ51NcaUC8N7AmoqGh75pFACLstvtfxZrVX%2BHQvL7seGsgsG8HKJNOVZKKjN4fkwv3bSsrv3bw8uWXR8mJxEkqmoWi8v%2FF4VgELw30AHRVwwxacKAzqsbHBphFAc79dNZlgs4bpQ17qwV2nEstie3EqsKj68GIMed8lfRZ3Ezt58PXLn2dRGKMDqPf1y1%2BpJ8pkifMu7hOGWJcnrX%2B1c9zCmeaA0XZF1e8ojYEp4ESI6AFOL16%2Bvb5IIe8fWd6CG4WOlWV4rQPfGVnIApvfPnBMtBklYdILWUUUNJQqn3F1gKMCsl6sJtJfzucYe51KO0ziOFil1AgqyVtiof9Gw%2FiNIXJdCr9qsXlNubydYmsjE5oZYs%2FuilvmNlvFGMR%2FgHH%2B89Xr6dmL2YVRoa8EwD6hphlUO5iqsLW1erM%2Bpr3Oo1Q1lWdXED%2FKbwvqq5KvK1gz4GwXtC1K5DuwCsF1g1EtPAUeZSR4aCtbVaSn6k6jJKZVVwQrKu%2B6fZ3sWSLrrN6d%2BVWdmwGgbPFNqD4dg7duuNZIjTdtY3WJ7ntDdaXny1PkSSi9Z4tblNq8czNmPvZ%2F%2BZ8gSS8Y6LYE%2B7hYR9P07NJoOLxvfU6hdM7S6SXvPjV3VgwZevhNWGezr5FLD8aOnDNgDHuL8axxCMoirTHQdw5GjzSCjVx3Z0ZNZ5jH8JInw33j4GvhaKFJmnoMqymiW3XG2Z2%2FemrcoeS2eVrNE8VueyS4BkaxYFhpjBSf5v599Jpuq49ey1bfqw9aJZJ9ZokKjVk7GfTNOlSr57dFVHsyHVfKvkz8WCdLtl7lqcgdvSV81SkNE7i8IybyUGj2d3Ek38z%2Bws3%2BzN1ZaDYAbevc9o1NxkTBb%2BtsVefIjHbbUcXZzemqAIMueSCrcvmq5kMD5ybhdEEseWGQ1cq%2FAUwxHK0uFwAA
+let lookBackTm = datetime(2026-03-01);
+let IcmLink = (icm:string) { strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', icm, '/summary') };
+let controlPathRunnerChildIncidents  =
+materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where CreateDate > lookBackTm
+    | where CorrelationId has "sdnrunners-hitcount"              // prefer has over contains [1](https://eng.ms/cid/607526aa-8bba-4c62-b21b-4bbc5db02b70/fid/20770719fb222ac6eeafa8829a9484bcea6fac7b1ec77a70db00057a853ea2b9)
+    | where Title has "control" and Title has "path"        // prefer has over contains [1](https://eng.ms/cid/607526aa-8bba-4c62-b21b-4bbc5db02b70/fid/20770719fb222ac6eeafa8829a9484bcea6fac7b1ec77a70db00057a853ea2b9)
+    | parse Title with * 'Runner Name: AzNetToolsRunners.' RunnerName ' Region: ' Region ' Instance: ' RunnerInstance ' Phase: ' Phase
+    | where isnotempty(Phase)
+    | project RunnerIncidentId = IncidentId
+);
+let controlPathRunnerChildIncidentIds = controlPathRunnerChildIncidents  | project RunnerIncidentId;
+let sev2OrSev25RunnerChildren = materialize (
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentHistory
+    | where ChangeDate > lookBackTm and IncidentId in (controlPathRunnerChildIncidentIds) and Severity in (2,25)
+    | extend priority = iif(Severity ==2,3, iif(Severity ==25, 2, 1))
+    | summarize arg_max(priority, *) by IncidentId
+    | project IncidentId
+    | join kind=inner (
+        cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+        | where CreateDate > lookBackTm
+        | where IncidentId in (controlPathRunnerChildIncidentIds)
+        | project IncidentId, Title, ParentIncidentId, CreateDate
+    ) on IncidentId    
+    | join kind=leftouter (
+        IncidentDescriptions
+        | where IncidentId in (controlPathRunnerChildIncidentIds) and Text has 'Eureka proactive triage is failed with reason:'
+        | extend LinkResult = iif(Text has 'Verify Kusto cluster/database availability and credentials', 'DatabaseDown', 'ProactiveFailed')
+        | project IncidentId, LinkResult
+    ) on IncidentId
+    | extend HasExistingParent = iif(isnotempty( ParentIncidentId), 1, 0)
+    | project RunnerIncidentId = IncidentId, HasExistingParent, IsProactivelyLinked = 0, LinkedDate = todatetime(format_datetime(CreateDate,'yyyy-MM-dd')), LinkResult, RunnerTitle = Title
+);
+let proactiveParentIncidentIds =
+materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').Incidents
+    | where CreateDate > lookBackTm
+    | where Title startswith "[SdnRunner Proactive] Failed Signature:"
+    | where Severity in (2,25)
+    | project ProactiveParentIncidentId = IncidentId
+    | distinct ProactiveParentIncidentId
+);
+// Branch A: relationship-based “Completed”
+let relationshipLinkEvidence =
+(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where CreateDate > lookBackTm
+    | where IncidentId in (proactiveParentIncidentIds)
+    // keep it narrow BEFORE join
+    | project ProactiveParentIncidentId = IncidentId, Status, CreateDate, ParentIncidentId, Tags, Title, OwningTeamName, Severity
+    | join kind=inner hint.strategy=shuffle (              // apply hint only here [1](https://eng.ms/cid/607526aa-8bba-4c62-b21b-4bbc5db02b70/fid/20770719fb222ac6eeafa8829a9484bcea6fac7b1ec77a70db00057a853ea2b9)
+        cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
+        | where Lens_IngestionTime > lookBackTm
+        | where RelationshipType =~ "DUPLICATE"
+        | where ParentIncidentId in (proactiveParentIncidentIds)
+        | summarize arg_max(Lens_IngestionTime, ParentIncidentId, ChildIncidentId) by ParentIncidentId, ChildIncidentId
+        | project ProactiveParentIncidentId = ParentIncidentId, ChildIncidentId, LinkedDate = Lens_IngestionTime
+    ) on ProactiveParentIncidentId
+    | extend HasProactiveParent = 1,
+             IsProactivelyLinkedCompleted       = 1
+    | project tostring(ProactiveParentIncidentId), RunnerIncidentId = ChildIncidentId, IsProactivelyLinkedCompleted, Status, Title, Tags, CreateDate, ParentIncidentId, HasProactiveParent, OwningTeamName, Severity, LinkedDate
+);
+// Branch B: description-based “Incompleted”
+let descriptionLinkEvidence =
+(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentDescriptions
+    | where Date > lookBackTm
+    | where IncidentId in (controlPathRunnerChildIncidentIds)
+    | where Text has "This incident is linked to parent ICM"
+    | where Text has "[SdnRunner Proactive] Failed Signature:"  // find proactive parentid
+    | parse Text with * "Incident " ProactiveParentIncidentId " : [SdnRunner Proactive] Failed Signature:" *
+    | summarize arg_max(Date, ProactiveParentIncidentId) by IncidentId
+    | project RunnerIncidentId = IncidentId, ProactiveParentIncidentId, IsProactivelyLinkedCompleted = 0, LinkedDate = Date
+);
+union sev2OrSev25RunnerChildren, (
+union relationshipLinkEvidence, descriptionLinkEvidence
+| summarize arg_max(IsProactivelyLinkedCompleted, *) by ProactiveParentIncidentId, RunnerIncidentId
+| extend LinkResult = iif(IsProactivelyLinkedCompleted == 1, "Completed", "Incompleted"), LinkedDate = todatetime(format_datetime(LinkedDate,'yyyy-MM-dd'))
+| extend IsProactivelyLinked = 1
+)
+| extend HasExistingParent = iif(isnotempty( HasExistingParent), HasExistingParent, 0), HasProactiveParent = iif(isnotempty( HasProactiveParent), HasProactiveParent, 0)
+| summarize max(HasExistingParent), max(HasProactiveParent), take_any(RunnerTitle), arg_max(IsProactivelyLinked, *) by RunnerIncidentId
+| extend ProactiveIncidentLink = IcmLink(ProactiveParentIncidentId), ChildIncidentLink = IcmLink(RunnerIncidentId), HasProactiveParent = max_HasProactiveParent, HasExistingParent = max_HasExistingParent, ProactiveTitle = Title
+| project-away CreateDate,ParentIncidentId, max_HasExistingParent, max_HasProactiveParent, Tags, RunnerTitle1, Title

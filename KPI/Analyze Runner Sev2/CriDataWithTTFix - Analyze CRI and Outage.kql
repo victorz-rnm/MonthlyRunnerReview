@@ -206,4 +206,104 @@ let
 in
     Source
 
-    
+
+
+=================== 4/7 version
+let lookBackTm = ago(180d);
+let TrimHtmlContent = (str:string)
+{
+    let step1 = replace_string(replace_string(str, " ", " "), "'", "'");
+    // Replace smart quotes and non-breaking spaces
+    let step2 = replace_string(step1, "&nbsp;", " ");
+    // Replace HTML non-breaking space entity
+    let step3 = replace_string(step2, "&amp;", "&");
+    // Replace ampersand entity
+    let step4 = replace_string(step3, "&quot;", "\"");
+    // Replace quote entity
+    let step5 = replace_string(step4, "&lt;", "<");
+    // Replace less-than entity
+    let step6 = replace_string(step5, "&gt;", ">");
+    // Replace greater-than entity
+    let step7 = replace_string(step6, "&#39;", "'");
+    // Replace single quote entity
+    let step8 = replace_regex(step7, "<[^>]*>", "");
+    // Remove HTML tags
+    let step9 = replace_regex(step8, "<!--[^>]*-->", "");
+    // Remove HTML comments
+    let step10 = replace_regex(step9, "\\s+", " ");
+    // Normalize multiple whitespaces to a single space
+    step10
+};
+let getIncidentLink = (incident:string)
+{
+    let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
+    link
+};
+let getRepairItemLink = (workItemId:string)
+{
+    let link = strcat("https://dev.azure.com/msazure/One/_workitems/edit/", workItemId);
+    link
+};
+let getSimpleTeamName = (name: string)
+{
+    let splitList = split(name, "\\");
+    let result = iif(array_length(splitList) > 1, splitList[1], name);
+    result
+};
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033']);
+let allData = cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+// cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+| where ModifiedDate > lookBackTm
+| where OwningTeamId in (XinyanTeamIds) and isempty( ParentIncidentId)
+| where IncidentType =~ 'CustomerReported' or IsOutage == 1
+| extend OwningTeamName = getSimpleTeamName(OwningTeamName)
+| extend LookingDate = iif(isnotempty( ResolveDate), ResolveDate, iif(isnotempty( MitigateDate), MitigateDate, CreateDate));
+let ICMIDs = allData
+| summarize by IncidentId;
+allData
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+    | where ModifiedDate > lookBackTm and IncidentId in (ICMIDs)
+    | summarize arg_max(ModifiedDate, *) by IncidentId
+    | project IncidentId, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, HasTsg, IsS360Related, S360Link
+)
+on IncidentId
+| extend CreateDate = todatetime(format_datetime(CreateDate, 'yyyy-MM-dd')), LookingDate = todatetime(format_datetime(LookingDate, 'yyyy-MM-dd'))
+| extend IsOutage = iif(isempty( IsOutage), false, IsOutage), IsOutageActual = iif(isempty( IsOutageActual), false, IsOutageActual), HasTsg = iif(isempty( HasTsg), 0, HasTsg), IsS360Related = iif(isempty( IsS360Related), 0, IsS360Related), IsAutoDetected = iif(isempty( IsAutoDetected), 0, IsAutoDetected)
+| extend TTFix = iif(isempty( TTFix), 0, TTFix), TTEng = iif(isempty( TTEng), 0, TTEng), TTM = iif(isempty( TTM), 0, TTM)
+| extend icmLink = strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', tostring(IncidentId), '/summary')
+| project IncidentId, Title, LookingDate, CreateDate, ModifiedDate, MitigateDate, ResolveDate, IncidentType, OwningTeamName = getSimpleTeamName(OwningTeamName), OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, Severity, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, Status, HasTsg, Tags=tostring(Tags), IsS360Related, S360Link=tostring(S360Link), icmLink
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentCustomFieldEntries
+    | where IncidentId in (ICMIDs) and TeamId in (XinyanTeamIds)
+    //and Name == "IssueCategory"
+    | summarize hint.num_partitions=50 hint.strategy=shuffle arg_max(ModifiedDate, *) by IncidentId, Name
+    | summarize hint.num_partitions=50 hint.strategy=shuffle       Category = max(iif(Name =~ 'IssueCategory', tostring(Value), ''))  by IncidentId
+)
+on IncidentId
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where ModifiedDate > lookBackTm
+    | where IncidentId in (ICMIDs) and isempty( ParentIncidentId)
+    | project IncidentId, RootCauseId
+)
+on IncidentId
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    // find root cause
+    | summarize arg_max(ModifiedDate, *) by RootCauseId
+    | project RootCauseId, RCATitle = Title, RCADesscription = TrimHtmlContent(Description), IsCausedByChange
+)
+on RootCauseId
+| join kind=leftouter
+    hint.num_partitions=50 hint.strategy=shuffle (     cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    // get work item
+    | where ModifiedDate > lookBackTm
+    | where IncidentId in (ICMIDs)
+    | summarize arg_max(ModifiedDate, *) by IncidentId, ExternalId
+    | summarize RepairItems = make_set(ExternalId) by IncidentId
+    | project IncidentId, RepairItems=tostring(RepairItems)
+)
+on IncidentId
+| extend IsMissingRCA = iif (tolower(Status) != 'resolved', 0, iif(isempty(RootCauseId), 1, 0)), IncidentLink = getIncidentLink(IncidentId)
+| project IncidentId, Severity, IncidentLink, RepairItems=tostring(RepairItems), IsMissingRCA, IsOutageActual, RCATitle, RCADesscription, IsCausedByChange, Title, LookingDate, CreateDate, ModifiedDate, MitigateDate, ResolveDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, PostmortemTitle, PostmortemStatus, Status, HasTsg, IsS360Related,S360Link=tostring(S360Link), Category=tostring(Category), RootCauseId

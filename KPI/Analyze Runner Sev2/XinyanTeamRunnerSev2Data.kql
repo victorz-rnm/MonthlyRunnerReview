@@ -3,25 +3,25 @@ https://dataexplorer.azure.com/clusters/aznwsdn/databases/AzNM?query=H4sIAAAAAAA
 let lookBackTm = ago(365d);
 let TrimHtmlContent = (str:string)
 {
-    let step1 = replace("'", "'", replace(" ", " ", str));
+    let step1 = replace_string(replace_string(str, " ", " "), "'", "'");
     // Replace smart quotes and non-breaking spaces
-    let step2 = replace("&nbsp;", " ", step1);
+    let step2 = replace_string(step1, "&nbsp;", " ");
     // Replace HTML non-breaking space entity
-    let step3 = replace("&amp;", "&", step2);
+    let step3 = replace_string(step2, "&amp;", "&");
     // Replace ampersand entity
-    let step4 = replace("&quot;", "\"", step3);
+    let step4 = replace_string(step3, "&quot;", "\"");
     // Replace quote entity
-    let step5 = replace("&lt;", "<", step4);
+    let step5 = replace_string(step4, "&lt;", "<");
     // Replace less-than entity
-    let step6 = replace("&gt;", ">", step5);
+    let step6 = replace_string(step5, "&gt;", ">");
     // Replace greater-than entity
-    let step7 = replace("&#39;", "'", step6);
+    let step7 = replace_string(step6, "&#39;", "'");
     // Replace single quote entity
-    let step8 = replace("<[^>]*>", "", step7);
+    let step8 = replace_regex(step7, "<[^>]*>", "");
     // Remove HTML tags
-    let step9 = replace("<!--[^>]*-->", "", step8);
+    let step9 = replace_regex(step8, "<!--[^>]*-->", "");
     // Remove HTML comments
-    let step10 = replace("\\s+", " ", step9);
+    let step10 = replace_regex(step9, "\\s+", " ");
     // Normalize multiple whitespaces to a single space
     step10
 };

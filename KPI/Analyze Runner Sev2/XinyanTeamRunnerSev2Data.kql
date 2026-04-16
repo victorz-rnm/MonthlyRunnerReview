@@ -146,3 +146,344 @@ on $left.RunnerInstance == $right.RunnerInstanceName
 | extend FinalTeamGroup = iif(OwningTeamId == RunnerTeamId, 'Runner Team', iif(OwningTeamId in (XinyanTeamIds), 'Xinyan Team', 'Other Teams')), TestPhase = iif(Phase =~ 'ValidateARMTemplate', 'ValidateARMTemplate', iif(Phase in (DeploymentPhases), 'Deployment RG', iif(Phase in (DeletingRgPhase), "Delete RG", 'Others')) )
 | project IncidentId, IcmLink = getIncidentLink(IncidentId), IsMissingRCA, IsTriaged, StartOfWeek, CreateDate, ModifiedDate, MonitorId, RoutingId, OwningTenantId, OwningTenantName, OwningTeamId, OwningTeamName, OwningContactAlias, Severity, Status, InactiveInDays, Title, RootCauseId, RCATitle, RCADesscription, ResponsibleTeamName, ResponsibleTeamId, Tags, RunnerName, RunnerInstance, Region, Phase, TestPhase, RunnerFlavor, SubscriptionId, FailureType, IcmAutoCorrelation, HowFixed, Mitigation = TrimHtmlContent(Mitigation), tostring(RepairItems), SeverityDowngradeBy, SeverityDowngradeType, FinalTeamGroup
 | sort by CreateDate asc  
+
+================================= 4/15/2026
+
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA7Uba1fbOPZ7f4UmOztOOoGQhGdn6S4E2uYcoJyQ0j0HMhyRKImLbXktpyHdx2%2FfeyU%2FJFuGdIbmnJnaku7Vfem%2BZFotclj1e9VqkUsaUZ%2FFLBKkRebMC1lEpotgHLs8ELigGtpjMfE4fzim44ehTw4JnfF6d3dn0vhNzs1Y3A%2FG7oQF8ZkbPMCCupu89ydvRBy5wazx6t%2BvCPzgbUzjem0ex6F402qFPIqpt%2Bm744gLPo3dsb855n7L9cPW124rxSNaExZT1xOtWpPkyJuk1ppzn9Uar%2F6b0XIFsB4bMupfAMdIzXThefhcoAXXhzSKBawRoefG2ULAe3tbA%2FZwmetO6zSK6OrOY8EsntclTIO8Je0mibnCqQZv2qNGk6RYJFEg2RM25hNGJnxx77GWgNUeIyzAwQn5MDw%2Fg5fYjV0mmigfNyQxnYkWiMFH1psk4JFPPfcbI8u5GzMR0jGT3A4j1%2F8Q%2B16PBzEsRV7n8GrhU7QJzEYs9AD2LqEZ1wKrv1A%2F%2FC24F%2BFvINwaSfmWYB0LmAC%2BSQKG%2FyHULwZU1wbVyaH%2BteCxBLutGXDbNrhuDveX7oEEcwyoHRvUdg7lqb3%2BZgDt2oB2cqCZAnprAO3ZgHYVUIUA920gewqkSgwHNpj9hLaQC4sM2lsWkAMFYuW%2F3bYpdquJAFbe2x0NIGIz9gjr24j3p42Nzdd%2F39h4i0AmTNcC00GYm9%2Ffjn61AGxbALryOIpfDeECxX4dXpsIlB3%2Ff7rBigZ49vsTPNaTVUDBt9RvJIzT3trZPnCa%2BLC728aH3b1udxsf9jv77Q4%2BbHd2D7bwYW%2FnoCsX7%2B7v7u84zRzF%2FrbCsb23gw8H3Z3tbopDPuxutXflQ7u9vb0vsbW7O1vdrvNqlDjNwSIIWKQoBUKd7sH29p6jz71Dh73k0cPlnApmcOMM2DRiYt7zXDj2Q%2F7AgiOxCsZO07mM2AnIj6%2FQdxwp9%2B6km%2BYzFpy9iNGYDWaApB%2BAO6JevhzGBu%2FlAsCHL2yiz12Dd5oA8NHgfMjA%2B8Kjtif8H6xrMJN7GlvKOTZ4DyiSx1kGxx7H3gI85IB5clcxd8PhKiwK4vTq8uPFVf%2F47BSRfLo86%2FeOhqcSy5NBDSbbDfLODSaER%2B7MDahHrtjXDomk8EnvMoszAp7AJUcQW0gMCpPhEn6fgJuILkk%2FWyc4WTIypgGRa%2Bfg5mkEOhJg2jEIhWDUTdE%2BH3Q%2FJoQhXcom%2BlnoQzH4gDJyZWSoS%2BsEiQkYqjsQRpNnp7EJmqH3IPq60x%2Bfn8DLZxqxOV8IBpMZ8RLBfyDCsIgRZQsnSPJbLfYba%2Bo9HkWJcsCGgUGIgEs3nhPn6uRC0Ss2Prhxjy%2FASggFUQ%2FdGGIf2AFxxhCzIu5BBI7nTgOUkExqeGo3Cde9c3I0m4E%2FkJuBbkY1SQpIEAWdCfkh4MuARHxpCLpJ7hcwx1hIeOCtSMAYRt4x9xZ%2BkPItFr5PI4yxoOg73w3q53ziTl02QSk0ycdlAEaszmsTLQUkH68a5H5FcqUY8knXgJJJx5jRcaFt1Q231UjWhhH%2Fwsaxjn4No%2B40yKk6OZr9xnMak%2FEC1BXEIIA5%2FQpsgm%2BAfyBvgcEWeJMQzpgLGQqJtBOX2voZCMGwYv1YokSkeAMebMTcvxcxD0DCKO3nrTwhd9Kbu97kGQNPpwcGiYblmlikeJ88Rw0DvOhtJHylK2rYjYc%2B1s9YIO76wQyEBgBDF3PK19JaTMEZm%2FfFMBceWM2UeoIlKyYuYIJ0vcjgOjbRbZBjdL2eVOKGUmJuHXQKUlb%2BVgBhz2sMkeVO74X90FVAQzHn8XXnuz3SH1H7Fw5LHyAMHHpsGlNIxEm9yiLBSwXkZ1y3qW0FivoZdprHm0XVJC6qUpgW8SYgUK1hcFGhCMo2irIj04j7YAjTKcMzS2LpL6dYHCTu%2B49tBnHwQlYY6YYScTp7%2BkixnnqTvt%2F0Esd9CY77DRlc9EZJwkJkjUWOvl0wyEm4J5IYsHnGIfzL5wt3PAQTvFpAGQMnYQbm9oYsxBjYiajHFjQEJYJ9BmNARL9NAfvg4twOb4BdUjdii4iHbAnzlxGfEJluvCH9y%2Bvdu%2F7Z8d31%2BR0aHZKNOK5dCqPAXghOFs5bzMlnSLbIBrn220N%2B7af2xx6htlLKxJ8SVUIOFpj4O8RVEbjU%2Bj9qujBuxes65MYNyF4TbmEEclbIm2W0azSLeOWqdMzEmyFIUWaieg5pYvxqtYFUR5GiVYJ7BqdK5qyEZvCAsPGzjiS1IQhSaTxPDZjIiB8p9luJJUr5pi8pqZWGmaEc3YDpbFy5kbsQJ1eDs2NQ9NWQBXC6N04uRzcLgUaSWA%2FgL1tsAQrWAEYrQgMX2t2ItLe2%2FkrG6AvgmJJPwZxRL56v7OYERHefUPptztXt6Pbm5vfb0ehXfELx3vzewldU2utWxUD2fjuyq1MSUG3NL0xA5ykCrBb6wgR0i7bYrbJFmSsq03sf8UWIhigVtY4BKltJk%2BCTyw0MQqObkqURzGBhz2C1HI9Ih%2FApOdiqMh7c4%2FqiRziks7BwTEM6hgRz9EIb7%2B59j9UmIVWJ5s8obB0L7ehH5OU26xSNYbtBqkqOxDYqlV9ZqsBUFug0XwHjm5ubI7t8e2HCsMlr1R7AMHB0o0WIjNORzf%2B%2Bk%2BXuIpD1TaEQKlCiuYZDWAnRFsJuPZsuBhnZPTVmTf9izmFr9buqviapVU2qXlKGXrOfknN5no10cRUr9vlazbp9qsknt5WLLNvZxzu28dRo1iEq7cWgBlwR8Jj5Ybyqa7G90dQjPQg3O2gTOVLLrYl63j1k48pjqmoChrCyh8cgtWAUAo7ARuvYWoGyfA4I0%2ByJ1D4Fsuyvady9o663iJgs4EDuWHMYMlHcY41gbbU1MjNTK2vNCuhiPw0B87EnwIyWmILC9hcZvLcCYa%2BEuoEoK8Gil4L6MdeFvVKZaNZg9hmy8byAyTHl1Vc%2BZvRH8lE3dmeltQMmuPe1MHgGVRxQJms67XToa010GhkNnY7AjXmkkzuACAmY9aG054I5W9W46aCMjo9l1LYaayMw9SPPpSKfSztB2giU4AtthXSCOv087lEojA2m8hZNefvCpA43pDNtJ5srrvJpRXeiPIHtlOWDH%2FjynfvIJiWLMDAZrcOkhXFBI%2BzcoefARkUkS3OBdZn0K%2FGcwUnonwjZggD%2FD4%2BF3oPZl9B6JrlJr9EtwRyAhVBPEigy%2FTXuRtXqPi4%2BXqVbvXBb5Hgxs3VoJ9%2FVEFFCq25amR3P00f03tQDoZldTn2qhEsThhTBA7sTLK5XIlunf7UDKfoi5hvj3GoAc%2FTAoueVg4Catf0wBZ2A74rcUF2n6zr4ExpKO5o0mLHJsWwkAwl%2BgSWnpIPyGsnsY739B4S%2F28g72ROIs7OIyt7ylD8v%2FBTwJIX7YeL%2FAEedRyuL4F5I%2Fj1AM%2BORi%2FdP%2FyPOTe104kKEr5VYrI3KCkkPWE5RM1er%2FQ6hkBqVtqnMbTRzATp7F4cBizG1gei0QcEqYhD5jG3Sb%2BC68VMLvJyUp2soJ5zmE9hwna%2BMDi9szMkZYhdfxynCZKGJzzkZ9J1SCqKYtZlLkgja2f%2FpUOFr2sWjy7jyTsUCe7yqQLjOcdlryOgNilmIdY%2BJFu6t7XQjrhm2qSfIOZKU2yz%2BaXOv0vvndEgkVzsvcx5ztOa1Sk6ASrs1jteNRypHIpqjVfcpGm%2BGkp%2FJpnpHqvI8LCVfvSPYI9sEF5if2dR1Etaxif20q0CmHv0KB6cFzN7nO6BvWoRr2IlEcp5eBzylMfotWIpJYKgLx%2FyJgDFAEWEn3WM%2BPJleM5DlF5ys085p0itSJY0CcirtT1VSksGGvOzVJq80dnP7LGv8MmJjVzC8L4MU2Q%2BbaQ5KTAxpCZhuh3ZgJLGY4FaZQ2mhlqtKHrOKvZgAq2mTFFhWoK2ITaMUcWqvCYXmHRTULmApuVPPdBpEoaFPPLYw8J7F6girD9%2BS6xm85lBbwcDUnYG3zzCWZfKcXGQokHjWZj4HeU4A8lqtUn3WHkGGLKsay7JuWrbXysYSIwVURYOzsV8MKxYREpMkE34d53HQSNp1VAjm3z93o27GCrttzd0g3hRxhCnN6lDMF9MpfpWBo8HCv8NPGV2ZyB7ubIGvtpU3Umda0vISG1Wm6j9isydS0x%2BxXTHcKpvXQteLbGLEB%2B22utgBzW6sLafOOHERXWL7AE5HiDfSd18ED%2Bo4khykcqwstu3MBY1mKZiWVzhOgt2eD2bn1Jq4OReto0r4NGmuxKDSRh2HtZbKEJRnm2Qra4xCbkpUuj2RH4Nh01q2uGmwwgsX1dIY82CilJjJnuCnIAmgEmnmtp7K%2BPAHXtH4WDnRIH6uvKUvMr5BOjw0vkfU16X9HJm2OcOIBsKVH%2F1BgpDU9I6xu6H93HWolMAgzZgF8hpKarLKxyv5N%2FJDsc99cvg2FaO%2Bkc06sCJA5eVuvp0%2FKv4TvcJG567Aj7HRiJWqRTICA0Wxx9zjSwjCqnHXkBtFqlE50Xbbyh%2FVQShrSsohn9FlUNSdMQk62mrIu5zEwFIDDdSXXP3ghK5EWi9JMmVZpmZBX%2FiBZgyJ1R1%2BQVJ3JnTl4Kflyzpg1TPtBu6QHCC8lfk4%2FcwYftUv72j4dAlv9VIn1uyLwurSl%2Fh1c0kCJ2MbjqUXiWZF%2B5SZggkmaTW%2Ba1p45vs6gFMDRTjnI5xIhU04uoyxh57emJj0JaMgZ9s3sM2K4QJ4xVWCk48R%2FEbWClW8SXCym4QSYylPr8z8r9jvB5%2BW%2FBlH4Q876tkfO2j91NQKtbOTjiQerGRKakDr%2FquB4h1D%2BX6hfLdQulcoXAYULgJslwD2C4By89%2FW%2BK9q%2BpsNf73Zb57WxLry%2BrNUqqZlqjXcZjKw3wtU3Ank9wHFuwDbPYBeAmn9%2F%2BxE6JBJkquYtpQFpQsDS%2FiU4%2BYlQn6BYKnF88nEEjMj1b1nZT7xRKJg809wdASPYqw3tQ8SqRj%2FHwQosBB%2FNQAA
+// =========================
+// Parameters / helper functions
+// =========================
+let lookBackTm = ago(365d);
+let getIncidentLink = (incidentId:string)
+{
+    strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incidentId, "/home")
+};
+let getSimpleTeamName = (fullName:string)
+{
+    let parts = split(fullName, "\\");
+    iif(array_length(parts) > 1, tostring(parts[1]), fullName)
+};
+// Decode double/single encoded HTML entities, strip tags/comments, normalize whitespace
+let TrimHtmlContent = (html:string)
+{
+    let s1  = replace_string(html, "&amp;nbsp;", " ");
+    let s2  = replace_string(s1,   "&amp;amp;", "&");
+    let s3  = replace_string(s2,   "&amp;quot;", "\"");
+    let s4  = replace_string(s3,   "&amp;#39;", "'");
+    let s5  = replace_string(s4,   "&amp;lt;", "<");
+    let s6  = replace_string(s5,   "&amp;gt;", ">");
+    let s7  = replace_string(s6,   "&nbsp;", " ");
+    let s8  = replace_string(s7,   "&quot;", "\"");
+    let s9  = replace_string(s8,   "&apos;", "'");
+    let s10 = replace_string(s9,   "&lt;", "<");
+    let s11 = replace_string(s10,  "&gt;", ">");
+    let s12 = replace_regex(s11, "<!--.*?-->", "");
+    let s13 = replace_regex(s12, "<[^>]+>", "");
+    let s14 = replace_regex(s13, "\\s+", " ");
+    trim(" ", s14)
+};
+let XinyanTeamIds = dynamic([
+    '10549', '10661', '67334', '82812', '42690', '75939', '68685',
+    '105484', '10475', '93543', '82813', '60163', '114480', '135033'
+]);
+let RunnerTeamId = '39447';
+let RunnerFrameworkPhases = dynamic(['RefreshClientTokenAsync','PreDeploymentActions']);
+let DeploymentPhases = dynamic(['CreateRg','InitialDeployment','RGCreation','Redeployment','ValidateARMTemplate']);
+let DeletingRgPhase = dynamic(['DeleteRG','DeleteRg']);
+let excludedRelationshipTypes = dynamic(['RESPONSIBLE','DUPLICATE']);
+// =========================
+// 1) Find original Sev2 runner CP incidents in target teams
+//    Use raw Incidents so we can get the earliest state per incident
+// =========================
+let OriginalSev2RunnerIncidentIds = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').Incidents
+    | where CreateDate > lookBackTm
+    | where (CorrelationId startswith 'SDNRunners-HitCount' and Title has 'control path') or Title startswith "[RunnerICM Aggregation CP]"
+    // get earliest known row per incident, but keep only needed columns
+    | summarize arg_min(ModifiedDate, OwningTeamId, Severity) by IncidentId
+    | where Severity == 2
+    | where OwningTeamId in (XinyanTeamIds)
+    | project IncidentId
+);
+// =========================
+// 2) Exclude incidents that currently have active parent/responsible relationships
+//    Latest state per RelationshipId, keep non-tombstoned only
+// =========================
+let ExcludedChildIncidentIds = materialize(
+    IncidentRelationships
+    | where ChildIncidentId in (OriginalSev2RunnerIncidentIds)
+    | where RelationshipType in (excludedRelationshipTypes)
+    | summarize arg_max(Lens_IngestionTime, *) by RelationshipId
+    | where IsTombstoned == false
+    | distinct ChildIncidentId
+);
+// =========================
+// 3) Base latest-state incidents after exclusion
+// =========================
+let BaseIncidents = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where CreateDate > lookBackTm
+    | where IncidentId in (OriginalSev2RunnerIncidentIds)
+    | join kind=leftanti (ExcludedChildIncidentIds) on $left.IncidentId == $right.ChildIncidentId
+    // ===========================================
+    // Parse runner metadata from different title formats
+    // ===========================================
+    // 1) Normal runner title
+    // Example:
+    // [Control Path: RNC] Runner Name: AzNetToolsRunners.LongRunnerNicTestSuite Region: uscentraleuap Instance: azfRNCRNMLongRunnerNicTestSuiteuscentraleuapPaireuropewestProd Phase: IPV6_ILB_VM_DataPathTestViaILB Expected to Work - Vm1ToVm2
+    | extend
+        NormalRunnerName     = extract(@"Runner Name:\s*(.*?)\s+Region:\s*", 1, Title),
+        NormalRegion         = extract(@"Region:\s*(.*?)\s+Instance:\s*", 1, Title),
+        NormalRunnerInstance = extract(@"Instance:\s*(.*?)\s+Phase:\s*", 1, Title),
+        NormalPhase          = extract(@"Phase:\s*(.*)$", 1, Title)
+    // 2) Aggregate format with region / runnerName / runnerInstance
+    // Example:
+    // [Aggregate][azf-SiriusDSRLBILBSTenant-DP][uswestcentral / AzNetToolsRunners.DSRLBILBSTenant / azfSiriusDSRLBILBSTenantuswestcentralProd] 100% children Unhealthy
+    | extend
+        Agg3Region         = extract(@"\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]", 1, Title),
+        Agg3RunnerName     = extract(@"\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]", 2, Title),
+        Agg3RunnerInstance = extract(@"\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]", 3, Title)
+    // 3) Aggregate format with only runnerGroup / region
+    // Example:
+    // [Aggregate][SiriusRunners-DP-Sev2][AzNetToolsRunners / germanywc] 2 of 90 children Unhealthy
+    // [VNC out of capacity][Aggregate][SiriusRunners-DP-Sev2][AzNetToolsRunners / germanywc] 2 of 67 children Unhealthy
+    | extend
+        Agg2RunnerGroup = extract(@"\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]", 1, Title),
+        Agg2Region      = extract(@"\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]", 2, Title)
+    // 4) RunnerICM Aggregation CP format
+    // Example:
+    // [RunnerICM Aggregation CP] [Region: uswestcentral] [...]
+    | extend
+        CpRegion = extract(@"\[RunnerICM Aggregation CP\]\s*\[Region:\s*([^\]]+?)\]", 1, Title)
+    // Final unified columns
+    | extend
+        RunnerName = coalesce(
+            NormalRunnerName,
+            Agg3RunnerName,
+            iif(Title startswith "[RunnerICM Aggregation CP]", "RunnerICM Aggregation CP", "")
+        ),
+        RunnerInstance = coalesce(
+            NormalRunnerInstance,
+            Agg3RunnerInstance,
+            ""
+        ),
+        Region = coalesce(
+            NormalRegion,
+            Agg3Region,
+            Agg2Region,
+            CpRegion,
+            ""
+        ),
+        Phase = iif(isnotempty(NormalPhase), NormalPhase, "AggregatedPhase")
+    // Fallback only after all pattern extraction attempts
+    | extend
+        RunnerName = iif(isnotempty(RunnerName), RunnerName, "Unknown"),
+        FailureType = case(
+            Phase in (RunnerFrameworkPhases), "Runner Phase",
+            Phase in (DeploymentPhases), "Deployment",
+            Phase in (DeletingRgPhase), "Delete RG",
+            Phase contains "AggregatedPhase", "AggregatedPhase",
+            "Testing Failure"
+        )
+    | project
+        IncidentId,
+        CreateDate,
+        ModifiedDate,
+        MitigateDate,
+        ResolveDate,
+        LookingDate = coalesce(ResolveDate, MitigateDate, CreateDate),
+        MonitorId,
+        RoutingId,
+        OwningTenantId,
+        OwningTenantName,
+        OwningTeamId,
+        OwningTeamName,
+        OwningContactAlias,
+        Severity,
+        Status,
+        Title,
+        RootCauseId,
+        ResponsibleTeamName,
+        ResponsibleTeamId,
+        Tags,
+        RunnerName,
+        RunnerInstance,
+        Region,
+        Phase,
+        FailureType,
+        HowFixed,
+        Mitigation,
+        CorrelationId
+);
+// Narrow all later joins to only these IDs
+let ICMIDs = materialize(BaseIncidents | distinct IncidentId);
+// =========================
+// 4) Repair items
+// =========================
+let RepairItemsByIncident = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    | where CreatedDate > lookBackTm
+    | where IncidentId in (ICMIDs)
+    | summarize arg_max(ModifiedDate, ExternalId) by IncidentId, ExternalId
+    | summarize RepairItems = make_set(ExternalId) by IncidentId
+);
+// =========================
+// 5) Auto-correlation marker
+// =========================
+let AutoCorrelationByIncident = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentDescriptions
+    | where Date > lookBackTm
+    | where IncidentId in (ICMIDs)
+    | where ChangedBy == 'IcmAutoCorrelation'
+    | summarize IcmAutoCorrelation = max(1) by IncidentId
+);
+// =========================
+// 6) Severity downgrade info
+// =========================
+let SeverityDowngradeByIncident = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentHistory
+    | where ChangeDate > lookBackTm
+    | where IncidentId in (ICMIDs)
+    | where ChangeCategories =~ '["Edit","SeverityDowngrade"]'
+    | summarize arg_max(ChangeDate, ChangedBy) by IncidentId
+    | extend
+        SeverityDowngradeType = case(
+            ChangedBy =~ 'CN=networking-autotriage.azure.com', 'Auto-Triage',
+            ChangedBy =~ 'Automation' or ChangedBy =~ 'gautosvc', 'Automation',
+            'DRI'
+        )
+    | extend SeverityDowngradeBy = iif(SeverityDowngradeType != 'DRI', SeverityDowngradeType, ChangedBy)
+    | project IncidentId, SeverityDowngradeBy, SeverityDowngradeType
+);
+// =========================
+// 7) Root cause info
+// =========================
+let RootCauseIds = materialize(
+    BaseIncidents
+    | where isnotempty(RootCauseId)
+    | distinct RootCauseId
+);
+let RootCausesLatest = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    | where RootCauseId in (RootCauseIds)
+    | summarize arg_max(ModifiedDate, Title, Description) by RootCauseId
+    | project
+        RootCauseId,
+        RCATitle = Title,
+        RCADesscription = TrimHtmlContent(Description)
+);
+// =========================
+// 8) Runner flavor / subscription lookup
+// =========================
+let RunnerMetadata = materialize(
+    cluster('aznwsdn').database('aznwmds').MetricTelemetry
+    | where name == 'E2ERunnersDeployMetric'
+    | where isnotempty(RunnerFlavor) and isnotempty(SubscriptionId)
+    | summarize arg_max(PreciseTimeStamp, Region, SubscriptionId, RunnerFlavor) by RunnerInstanceName
+    | project
+        RunnerInstanceName,
+        MetricRegion = Region,
+        MetricSubscriptionId = SubscriptionId,
+        MetricRunnerFlavor = RunnerFlavor
+    | join kind=leftouter (
+        cluster('nrp').database('test').GetLatestSimpleControlPathRunnerConfigure
+        | project
+            RunnerInstanceName,
+            ConfigSubscriptionId = SubscriptionId,
+            ConfigRunnerFlavor = RunnerFlavor
+    ) on RunnerInstanceName
+    | extend
+        RunnerFlavor = coalesce(MetricRunnerFlavor, ConfigRunnerFlavor),
+        SubscriptionId = coalesce(MetricSubscriptionId, ConfigSubscriptionId)
+    | project RunnerInstanceName, RunnerFlavor, SubscriptionId
+);
+// =========================
+// 9) Final assembly
+// =========================
+BaseIncidents
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (RepairItemsByIncident) on IncidentId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (AutoCorrelationByIncident) on IncidentId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (SeverityDowngradeByIncident) on IncidentId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (RootCausesLatest) on RootCauseId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (RunnerMetadata) on $left.RunnerInstance == $right.RunnerInstanceName
+| extend
+    rawTags = parse_json(Tags),
+    RCADesscription = iif(isnotempty(RCADesscription), TrimHtmlContent(RCADesscription), ''),
+    SeverityDowngradeBy = coalesce(SeverityDowngradeBy, 'N/A'),
+    SeverityDowngradeType = coalesce(SeverityDowngradeType, 'N/A'),
+    IcmAutoCorrelation = coalesce(IcmAutoCorrelation, 0)
+    // DRI triaged the ICM with any of these conditions
+| extend  IsTriaged = iif(
+        isnotempty(RootCauseId)
+        or array_length(rawTags) > 0
+        or OwningTeamId == RunnerTeamId
+        or HowFixed in ('Transient', 'External')
+        or (isnotempty(RepairItems) and array_length(RepairItems) > 0)   // corrected: has WI => triaged
+        or SeverityDowngradeBy != 'N/A',
+        1,
+        0
+    ),
+    // Missing RCA
+    IsMissingRCA = iif(
+        tolower(Status) != 'resolved',
+        0,
+        iif(isempty(RootCauseId) and (isempty(RepairItems) or array_length(RepairItems) == 0), 1, 0)
+    ),
+    InactiveInDays = iif(Status =~ 'active', datetime_diff('day', now(), ModifiedDate), 0),
+    StartOfWeek = startofweek(CreateDate),
+    OwningTeamName = getSimpleTeamName(OwningTeamName),
+    FinalTeamGroup = case(
+        OwningTeamId == RunnerTeamId, 'Runner Team',
+        OwningTeamId in (XinyanTeamIds), 'Xinyan Team',
+        'Other Teams'
+    ),
+    TestPhase = case(
+        Phase =~ 'ValidateARMTemplate', 'ValidateARMTemplate',
+        Phase in (DeploymentPhases), 'Deployment RG',
+        Phase in (DeletingRgPhase), 'Delete RG',
+        'Others'
+    )
+| project
+    IncidentId,
+    IcmLink = getIncidentLink(tostring(IncidentId)),
+    IsMissingRCA,
+    IsTriaged,
+    StartOfWeek,
+    LookingDate,
+    CreateDate,
+    ModifiedDate,
+    MitigateDate,
+    ResolveDate,
+    MonitorId,
+    RoutingId,
+    OwningTenantId,
+    OwningTenantName,
+    OwningTeamId,
+    OwningTeamName,
+    OwningContactAlias,
+    Severity,
+    Status,
+    InactiveInDays,
+    Title,
+    RootCauseId,
+    RCATitle,
+    RCADesscription,
+    ResponsibleTeamName,
+    ResponsibleTeamId,
+    Tags,
+    RunnerName,
+    RunnerInstance,
+    Region,
+    Phase,
+    TestPhase,
+    RunnerFlavor,
+    SubscriptionId,
+    FailureType,
+    IcmAutoCorrelation,
+    HowFixed,
+    Mitigation = TrimHtmlContent(Mitigation),
+    tostring(RepairItems),
+    SeverityDowngradeBy,
+    SeverityDowngradeType,
+    FinalTeamGroup
+| sort by CreateDate asc

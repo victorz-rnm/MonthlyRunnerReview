@@ -307,3 +307,262 @@ on RootCauseId
 on IncidentId
 | extend IsMissingRCA = iif (tolower(Status) != 'resolved', 0, iif(isempty(RootCauseId), 1, 0)), IncidentLink = getIncidentLink(IncidentId)
 | project IncidentId, Severity, IncidentLink, RepairItems=tostring(RepairItems), IsMissingRCA, IsOutageActual, RCATitle, RCADesscription, IsCausedByChange, Title, LookingDate, CreateDate, ModifiedDate, MitigateDate, ResolveDate, IncidentType, OwningTeamName, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, PostmortemTitle, PostmortemStatus, Status, HasTsg, IsS360Related,S360Link=tostring(S360Link), Category=tostring(Category), RootCauseId
+
+
+==================== 4/15/2026
+
+https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?query=H4sIAAAAAAAAA%2BUZ227byPVdXzGrLlZkVtbFkhU7iVLEstMItR0j1m5QJKkxJkfSrEkOwxna1jYt9qV%2Fsf25fEnPGd6GFGU5iwQoUAMJNcM5lzn3c9jtkvGmv0a3S85pRH2mWCRJl0xEIBUNlMQ3m8E8pognxPUVda7f8sAVt2RM6EJY%2Ff2eaz9F4BmjPpGOCBmxJBAg0yNJqCQrEUdERHzBA%2BqRjzGLVrbGJ24DHiwQbOpKQOeuAupzx3rXIKTV7%2B0ND1pteI5GfXiOHg8GQ3ju7%2B73d%2BE53B0d9OD5eO9ggOdG%2B6P9vVY7A90fatjhY9hrHQz2hoMUFp%2BjXn%2BEz35%2FONxHJP3BXm8waDU%2BwE2ymwJrb5hHFQcBLXk4W4WsxGTrzfHF%2Beuzi%2BnhyTGgOPrp%2FGQ6eTE7bn1IxHGvCl4xL2QRmceBowlsBQA13bBISRCt8JlNXBFfeWyHBY5wmUtezU5PCAsUVxy4VIJEjLoUThDF7lQblr64wTd0IbuO8H04K9uImAYuCUTkU4%2F%2FCgdul1wxGVKHdbQkJh6jwSvlezMxA0wgAGsJqydSRSAgu%2FEPEDgh3W76IP0OOWLI070cmkBIRSoW9gF3xEIPSF8m2DWlNmn%2BQP3waXAlw6dNWJEmyNcE3F0H1PgySPyHgD9UAQf1gLsZ4MdYKA35vlkFHdaDDjLQPw0ONGSrCrhXDzjMAL2E4rMq3Kgebi%2BDWyRwzzO4QiO7uUYkQH2JRh7X0xwhzc3q2K%2BHeoxQ90j0oB5sX18wFLJenP1ePdgBgm2SZb%2FG1BJkCLVZkoMOeaP9KBFd5kbahdCxaq3atM6ILdhdQgqt89l3OzudR3%2Fe2XmOBNe4HNRDonk%2Be%2Ff35x9%2BLIEVbA475CxzaMOfa7kb1tNAO37%2FXv5YUjAIyrdg2U5B7cY%2FdaA7jLkH8XvqnBKPB9cyjf4scEPBtXyqOWCpo59MsoAGnwYOd0GYJ4AAYwxP11O3Emlg5VBlNZdKhfJJtxuKSFGvAxE5ElLMFXf8Diimy%2F2wezPoZnhk12WKck92gf0COVyvu4R42tR3ybl5w0LKo6lifsbPrYiucb2VH5fddOivccQ0F77Uv7uvA9a9RBygDF92mcsVMlJgzWR5fKci6oDM1BL8dQmXgwAOaTVAidI55Gz9RrEAUjYJIzbnd6Q5Oz57cTZ7%2Fx5TaVNf4y9MXYAIPIZbZwgMl5jHnoe%2FK1fA8yHF3DImMvS4yg9qK8jUz%2FncolFEV5ceCxZqaWkYmzwnYMtKpH6kN9%2F1P9htkmHJ7nZvfuvb5JBKlutGEglsWT6FK3NtyiAjOAd%2FO%2BQl91ASjEbeKt88j8QvzFHJLrFEAP87wov9QJKAMYx4HmKztxc6V8DJNGdkTAwuLC0Lx4vBByKrBeaW%2Fm7ZHZcqiqBWC3zhCBZvacSWIpYMXub4LgIagmbVz7sa1SdwURYxcipcPufMBTgGMi3XWqWTr42yCeQFVzXrKLt0NqOK1QsZ%2F4u0JsAsGHwEJg7GxdwWeCWZytcxBDA4MSb9FB6SPXiwQQxVeaEtcrxuXlb5nJ3Fogs0PU8suJNHgZOktsJ7PoF4KoV3w9JLn0IqWsDPdDmBIiZZlHk6ns9B0TwBm3Ft3I6gHpMOswyM7RLCtoEvE1KY2Ixe4d%2B0iAz53owrjxXLCwZ1GFcrY0dRFUsDAFJBew0lasDYTSVe7NQIev0ler12zMobqA4VhI0XHqcG6eK%2BxZ5pZsauKad81xRlvrkm%2FEZS7h5xqcB5oXaGH0TMDVlKAi7gYlXqcZ8rQj0PqsNb6DuipGWgUACj33EDpOx1ZY%2F8RNyMWkElYWPXBisBl4RyBwPldHKKsZQqsqSYqFeEauYx4AHUjrOEcI8uEEGShDqcY8mabEZG8V%2Fi7hWV5xr6NXhRDgWUyLhhatzsHmTJKydLI%2BWlTmzc3Sa1f3C7z7%2F%2FGzmFUFsEuiu%2BIJBN5%2BSWB2Xnr7Yvms6m1kYT3Q6%2BsevJSMvY92mEpQeNFpc%2BvbNOWCAvp8EC%2BAZsaDJt8sgmV6sShalbDlxyJvwriFUBWA6EpTn1ZBYGcuVX5Lg9ywxscgJWBQY6m90R6IFBkHJTlvkrYyEppRGwnRiMd6XtOT%2BX3hOOQs7ywDmA4wzCmlOZJG0a5AJ5ZD8gByl1l7J6X%2F7Jyg7IQ5h9ItFxQBQRhfedawz1nVudQGQnYKqUoiZQvYoAtiCWX04d%2FzJ3r8u3XC1BPn8wPd1j1xtNZEt4SuqxiYgDaGXThSdAB8lWEXlnR2347wz%2FOw4W%2BHjJ7%2FBxaoTr%2BEo6EQ%2FR8CrwU%2FkiVuKIKa3Edh6lX2i9F%2BfOodrxMX36SXIwNqrJAILFTC5MEheDUU8bPlLABdaY6XvtFYUAvyBL%2FR%2BI6AFjlaEN0DJmEwBdiGi1pYDUhXEaRtnHmN9ADQFlNSQqXamgZWLV2%2Bl0bDupYirRwUs8FJRW8g8c7WR2v93Tucnxl%2Fl8urfF1e%2BpRpNy8CVnnnsMcSMbBDzcl5NzDytGkz4EitCSjlobo0IpGJCfIaixex3EdAySm8C4aE4SFA8xpD2bvBFCTSiICy5mKrTGprboN6sHMoT%2Fcx3FdjXXSdgQUCOdm0bFVm3ftCaKEhtcBgLiQ6hWloE7YyHP%2BhW621Q5SlRJHC36dAwAdZB2NHtThDjRlSpEAl0ApP2jQfkB4%2FJcGPIBTv1wtedMlF3VNFdUoqmKzYm37GJpqD5iefTHAK%2BxuIerCdQwi8QDTRXU5yjjhJGkoFJEEiCJSlcFbwyq8L4yd7aMt7aZKsrMPcQeHttpfiR6GJP0K1%2Fq01E%2BIZKHq8wpvrJfH8YL%2BY0cGu73t9JELmnRWdbbgcmDvcch2Dxo2zK9%2Fhh68AhAwDHJFZsLoObTa3YpmXqglZUwrEg98jVcxUwuiSwJSWsjsvsCVwlVnh2M7QfliH0b6ggUHpWS%2BVfGKOqEzRX5RXBoAEJo11gEDWd5AiqXNGRdH2wcKOdwEip4JeYuXVl2NpbFrzlgLkxB32TNca6rLvN1UpnALqhCYUWDjSCeCRyWY81HI3g6Z6g6k23qwEt2npNeVzdbzfyzkO7R7hdHqT9vfNKXJ9BnumMPZCFi5G3JA9UBWWNiXo3lMp7PIRTo3SD2L3FyyHU3ON7rESvvf2xsrAy9fg3kNSXXNyFTTXffgkg1zWgaZoD%2BKkTq4t2229BAcfIHRbZxyKKJfo%2FoO0aUG4%2FJ92DJS9WpzAQa2dQwi3vnJYdETyKff%2Fv9KnauWVL5w9%2FO6emO637%2B7T%2FgVkt6w0WkoYt5Gk7KC1815opJajJGnOWTa8OzFGCNr7OfTk7QF102p7Gnyq5Y5qoY3haersSVEJ6VvcJhPLp0Sq3cs90DlxyoQCftWhkKlGkl%2B3C4l5Mx%2Brj186XXJTCzw6yDM98bgLqTLZ9PvkFb%2Bg2e7BRnofndcBbeVM6ebjh5WjoHSsQ%2BNcnZkO7Tb0df9MVqr%2F6LVZ6jjHEnfrtK0uOqmYmu%2FBVt7cuaVYen4F4P632IjXACK7LK4D5LFamWTpODeG6sPw4p4YlbKHWS%2Ft4m341JM0pGyC7codfWp7hcr%2FDb%2BAmpZ9uNch1ZnXOUR%2B%2FmxZIdI4G315isM%2F0ULK1K85VZ%2FzbqyszULgogw%2BHblVCRrNfnWusj97Vx%2B%2Fqng%2FJHApD7xq8G9V8MNn0tMKdH5kZ1goTTo%2FTHmeFIhv%2FlLpOqrH6SVJki6b3qxKiyaU6NzN%2Fm9Ai%2FvJgVHa7rglGKJR0smRDZXgpVN0TI9tIja41O6vn%2FBdMWwCuFJQAA
+// =========================
+// Parameters / Constants
+// =========================
+let lookbackWindow = ago(180d);
+// Team scope (same IDs as your original query)
+let owningTeamIds = dynamic([
+  '10549','10661','67334','82812','42690','75939','68685',
+  '105484','10475','93543','82813','60163','114480','135033'
+]);
+let lookingRelationshipTypes = dynamic(['RESPONSIBLE','DUPLICATE']);
+// =========================
+// Helper functions
+// =========================
+// Converts (some) double-encoded HTML entities to readable text, removes tags/comments,
+// and normalizes whitespace.
+let CleanHtmlToText = (html:string)
+{
+    //
+    // 1. Decode double-encoded HTML entities
+    //
+    let step1 = replace_string(html, "&amp;nbsp;", " ");
+    let step2 = replace_string(step1, "&amp;amp;", "&");
+    let step3 = replace_string(step2, "&amp;quot;", "\"");
+    let step4 = replace_string(step3, "&amp;#39;", "'");
+    let step5 = replace_string(step4, "&amp;lt;", "<");
+    let step6 = replace_string(step5, "&amp;gt;", ">");
+    //
+    // 2. Decode single-encoded HTML entities
+    //
+    let step7 = replace_string(step6, "&nbsp;", " ");
+    let step8 = replace_string(step7, "&quot;", "\"");
+    let step9 = replace_string(step8, "&apos;", "'");
+    let step10 = replace_string(step9, "&lt;", "<");
+    let step11 = replace_string(step10, "&gt;", ">");
+    //
+    // 3. Remove HTML comments and tags
+    //
+    let step12 = replace_regex(step11, "<!--.*?-->", "");
+    let step13 = replace_regex(step12, "<[^>]+>", "");
+    //
+    // 4. Normalize whitespace
+    //
+    let step14 = replace_regex(step13, "\\s+", " ");
+    trim(" ", step14)
+};
+// Builds IcM links (same endpoints as your original helpers)
+let BuildIncidentLink = (incidentId:string)
+{
+    strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incidentId, "/home")
+};
+let BuildRepairItemLink = (workItemId:string)
+{
+    strcat("https://dev.azure.com/msazure/One/_workitems/edit/", workItemId)
+};
+// Extracts the short team name after the tenant prefix "TENANT\\Team"
+let GetSimpleTeamName = (fullName:string)
+{
+    let parts = split(fullName, "\\");
+    iif(array_length(parts) > 1, tostring(parts[1]), fullName)
+};
+// =========================
+// 1) Base incidents set (materialized)
+//    - Filter early
+//    - Project early (only columns needed later)
+// =========================
+let baseIncidents = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where ModifiedDate > lookbackWindow
+    | where OwningTeamId in (owningTeamIds)
+    | where IncidentType =~ 'CustomerReported' or IsOutage == 1
+    | extend OwningTeamNameShort = GetSimpleTeamName(OwningTeamName)
+    // Same logic as your LookingDate: ResolveDate > MitigateDate > CreateDate
+    | extend EffectiveDateTime = coalesce(ResolveDate, MitigateDate, CreateDate)
+    | project
+        IncidentId,
+        Title,
+        Severity,
+        Status,
+        Tags,
+        IncidentType,
+        IsOutage,
+        OwningTeamNameShort,
+        OwningTenantName,
+        OwningContactAlias,
+        CreateDate,
+        ModifiedDate,
+        MitigateDate,
+        ResolveDate,
+        EffectiveDateTime
+);
+// Distinct list of IncidentIds used to limit all downstream scans
+let incidentIds = materialize(baseIncidents | distinct IncidentId);
+// 2) exclude the ICMs that has any active parent-child or responsible-child relationship
+let incidentHasParentOrResponsibleICM =
+    IncidentRelationships
+    | where ChildIncidentId in (incidentIds)                      // ✅ restrict early (big perf win)
+    | where RelationshipType in (lookingRelationshipTypes)    
+    | where RelationshipType in ('RESPONSIBLE','DUPLICATE')
+    | summarize arg_max(Lens_IngestionTime, *) by RelationshipId
+    | where IsTombstoned == false
+    | distinct ChildIncidentId;
+// =========================
+// 3) Latest TTx metrics (materialized)
+//    - Keep only columns actually used
+//    - arg_max on selected columns (faster than arg_max(*))
+// =========================
+let ttxLatest = materialize(
+    cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+    | where ModifiedDate > lookbackWindow
+    | where IncidentId in (incidentIds)
+    | summarize arg_max(
+        ModifiedDate,
+        RepairCount, RepairClosedCount,
+        TTD, TTN, TTEng, TTFix, TTM,
+        SubscriptionCount,
+        IsAutoDetected, IsOutageActual,
+        PostmortemTitle, PostmortemStatus,
+        HasTsg,
+        IsS360Related, S360Link
+      ) by IncidentId
+    | project
+        IncidentId,
+        RepairCount, RepairClosedCount,
+        TTD, TTN, TTEng, TTFix, TTM,
+        SubscriptionCount,
+        IsAutoDetected, IsOutageActual,
+        PostmortemTitle, PostmortemStatus,
+        HasTsg,
+        IsS360Related, S360Link
+);
+// =========================
+// 4) IssueCategory (materialized)
+//    - Filter Name early (equivalent to your max(iif(...)) logic)
+//    - Keep latest by ModifiedDate per incident
+// =========================
+let issueCategoryLatest = materialize(
+    cluster('https://icmcluster.kusto.windows.net').database('IcMDataWarehouse').IncidentCustomFieldEntries
+    | where IncidentId in (incidentIds)
+    | where TeamId in (owningTeamIds)
+    | where Name =~ 'IssueCategory'
+    | summarize arg_max(ModifiedDate, Value) by IncidentId
+    | project IncidentId, Category = tostring(Value)
+);
+// =========================
+// 5) RootCauseId per incident (materialized)
+// =========================
+let incidentRootCause = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where ModifiedDate > lookbackWindow
+    | where IncidentId in (incidentIds)
+    | project IncidentId, RootCauseId
+);
+let rootCauseIds = materialize(
+    incidentRootCause
+    | where isnotempty(RootCauseId)
+    | distinct RootCauseId
+);
+// =========================
+// 6) Root cause details (latest) (materialized)
+//    - Limit to only needed RootCauseIds
+// =========================
+let rootCausesLatest = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    | where RootCauseId in (rootCauseIds)
+    | summarize arg_max(ModifiedDate, Title, Description, IsCausedByChange) by RootCauseId
+    | project
+        RootCauseId,
+        RCATitle = Title,
+        RCADescription = CleanHtmlToText(Description),
+        IsCausedByChange
+);
+// =========================
+// 7) Repair items list (materialized)
+// =========================
+let repairItemsByIncident = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    | where ModifiedDate > lookbackWindow
+    | where IncidentId in (incidentIds)
+    // Your original logic effectively deduped by (IncidentId, ExternalId) before make_set
+    | summarize arg_max(ModifiedDate, ExternalId) by IncidentId, ExternalId
+    | summarize RepairItems = make_set(ExternalId) by IncidentId
+    | project IncidentId, RepairItems = tostring(RepairItems)
+);
+// =========================
+// 8) Final assembly
+//    - Left joins preserve your original shape/meaning
+//    - startofday() replaces todatetime(format_datetime(...)) for better performance
+//    - coalesce(...) preserves your original "empty -> 0/false" normalization
+// =========================
+baseIncidents
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (ttxLatest) on IncidentId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (issueCategoryLatest) on IncidentId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (incidentRootCause) on IncidentId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (rootCausesLatest) on RootCauseId
+| join kind=leftouter hint.strategy=shuffle hint.num_partitions=50 (repairItemsByIncident) on IncidentId
+| join kind=leftanti  hint.strategy=shuffle hint.num_partitions=50 (incidentHasParentOrResponsibleICM) on $left.IncidentId == $right.ChildIncidentId
+| extend
+    // Preserve your date “bucket to yyyy-MM-dd” behavior
+    CreateDate = startofday(CreateDate),
+    LookingDate = startofday(EffectiveDateTime),
+    // Preserve your NULL -> default normalization behavior
+    IsOutage = coalesce(tobool(IsOutage), false),
+    IsOutageActual = coalesce(tobool(IsOutageActual), false),
+    HasTsg = coalesce(toint(HasTsg), 0),
+    IsS360Related = coalesce(toint(IsS360Related), 0),
+    IsAutoDetected = coalesce(toint(IsAutoDetected), 0),
+    TTFix = coalesce(todouble(TTFix), 0.0),
+    TTEng = coalesce(todouble(TTEng), 0.0),
+    TTM = coalesce(todouble(TTM), 0.0),
+    // Links
+    icmLink = strcat("https://portal.microsofticm.com/imp/v5/incidents/details/", tostring(IncidentId), "/summary"),
+    IncidentLink = BuildIncidentLink(tostring(IncidentId)),
+    // Same missing RCA logic as your original
+    IsMissingRCA = iif(tolower(Status) != "resolved", 0, iif(isempty(RootCauseId), 1, 0))
+| project
+    IncidentId,
+    Severity,
+    IncidentLink,
+    RepairItems,
+    IsMissingRCA,
+    IsOutageActual,
+    RCATitle,
+    RCADescription,
+    IsCausedByChange,
+    Title,
+    LookingDate,
+    CreateDate,
+    ModifiedDate,
+    MitigateDate,
+    ResolveDate,
+    IncidentType,
+    OwningTeamName = OwningTeamNameShort,
+    OwningTenantName,
+    OwningContactAlias,
+    RepairCount,
+    RepairClosedCount,
+    TTD,
+    TTN,
+    TTEng,
+    TTFix,
+    TTM,
+    SubscriptionCount,
+    IsAutoDetected,
+    PostmortemTitle,
+    PostmortemStatus,
+    Status,
+    HasTsg,
+    Tags = tostring(Tags),
+    IsS360Related,
+    S360Link = tostring(S360Link),
+    Category = tostring(Category),
+    RootCauseId,
+    icmLink
+

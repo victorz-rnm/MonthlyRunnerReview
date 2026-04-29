@@ -5,7 +5,7 @@ let getIncidentLink = (incident:string)
     let link = strcat("https://portal.microsofticm.com/imp/v3/incidents/details/", incident, "/home");
     link;    
 };
-let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033','39447']);
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '105484', '10475', '93543', '82813', '60163', '114480', '135033','39447','151109','140105']);
 let lookbackWindow = ago(365d);
 let XinyanTeamICMIDs = 
 Incidents
@@ -50,7 +50,7 @@ let getIncidentLink = (incident:string)
     link    
 };
 // no triage team because this query is getting notification analysis
-let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '10475', '60163', '114480', '135033','39447','150283','110503']);
+let XinyanTeamIds = dynamic(['10549', '10661', '67334', '82812', '42690', '75939', '68685', '10475', '60163', '114480', '135033','39447','150283','110503','151109','140105']);
 let lookbackWindow = ago(365d);
 // all ICM IDs that ever been sev2, sev25 in Xinyan's team
 let XinyanTeamSev2ICMIDs =  cluster('icmcluster').database('IcMDataWarehouse').Incidents
@@ -109,7 +109,7 @@ let BuildIncidentLink = (incidentId:string)
 // No triage team here because this query is for notification / DRI acknowledge analysis
 let xinyanTeamIds = dynamic([
     '10549', '10661', '67334', '82812', '42690', '75939', '68685',
-    '10475', '60163', '114480', '135033', '39447', '150283', '110503'
+    '10475', '60163', '114480', '135033', '39447', '150283', '110503','151109','140105'
 ]);
 // =========================
 // 1) All ICM IDs that were EVER Sev2 / Sev2.5 in the target teams

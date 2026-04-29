@@ -184,7 +184,7 @@ let TrimHtmlContent = (html:string)
 };
 let XinyanTeamIds = dynamic([
     '10549', '10661', '67334', '82812', '42690', '75939', '68685',
-    '105484', '10475', '93543', '82813', '60163', '114480', '135033'
+    '105484', '10475', '93543', '82813', '60163', '114480', '135033','151109','140105'
 ]);
 let RunnerTeamId = '39447';
 let RunnerFrameworkPhases = dynamic(['RefreshClientTokenAsync','PreDeploymentActions']);
@@ -210,7 +210,7 @@ let OriginalSev2RunnerIncidentIds = materialize(
 //    Latest state per RelationshipId, keep non-tombstoned only
 // =========================
 let ExcludedChildIncidentIds = materialize(
-    IncidentRelationships
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
     | where ChildIncidentId in (OriginalSev2RunnerIncidentIds)
     | where RelationshipType in (excludedRelationshipTypes)
     | summarize arg_max(Lens_IngestionTime, *) by RelationshipId

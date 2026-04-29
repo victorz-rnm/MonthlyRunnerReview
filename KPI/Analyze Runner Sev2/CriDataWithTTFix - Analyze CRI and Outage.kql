@@ -318,9 +318,7 @@ https://dataexplorer.azure.com/clusters/icmcluster/databases/IcmDataWarehouse?qu
 let lookbackWindow = ago(180d);
 // Team scope (same IDs as your original query)
 let owningTeamIds = dynamic([
-  '10549','10661','67334','82812','42690','75939','68685',
-  '105484','10475','93543','82813','60163','114480','135033'
-]);
+  '10549','10661','67334','82812','42690','75939','68685','105484','10475','93543','82813','60163','114480','135033','151109','140105']);
 let lookingRelationshipTypes = dynamic(['RESPONSIBLE','DUPLICATE']);
 // =========================
 // Helper functions
@@ -406,7 +404,7 @@ let baseIncidents = materialize(
 let incidentIds = materialize(baseIncidents | distinct IncidentId);
 // 2) exclude the ICMs that has any active parent-child or responsible-child relationship
 let incidentHasParentOrResponsibleICM =
-    IncidentRelationships
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
     | where ChildIncidentId in (incidentIds)                      // ✅ restrict early (big perf win)
     | where RelationshipType in (lookingRelationshipTypes)    
     | where RelationshipType in ('RESPONSIBLE','DUPLICATE')

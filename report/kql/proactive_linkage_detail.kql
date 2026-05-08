@@ -1,0 +1,86 @@
+let QueryStartTime = datetime({{QUERY_START_TIME}});
+let EndTime = datetime({{END_TIME}});
+let IcmLink = (incidentId:string) { strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', incidentId, '/summary') };
+let ControlPathRunnerChildIncidents = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where CreateDate >= QueryStartTime and CreateDate < EndTime
+    | where CorrelationId has 'sdnrunners-hitcount'
+    | where Title has 'control' and Title has 'path'
+    | parse Title with * 'Runner Name: AzNetToolsRunners.' RunnerName ' Region: ' Region ' Instance: ' RunnerInstance ' Phase: ' Phase
+    | where isnotempty(Phase)
+    | project RunnerIncidentId = IncidentId
+);
+let ControlPathRunnerChildIncidentIds = ControlPathRunnerChildIncidents | project RunnerIncidentId;
+let SevRunnerChildren = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentHistory
+    | where ChangeDate >= QueryStartTime and ChangeDate < EndTime
+    | where IncidentId in (ControlPathRunnerChildIncidentIds)
+    | where Severity in (2, 25)
+    | extend priority = iif(Severity == 2, 3, iif(Severity == 25, 2, 1))
+    | summarize arg_max(priority, Severity) by IncidentId
+    | join kind=inner (
+        cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+        | where IncidentId in (ControlPathRunnerChildIncidentIds)
+        | project IncidentId, RunnerTitle = Title, ParentIncidentId, CreateDate, OwningTeamName, Severity
+    ) on IncidentId
+    | join kind=leftouter (
+        cluster('icmcluster').database('IcMDataWarehouse').IncidentDescriptions
+        | where Date >= QueryStartTime and Date < EndTime
+        | where IncidentId in (ControlPathRunnerChildIncidentIds)
+        | where Text has 'Eureka proactive triage is failed with reason:'
+        | extend LinkResult = iif(Text has 'Verify Kusto cluster/database availability and credentials', 'DatabaseDown', 'ProactiveFailed')
+        | project IncidentId, LinkResult
+    ) on IncidentId
+    | extend HasExistingParent = iif(isnotempty(ParentIncidentId), 1, 0)
+    | project RunnerIncidentId = IncidentId, HasExistingParent, IsProactivelyLinked = 0, LinkedDate = startofday(CreateDate), ChildCreateDate = startofday(CreateDate), LinkResult, RunnerTitle, OwningTeamName, Severity
+);
+let ProactiveParentIncidentIds = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').Incidents
+    | where CreateDate >= QueryStartTime
+    | where Title startswith '[SdnRunner Proactive] Failed Signature:'
+    | where Severity in (2, 25)
+    | distinct ProactiveParentIncidentId = IncidentId
+);
+let RelationshipLinkEvidence = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where IncidentId in (ProactiveParentIncidentIds)
+    | project ProactiveParentIncidentId = IncidentId, Status, ProactiveCreateDate = CreateDate, ParentIncidentId, Tags, ProactiveTitle = Title, OwningTeamName, Severity
+    | join kind=inner hint.strategy=shuffle (
+        cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
+        | where Lens_IngestionTime >= QueryStartTime
+        | where RelationshipType =~ 'DUPLICATE'
+        | where ParentIncidentId in (ProactiveParentIncidentIds)
+        | summarize arg_max(Lens_IngestionTime, ParentIncidentId, ChildIncidentId) by ParentIncidentId, ChildIncidentId
+        | project ProactiveParentIncidentId = ParentIncidentId, RunnerIncidentId = ChildIncidentId, LinkedDate = Lens_IngestionTime
+    ) on ProactiveParentIncidentId
+    | extend HasProactiveParent = 1, IsProactivelyLinkedCompleted = 1
+    | project ProactiveParentIncidentId = tostring(ProactiveParentIncidentId), RunnerIncidentId, IsProactivelyLinkedCompleted, Status, ProactiveTitle, ProactiveCreateDate, ParentIncidentId, HasProactiveParent, OwningTeamName, Severity, LinkedDate
+);
+let DescriptionLinkEvidence = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentDescriptions
+    | where Date >= QueryStartTime
+    | where IncidentId in (ControlPathRunnerChildIncidentIds)
+    | where Text has 'This incident is linked to parent ICM'
+    | where Text has '[SdnRunner Proactive] Failed Signature:'
+    | parse Text with * 'Incident ' ProactiveParentIncidentId ' : [SdnRunner Proactive] Failed Signature:' *
+    | extend ProactiveParentIncidentId = tostring(ProactiveParentIncidentId)
+    | summarize arg_max(Date, ProactiveParentIncidentId) by IncidentId
+    | join kind=leftouter (
+        cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+        | project ProactiveParentIncidentId = tostring(IncidentId), Status, ProactiveTitle = Title, ProactiveCreateDate = CreateDate, ParentIncidentId, HasProactiveParent = 1, OwningTeamName, Severity
+    ) on ProactiveParentIncidentId
+    | extend HasProactiveParent = coalesce(HasProactiveParent, 1)
+    | project RunnerIncidentId = IncidentId, ProactiveParentIncidentId, IsProactivelyLinkedCompleted = 0, Status, ProactiveTitle, ProactiveCreateDate, ParentIncidentId, HasProactiveParent, OwningTeamName, Severity, LinkedDate = Date
+);
+let ProactiveEvidence = materialize(
+    union RelationshipLinkEvidence, DescriptionLinkEvidence
+    | summarize arg_max(IsProactivelyLinkedCompleted, *) by ProactiveParentIncidentId, RunnerIncidentId
+    | extend LinkResult = iif(IsProactivelyLinkedCompleted == 1, 'Completed', 'Incompleted'), EvidenceDate = startofday(LinkedDate), LinkedDate = startofday(LinkedDate), IsProactivelyLinked = 1
+);
+union SevRunnerChildren, ProactiveEvidence
+| extend HasExistingParent = coalesce(HasExistingParent, 0), HasProactiveParent = coalesce(HasProactiveParent, 0)
+| summarize max(HasExistingParent), max(HasProactiveParent), max(ChildCreateDate), AnyRunnerTitle = take_any(RunnerTitle), arg_max(IsProactivelyLinked, *) by RunnerIncidentId
+| extend EvidenceDate = coalesce(EvidenceDate, LinkedDate)
+| extend HasExistingParent = max_HasExistingParent, HasProactiveParent = max_HasProactiveParent, RunnerTitle = coalesce(RunnerTitle, AnyRunnerTitle), LinkResult = coalesce(LinkResult, 'NotLinked'), LinkedDate = coalesce(max_ChildCreateDate, LinkedDate)
+| extend ProactiveIncidentLink = IcmLink(tostring(ProactiveParentIncidentId)), ChildIncidentLink = IcmLink(tostring(RunnerIncidentId))
+| project RunnerIncidentId, ChildIncidentLink, RunnerTitle, Severity, OwningTeamName, IsProactivelyLinked, LinkResult, LinkedDate, EvidenceDate, ProactiveParentIncidentId, ProactiveIncidentLink, ProactiveTitle, HasExistingParent, HasProactiveParent, Status

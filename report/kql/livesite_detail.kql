@@ -1,0 +1,96 @@
+let QueryStartTime = datetime({{QUERY_START_TIME}});
+let EndTime = datetime({{END_TIME}});
+let XinyanTeamIds = {{XINYAN_TEAM_IDS}};
+let ExcludedRelationshipTypes = dynamic(['RESPONSIBLE','DUPLICATE']);
+let BuildIncidentLink = (incidentId:string) { strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', incidentId, '/summary') };
+let GetSimpleTeamName = (fullName:string) {
+    let parts = split(fullName, '\\');
+    iif(array_length(parts) > 1, tostring(parts[1]), fullName)
+};
+let CleanHtmlToText = (html:string) {
+    let s1 = replace_string(html, '&amp;nbsp;', ' ');
+    let s2 = replace_string(s1, '&amp;amp;', '&');
+    let s3 = replace_string(s2, '&amp;quot;', '"');
+    let s4 = replace_string(s3, '&amp;#39;', "'");
+    let s5 = replace_string(s4, '&amp;lt;', '<');
+    let s6 = replace_string(s5, '&amp;gt;', '>');
+    let s7 = replace_string(s6, '&nbsp;', ' ');
+    let s8 = replace_string(s7, '&quot;', '"');
+    let s9 = replace_string(s8, '&apos;', "'");
+    let s10 = replace_string(s9, '&lt;', '<');
+    let s11 = replace_string(s10, '&gt;', '>');
+    let s12 = replace_regex(s11, '<!--.*?-->', '');
+    let s13 = replace_regex(s12, '<[^>]+>', '');
+    trim(' ', replace_regex(s13, '\\s+', ' '))
+};
+let BaseCandidates = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where ModifiedDate >= QueryStartTime - 30d and ModifiedDate < EndTime + 30d
+    | where OwningTeamId in (XinyanTeamIds)
+    | where Severity <= 2
+    | where IncidentType =~ 'LiveSite' or IsOutage == 1 or CorrelationId contains 'sdnrunners-hitcount'
+    | extend IncidentType = iif(CorrelationId contains 'sdnrunners-hitcount', 'Runner', IncidentType)
+    | extend LookingDate = coalesce(ResolveDate, MitigateDate, CreateDate)
+    | where LookingDate >= QueryStartTime and LookingDate < EndTime
+    | extend OwningTeamNameShort = GetSimpleTeamName(OwningTeamName)
+    | project IncidentId, Title, Severity, Status, Tags, IncidentType, IsOutage, OwningTeamNameShort, OwningTenantName, OwningContactAlias, CreateDate, ModifiedDate, MitigateDate, ResolveDate, LookingDate, RootCauseId, MonitorId, TsgId
+);
+let CandidateIncidentIds = materialize(BaseCandidates | distinct IncidentId);
+let ExcludedChildIncidentIds = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
+    | where ChildIncidentId in (CandidateIncidentIds)
+    | where RelationshipType in (ExcludedRelationshipTypes)
+    | summarize arg_max(Lens_IngestionTime, *) by RelationshipId
+    | where IsTombstoned == false
+    | distinct ChildIncidentId
+);
+let BaseIncidents = materialize(BaseCandidates | join kind=leftanti (ExcludedChildIncidentIds) on $left.IncidentId == $right.ChildIncidentId);
+let IncidentIds = materialize(BaseIncidents | distinct IncidentId);
+let TtxLatest = materialize(
+    cluster('https://icmdataro.centralus.kusto.windows.net').database('Common').Get_Icm_Incidents_WithTTx
+    | where ModifiedDate >= QueryStartTime - 30d and ModifiedDate < EndTime + 30d
+    | where IncidentId in (IncidentIds)
+    | summarize arg_max(ModifiedDate, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, IsOutageActual, PostmortemTitle, PostmortemStatus, HasTsg, IsS360Related, S360Link) by IncidentId
+);
+let IssueCategory = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentCustomFieldEntries
+    | where IncidentId in (IncidentIds)
+    | where TeamId in (XinyanTeamIds)
+    | where Name =~ 'IssueCategory'
+    | summarize arg_max(ModifiedDate, Value) by IncidentId
+    | project IncidentId, Category = tostring(Value)
+);
+let RootCauseIds = materialize(BaseIncidents | where isnotempty(RootCauseId) | distinct RootCauseId);
+let RootCausesLatest = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    | where RootCauseId in (RootCauseIds)
+    | summarize arg_max(ModifiedDate, Title, Description, IsCausedByChange) by RootCauseId
+    | project RootCauseId, RCATitle = Title, RCADescription = CleanHtmlToText(Description), IsCausedByChange
+);
+let RepairItems = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    | where IncidentId in (IncidentIds)
+    | summarize arg_max(ModifiedDate, ExternalId) by IncidentId, ExternalId
+    | summarize RepairItems = make_set(ExternalId) by IncidentId
+);
+let MonitorLookup = materialize(
+    cluster('geneva').database('genevahealthconfigs').MonitorConfigSnapshot
+    | where isnotempty(MonitorGuid)
+    | summarize arg_max(LastUpdateDate, monitor_name) by MonitorGuid
+    | project MonitorGuid, monitor_name
+);
+BaseIncidents
+| join kind=leftouter hint.strategy=shuffle (TtxLatest) on IncidentId
+| join kind=leftouter hint.strategy=shuffle (IssueCategory) on IncidentId
+| join kind=leftouter hint.strategy=shuffle (RootCausesLatest) on RootCauseId
+| join kind=leftouter hint.strategy=shuffle (RepairItems) on IncidentId
+| join kind=leftouter hint.strategy=shuffle (MonitorLookup) on $left.MonitorId == $right.MonitorGuid
+| extend IsOutage = coalesce(tobool(IsOutage), false), IsOutageActual = coalesce(tobool(IsOutageActual), false), HasTsg = coalesce(toint(HasTsg), 0), IsS360Related = coalesce(toint(IsS360Related), 0), IsAutoDetected = coalesce(toint(IsAutoDetected), 0)
+| extend TTFix = coalesce(todouble(TTFix), 0.0), TTEng = coalesce(todouble(TTEng), 0.0), TTM = coalesce(todouble(TTM), 0.0)
+| extend IncidentClass = iif(isnotempty(monitor_name), tostring(monitor_name), iif(isnotempty(MonitorId), tostring(MonitorId), 'Other'))
+| extend MonitorName = iif(IncidentClass != 'Other', IncidentClass, '')
+| extend IncidentClass = iif(IncidentType =~ 'Runner', 'Runner Monitor', IncidentClass)
+| extend Category = iif(IncidentType =~ 'Runner', iif(Title contains 'Control Path', 'Control Path Runner', iif(Title contains 'Data Path', 'Data Path Runner', iif(Title contains 'Aggregate', 'Aggregate Runner', iif(Title contains 'longrunner runner', 'LongRunning Runner', 'Other Runner')))), tostring(Category))
+| extend IsMissingRCA = iif(tolower(Status) != 'resolved', 0, iif(isempty(RootCauseId), 1, 0))
+| project IncidentId, Severity, IcmLink = BuildIncidentLink(tostring(IncidentId)), RepairItems = tostring(RepairItems), IsMissingRCA, IsOutage, IsOutageActual, RCATitle, RCADescription, IsCausedByChange, Title, LookingDate, CreateDate, ModifiedDate, MitigateDate, ResolveDate, IncidentType, OwningTeamName = OwningTeamNameShort, OwningTenantName, OwningContactAlias, RepairCount, RepairClosedCount, TTD, TTN, TTEng, TTFix, TTM, SubscriptionCount, IsAutoDetected, PostmortemTitle, PostmortemStatus, Status, HasTsg, Tags = tostring(Tags), IsS360Related, S360Link = tostring(S360Link), Category, RootCauseId, TsgId, IncidentClass, MonitorId, MonitorName
+| sort by LookingDate asc

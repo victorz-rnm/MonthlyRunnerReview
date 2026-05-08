@@ -1,0 +1,14 @@
+let QueryStartTime = datetime({{QUERY_START_TIME}});
+let EndTime = datetime({{END_TIME}});
+cluster('genevaactions').database('Production').Audit
+| where env_time >= QueryStartTime and env_time < EndTime
+| where EndpointName =~ 'Production' and ExtensionName =~ 'NRP' and AuditEventType in ('Succeeded', 'Failed')
+| where IsServiceIdentity =~ 'false' or UserIdentity =~ 'oaas-to-nrp-acis-extension-call'
+| extend UserIdentity = iif(UserIdentity =~ 'oaas-to-nrp-acis-extension-call', 'OaaSServiceAgent', 'HumanTouch')
+| where OperationName !contains 'get' and OperationName !contains 'read' and OperationName !contains 'list'
+| where IsServiceIdentity =~ 'true' or (OperationName !endswith 'OaaS' and OperationName !endswith 'TestRun')
+| parse Parameters with * 'smenrpregionparam:' Region ';;' *
+| extend RegionType = iif(Region in ('EastUS2Euap','CentralUSEuap'), 'Canary', iif(Region in ('EastUSSTG','SouthCentralUSSTG','WestUSValidation'), 'Staging', 'Prod'))
+| extend StartOfWeek = startofweek(env_time)
+| project PreciseTimeStamp = env_time, StartOfWeek, OperationName, Region, UserIdentity, IsServiceIdentity, IsOperationReadWrite, AuditEventType, RegionType
+| sort by PreciseTimeStamp asc

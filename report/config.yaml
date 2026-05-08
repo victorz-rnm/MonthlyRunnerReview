@@ -1,0 +1,74 @@
+report:
+  title: Runner Review
+  owner: NCP Quality
+  default_trend_days: 180
+  timezone: UTC
+
+teams:
+  xinyan_team_ids:
+  - "10549"
+  - "10661"
+  - "67334"
+  - "82812"
+  - "42690"
+  - "75939"
+  - "68685"
+  - "105484"
+  - "10475"
+  - "93543"
+  - "82813"
+  - "60163"
+  - "114480"
+  - "135033"
+  - "151109"
+  - "140105"
+  acknowledge_team_ids:
+  - "10549"
+  - "10661"
+  - "67334"
+  - "82812"
+  - "42690"
+  - "75939"
+  - "68685"
+  - "10475"
+  - "60163"
+  - "114480"
+  - "135033"
+  - "39447"
+  - "150283"
+  - "110503"
+  - "151109"
+  - "140105"
+  runner_team_id: "39447"
+
+queries:
+  runner_sev2_detail:
+    enabled: true
+    cluster_uri: https://icmcluster.kusto.windows.net
+    database: IcMDataWarehouse
+    template: kql/runner_sev2_detail.kql
+  cri_outage_detail:
+    enabled: true
+    cluster_uri: https://icmcluster.kusto.windows.net
+    database: IcMDataWarehouse
+    template: kql/cri_outage_detail.kql
+  livesite_detail:
+    enabled: true
+    cluster_uri: https://icmcluster.kusto.windows.net
+    database: IcMDataWarehouse
+    template: kql/livesite_detail.kql
+  dri_acknowledge_detail:
+    enabled: true
+    cluster_uri: https://icmcluster.kusto.windows.net
+    database: IcMDataWarehouse
+    template: kql/dri_acknowledge_detail.kql
+  proactive_linkage_detail:
+    enabled: true
+    cluster_uri: https://icmcluster.kusto.windows.net
+    database: IcMDataWarehouse
+    template: kql/proactive_linkage_detail.kql
+  oaas_human_touch:
+    enabled: false
+    cluster_uri: https://genevaactions.kusto.windows.net
+    database: Production
+    template: kql/oaas_human_touch.kql

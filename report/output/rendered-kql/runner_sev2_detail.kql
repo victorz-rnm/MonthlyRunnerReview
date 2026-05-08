@@ -1,0 +1,127 @@
+let QueryStartTime = datetime(2025-11-02T00:00:00Z);
+let EndTime = datetime(2026-05-01T00:00:00Z);
+let XinyanTeamIds = dynamic(['10549','10661','67334','82812','42690','75939','68685','105484','10475','93543','82813','60163','114480','135033','151109','140105']);
+let RunnerTeamId = '39447';
+let RunnerFrameworkPhases = dynamic(['RefreshClientTokenAsync','PreDeploymentActions']);
+let DeploymentPhases = dynamic(['CreateRg','InitialDeployment','RGCreation','Redeployment','ValidateARMTemplate']);
+let DeletingRgPhases = dynamic(['DeletePEBeforeRGDeletion','DeletePLSBeforeRGDeletion','DeleteRG','DeleteRg']);
+let ExcludedRelationshipTypes = dynamic(['RESPONSIBLE','DUPLICATE']);
+let BuildIncidentLink = (incidentId:string) { strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', incidentId, '/summary') };
+let GetSimpleTeamName = (fullName:string) {
+    let parts = split(fullName, '\\');
+    iif(array_length(parts) > 1, tostring(parts[1]), fullName)
+};
+let CleanHtmlToText = (html:string) {
+    let s1 = replace_string(html, '&amp;nbsp;', ' ');
+    let s2 = replace_string(s1, '&amp;amp;', '&');
+    let s3 = replace_string(s2, '&amp;quot;', '"');
+    let s4 = replace_string(s3, '&amp;#39;', "'");
+    let s5 = replace_string(s4, '&amp;lt;', '<');
+    let s6 = replace_string(s5, '&amp;gt;', '>');
+    let s7 = replace_string(s6, '&nbsp;', ' ');
+    let s8 = replace_string(s7, '&quot;', '"');
+    let s9 = replace_string(s8, '&apos;', "'");
+    let s10 = replace_string(s9, '&lt;', '<');
+    let s11 = replace_string(s10, '&gt;', '>');
+    let s12 = replace_regex(s11, '<!--.*?-->', '');
+    let s13 = replace_regex(s12, '<[^>]+>', '');
+    trim(' ', replace_regex(s13, '\\s+', ' '))
+};
+let OriginalRunnerIncidentIds = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').Incidents
+    | where CreateDate >= QueryStartTime and CreateDate < EndTime
+    | where (CorrelationId startswith 'SDNRunners-HitCount' and Title has 'control path') or Title startswith '[RunnerICM Aggregation CP]'
+    | summarize arg_min(ModifiedDate, OwningTeamId, Severity) by IncidentId
+    | where Severity in (2, 25)
+    | where OwningTeamId in (XinyanTeamIds)
+    | project IncidentId
+);
+let ExcludedChildIncidentIds = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
+    | where ChildIncidentId in (OriginalRunnerIncidentIds)
+    | where RelationshipType in (ExcludedRelationshipTypes)
+    | summarize arg_max(Lens_IngestionTime, *) by RelationshipId
+    | where IsTombstoned == false
+    | distinct ChildIncidentId
+);
+let BaseIncidents = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where IncidentId in (OriginalRunnerIncidentIds)
+    | join kind=leftanti (ExcludedChildIncidentIds) on $left.IncidentId == $right.ChildIncidentId
+    | extend
+        NormalRunnerName = extract(@'Runner Name:\s*(.*?)\s+Region:\s*', 1, Title),
+        NormalRegion = extract(@'Region:\s*(.*?)\s+Instance:\s*', 1, Title),
+        NormalRunnerInstance = extract(@'Instance:\s*(.*?)\s+Phase:\s*', 1, Title),
+        NormalPhase = extract(@'Phase:\s*(.*)$', 1, Title),
+        Agg3Region = extract(@'\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]', 1, Title),
+        Agg3RunnerName = extract(@'\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]', 2, Title),
+        Agg3RunnerInstance = extract(@'\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]', 3, Title),
+        Agg2Region = extract(@'\[Aggregate\]\[[^\]]+\]\[\s*([^/\]]+?)\s*/\s*([^\]]+?)\s*\]', 2, Title),
+        CpRegion = extract(@'\[RunnerICM Aggregation CP\]\s*\[Region:\s*([^\]]+?)\]', 1, Title)
+    | extend
+        RunnerName = case(isnotempty(NormalRunnerName), NormalRunnerName, isnotempty(Agg3RunnerName), Agg3RunnerName, Title startswith '[RunnerICM Aggregation CP]', 'RunnerICM Aggregation CP', 'Unknown'),
+        RunnerInstance = case(isnotempty(NormalRunnerInstance), NormalRunnerInstance, isnotempty(Agg3RunnerInstance), Agg3RunnerInstance, ''),
+        Region = case(isnotempty(NormalRegion), NormalRegion, isnotempty(Agg3Region), Agg3Region, isnotempty(Agg2Region), Agg2Region, isnotempty(CpRegion), CpRegion, ''),
+        Phase = iif(isnotempty(NormalPhase), NormalPhase, 'AggregatedPhase'),
+        LookingDate = coalesce(ResolveDate, MitigateDate, CreateDate)
+    | extend FailureType = case(
+        Phase in (RunnerFrameworkPhases), 'Runner Phase',
+        Phase in (DeploymentPhases), 'Deployment',
+        Phase in (DeletingRgPhases), 'Delete RG',
+        Phase =~ 'AggregatedPhase', 'AggregatedPhase',
+        'Testing Failure')
+    | project IncidentId, IcmLink = BuildIncidentLink(tostring(IncidentId)), LookingDate, CreateDate, ModifiedDate, MitigateDate, ResolveDate, MonitorId, RoutingId, OwningTenantId, OwningTenantName, OwningTeamId, OwningTeamName, OwningContactAlias, Severity, Status, Title, RootCauseId, ResponsibleTeamName, ResponsibleTeamId, Tags, RunnerName, RunnerInstance, Region, Phase, FailureType, HowFixed, Mitigation, CorrelationId
+);
+let IncidentIds = materialize(BaseIncidents | distinct IncidentId);
+let RepairItemsByIncident = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentBugs
+    | where IncidentId in (IncidentIds)
+    | summarize arg_max(ModifiedDate, ExternalId) by IncidentId, ExternalId
+    | summarize RepairItems = make_set(ExternalId) by IncidentId
+);
+let AutoCorrelationByIncident = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentDescriptions
+    | where Date >= QueryStartTime and Date < EndTime
+    | where IncidentId in (IncidentIds)
+    | where ChangedBy == 'IcmAutoCorrelation'
+    | summarize IcmAutoCorrelation = max(1) by IncidentId
+);
+let SeverityDowngradeByIncident = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentHistory
+    | where ChangeDate >= QueryStartTime and ChangeDate < EndTime
+    | where IncidentId in (IncidentIds)
+    | where ChangeCategories =~ '["Edit","SeverityDowngrade"]'
+    | summarize arg_max(ChangeDate, ChangedBy) by IncidentId
+    | extend SeverityDowngradeType = case(ChangedBy =~ 'CN=networking-autotriage.azure.com', 'Auto-Triage', ChangedBy =~ 'Automation' or ChangedBy =~ 'gautosvc', 'Automation', 'DRI')
+    | extend SeverityDowngradeBy = iif(SeverityDowngradeType != 'DRI', SeverityDowngradeType, ChangedBy)
+    | project IncidentId, SeverityDowngradeBy, SeverityDowngradeType
+);
+let RootCauseIds = materialize(BaseIncidents | where isnotempty(RootCauseId) | distinct RootCauseId);
+let RootCausesLatest = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').RootCauses
+    | where RootCauseId in (RootCauseIds)
+    | summarize arg_max(ModifiedDate, Title, Description, IsCausedByChange) by RootCauseId
+    | project RootCauseId, RCATitle = Title, RCADescription = CleanHtmlToText(Description), IsCausedByChange
+);
+let RunnerMetadata = materialize(
+    cluster('aznwsdn').database('aznwmds').MetricTelemetry
+    | where name == 'E2ERunnersDeployMetric'
+    | where isnotempty(RunnerFlavor) and isnotempty(SubscriptionId)
+    | summarize arg_max(PreciseTimeStamp, Region, SubscriptionId, RunnerFlavor) by RunnerInstanceName
+    | project RunnerInstanceName, RunnerFlavor, SubscriptionId
+);
+BaseIncidents
+| join kind=leftouter hint.strategy=shuffle (RepairItemsByIncident) on IncidentId
+| join kind=leftouter hint.strategy=shuffle (AutoCorrelationByIncident) on IncidentId
+| join kind=leftouter hint.strategy=shuffle (SeverityDowngradeByIncident) on IncidentId
+| join kind=leftouter hint.strategy=shuffle (RootCausesLatest) on RootCauseId
+| join kind=leftouter hint.strategy=shuffle (RunnerMetadata) on $left.RunnerInstance == $right.RunnerInstanceName
+| extend rawTags = parse_json(Tags)
+| extend IsTriaged = iif(isnotempty(RootCauseId) or array_length(rawTags) > 0 or OwningTeamId == RunnerTeamId or HowFixed in ('Transient', 'External') or (isnotempty(RepairItems) and array_length(RepairItems) > 0) or isnotempty(SeverityDowngradeBy), 1, 0)
+| extend IsMissingRCA = iif(tolower(Status) != 'resolved', 0, iif(isempty(RootCauseId) and (isempty(RepairItems) or array_length(RepairItems) == 0), 1, 0))
+| extend InactiveInDays = iif(Status =~ 'active', datetime_diff('day', now(), ModifiedDate), 0)
+| extend StartOfWeek = startofweek(CreateDate), OwningTeamName = GetSimpleTeamName(OwningTeamName)
+| extend FinalTeamGroup = case(OwningTeamId == RunnerTeamId, 'Runner Team', OwningTeamId in (XinyanTeamIds), 'Xinyan Team', 'Other Teams')
+| extend TestPhase = case(Phase =~ 'ValidateARMTemplate', 'ValidateARMTemplate', Phase in (DeploymentPhases), 'Deployment RG', Phase in (DeletingRgPhases), 'Delete RG', 'Others')
+| project IncidentId, IcmLink, IsMissingRCA, IsTriaged, StartOfWeek, LookingDate, CreateDate, ModifiedDate, MitigateDate, ResolveDate, MonitorId, RoutingId, OwningTenantId, OwningTenantName, OwningTeamId, OwningTeamName, OwningContactAlias, Severity, Status, InactiveInDays, Title, RootCauseId, RCATitle, RCADescription, ResponsibleTeamName, ResponsibleTeamId, Tags = tostring(Tags), RunnerName, RunnerInstance, Region, Phase, TestPhase, RunnerFlavor, SubscriptionId, FailureType, IcmAutoCorrelation = coalesce(IcmAutoCorrelation, 0), HowFixed, Mitigation = CleanHtmlToText(Mitigation), RepairItems = tostring(RepairItems), SeverityDowngradeBy = coalesce(SeverityDowngradeBy, 'N/A'), SeverityDowngradeType = coalesce(SeverityDowngradeType, 'N/A'), FinalTeamGroup
+| sort by CreateDate asc

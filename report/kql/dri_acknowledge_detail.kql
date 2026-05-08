@@ -1,0 +1,46 @@
+let QueryStartTime = datetime({{QUERY_START_TIME}});
+let EndTime = datetime({{END_TIME}});
+let AcknowledgeTeamIds = {{ACK_TEAM_IDS}};
+let HistoryStartTime = QueryStartTime - 365d;
+let BuildIncidentLink = (incidentId:string) { strcat('https://portal.microsofticm.com/imp/v5/incidents/details/', incidentId, '/summary') };
+let SevIncidentIds = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').Incidents
+    | where CreateDate >= HistoryStartTime and CreateDate < EndTime
+    | where OwningTeamId in (AcknowledgeTeamIds)
+    | where Severity in (2, 25)
+    | distinct IncidentId
+);
+let LatestIncidents = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
+    | where IncidentId in (SevIncidentIds)
+    | project IncidentId, CreateDate, Severity, Status, ChildCount, OwningTeamName, OwningContactAlias, Title, IncidentType, CorrelationId
+);
+let TeamLookup = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').TeamsSnapshotV2()
+    | where tostring(TeamId) in (AcknowledgeTeamIds)
+    | project AcknowledgeTeamId = tostring(TeamId), AcknowledgeTeamName = TeamName, TenantName
+);
+let AcknowledgeBase = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').Notifications
+    | where ModifiedDate >= HistoryStartTime and ModifiedDate < EndTime + 30d
+    | where IncidentId in (SevIncidentIds)
+    | where AcknowledgeDate >= QueryStartTime and AcknowledgeDate < EndTime
+    | where PrimaryTargetType == 'TEAMID'
+    | where isnotempty(PrimaryTarget) and isnotempty(AcknowledgeContactAlias)
+    | where Notes in ('Incident Transferred', 'Severity Upgraded')
+    | where PrimaryTarget in (AcknowledgeTeamIds)
+    | project IncidentId, AcknowledgeDate, AcknowledgeTeamId = tostring(PrimaryTarget), AcknowledgeContactAlias, AckType = tostring(Notes)
+    | distinct IncidentId, AcknowledgeDate, AcknowledgeTeamId, AcknowledgeContactAlias, AckType
+    | join kind=leftouter (TeamLookup) on AcknowledgeTeamId
+    | extend AcknowledgeDateInDate = format_datetime(AcknowledgeDate, 'yyyy-MM-dd')
+);
+LatestIncidents
+| join kind=inner (AcknowledgeBase) on IncidentId
+| extend IcmType = case(
+    CorrelationId startswith 'SDNRunners-HitCount' or Title has_all ('Runner Name:', 'Region:', 'Instance:'), 'Runner',
+    Title startswith '[SdnRunner Proactive] Failed Signature:', 'NCPQuality-Proactive',
+    IncidentType =~ 'CustomerReported' or IncidentType =~ 'Customer Reported', 'CRI',
+    'LiveSite')
+| where (IcmType in ('Runner', 'CRI', 'LiveSite') and AckType =~ 'Incident Transferred') or (IcmType == 'NCPQuality-Proactive' and AckType in ('Incident Transferred', 'Severity Upgraded'))
+| project IncidentId, CreateDate, IcmType, Severity, Status, ChildCount, OwningTeamName, OwningContactAlias, Title, AcknowledgeTeamId, AcknowledgeTeamName, TenantName, AcknowledgeDateInDate, AcknowledgeDate, AcknowledgeContactAlias, IcmLink = BuildIncidentLink(tostring(IncidentId)), AckType
+| sort by AcknowledgeDate asc

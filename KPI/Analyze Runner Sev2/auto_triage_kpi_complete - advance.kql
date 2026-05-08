@@ -1,0 +1,271 @@
+let lookBackRange = ago(90d);
+let targetSeverities = dynamic([2, 25]);
+let targetTeamIds = dynamic([
+    '10549', '10661', '67334', '82812', '42690', '75939', '68685',
+    '105484', '10475', '93543', '82813', '60163', '114480', '135033',
+    '151109', '140105'
+]);
+// Event constants
+let transferHappened = 'Transferred incident';
+let linkHappened = 'Add or update incident relationship';
+let transferredByAutoTriage = 'AzNetBot';
+let changedByAutoTriage = 'CN=networking-autotriage.azure.com';
+// Phase 1: candidate IDs = incidents that EVER matched target team+severity in the lookback
+let CandidateIncidentIds = materialize(
+    Incidents
+    | where CreateDate > lookBackRange
+    | where OwningTeamId in (targetTeamIds)
+    | where Severity in (targetSeverities)
+    | distinct IncidentId
+);
+// -------------------------------------
+// 1) Eligible incident denominator
+// -------------------------------------
+// Use the earliest known row per incident so the denominator reflects the
+// incident's original queue / severity rather than the latest state.
+let EligibleIncidents = materialize(
+    Incidents
+    | where CreateDate > lookBackRange
+    | where IncidentId in (CandidateIncidentIds)
+| project IncidentId, CreateDate, OwningTeamId, OwningTeamName, OwningTenantName, Severity, IncidentType, Title
+    | summarize hint.strategy=shuffle hint.num_partitions=64
+        arg_min(CreateDate, OwningTeamId, OwningTeamName, OwningTenantName, Severity, IncidentType, Title)
+      by IncidentId
+    | where OwningTeamId in (targetTeamIds)
+    | where Severity in (targetSeverities)
+    | project
+        IncidentId,
+        OriginalCreateDate = CreateDate,
+        OriginalOwningTeamId = tostring(OwningTeamId),
+        OriginalOwningTeamName = OwningTeamName,
+        OriginalOwningTenantName = OwningTenantName,
+        OriginalSeverity = Severity,
+        OriginalIncidentType = IncidentType,
+        OriginalTitle = Title
+);
+let EligibleIncidentIds = materialize(EligibleIncidents | project IncidentId);
+// -------------------------------------
+// 2) Relevant history actions only
+// -------------------------------------
+let RelevantHistory = materialize(
+    IncidentHistory
+    | where ChangeDate > lookBackRange
+    | where IncidentId in (EligibleIncidentIds)
+    | where ChangeDescription in (transferHappened, linkHappened)
+    | project
+        IncidentId,
+        ChangeDate,
+        ChangedBy,
+        ChangeDescription,
+        ChangeCategories
+);
+// -------------------------------------
+// 3) Collapse to one row per incident
+// -------------------------------------
+let IncidentActionFacts = materialize(
+    RelevantHistory
+    | summarize
+        // First auto actions
+        FirstAutoTransferAt = minif(ChangeDate, ChangedBy == transferredByAutoTriage and ChangeDescription == transferHappened),
+        FirstAutoLinkAt = minif(ChangeDate, ChangedBy == changedByAutoTriage and ChangeDescription == linkHappened),
+        // First manual corrections
+        FirstManualTransferAt = minif(ChangeDate, ChangedBy != transferredByAutoTriage and ChangeDescription == transferHappened),
+        FirstManualRelationshipUpdateAt = minif(ChangeDate, ChangedBy != changedByAutoTriage and ChangeDescription == linkHappened),
+        // Optional volume counters (helpful for drill-down)
+        AutoTransferEventCount = countif(ChangedBy == transferredByAutoTriage and ChangeDescription == transferHappened),
+        AutoLinkEventCount = countif(ChangedBy == changedByAutoTriage and ChangeDescription == linkHappened),
+        ManualTransferEventCount = countif(ChangedBy != transferredByAutoTriage and ChangeDescription == transferHappened),
+        ManualRelationshipUpdateEventCount = countif(ChangedBy != changedByAutoTriage and ChangeDescription == linkHappened)
+    by IncidentId
+    | extend
+        HasAutoTransfer = toint(isnotempty(FirstAutoTransferAt)),
+        HasAutoLink = toint(isnotempty(FirstAutoLinkAt)),
+        HasAnyAutoAction = toint(isnotempty(FirstAutoTransferAt) or isnotempty(FirstAutoLinkAt)),
+        // Earliest / latest auto action timestamps
+        FirstAutoActionAt = case(
+            isnotempty(FirstAutoTransferAt) and isnotempty(FirstAutoLinkAt), iif(FirstAutoTransferAt < FirstAutoLinkAt, FirstAutoTransferAt, FirstAutoLinkAt),
+            isnotempty(FirstAutoTransferAt), FirstAutoTransferAt,
+            FirstAutoLinkAt
+        ),
+        LatestAutoActionAt = case(
+            isnotempty(FirstAutoTransferAt) and isnotempty(FirstAutoLinkAt), iif(FirstAutoTransferAt > FirstAutoLinkAt, FirstAutoTransferAt, FirstAutoLinkAt),
+            isnotempty(FirstAutoTransferAt), FirstAutoTransferAt,
+            FirstAutoLinkAt
+        )
+    | extend
+        // Rework / correction signals
+        HasManualTransferAfterAuto = toint(isnotempty(FirstManualTransferAt) and isnotempty(FirstAutoActionAt) and FirstManualTransferAt > FirstAutoActionAt),
+        HasManualRelationshipUpdateAfterAuto = toint(isnotempty(FirstManualRelationshipUpdateAt) and isnotempty(FirstAutoActionAt) and FirstManualRelationshipUpdateAt > FirstAutoActionAt),
+        HasAnyManualCorrectionAfterAuto = toint(
+            (isnotempty(FirstManualTransferAt) and isnotempty(FirstAutoActionAt) and FirstManualTransferAt > FirstAutoActionAt)
+            or
+            (isnotempty(FirstManualRelationshipUpdateAt) and isnotempty(FirstAutoActionAt) and FirstManualRelationshipUpdateAt > FirstAutoActionAt)
+        )
+    | extend
+        // Correctness by action type
+        // If a manual transfer happens after auto transfer, treat auto transfer as incorrect.
+        AutoTransferCorrect = iif(HasAutoTransfer == 1,
+                                  iif(isnotempty(FirstManualTransferAt) and FirstManualTransferAt > FirstAutoTransferAt, 0, 1),
+                                  int(null)),
+        // If a manual relationship update happens after auto link, treat auto link as incorrect.
+        AutoLinkCorrect = iif(HasAutoLink == 1,
+                              iif(isnotempty(FirstManualRelationshipUpdateAt) and FirstManualRelationshipUpdateAt > FirstAutoLinkAt, 0, 1),
+                              int(null))
+);
+// -------------------------------------
+// 4) Latest incident state for context
+// -------------------------------------
+let LatestIncidentState = materialize(
+    IncidentsSnapshotV2
+    | where IncidentId in (EligibleIncidentIds)
+    | project
+        IncidentId,
+        CurrentStatus = Status,
+        CurrentSeverity = Severity,
+        CurrentOwningTeamId = tostring(OwningTeamId),
+        CurrentOwningTeamName = OwningTeamName,
+        CurrentOwningTenantName = OwningTenantName,
+        CurrentIncidentType = IncidentType,
+        CurrentTitle = Title,
+        ParentIncidentId,
+        ModifiedDate,
+        ResolveDate,
+        MitigateDate
+);
+// -------------------------------------
+// 5) Incident-level KPI dataset
+// -------------------------------------
+let IncidentLevelKpi = materialize(
+    EligibleIncidents
+    | join kind=leftouter IncidentActionFacts on IncidentId
+    | join kind=leftouter LatestIncidentState on IncidentId
+    | extend
+        TransferLatencySeconds = iif(isnotempty(FirstAutoTransferAt), datetime_diff('second', FirstAutoTransferAt, OriginalCreateDate), long(null)),
+        LinkLatencySeconds = iif(isnotempty(FirstAutoLinkAt), datetime_diff('second', FirstAutoLinkAt, OriginalCreateDate), long(null)),
+        FirstAutoActionLatencySeconds = iif(isnotempty(FirstAutoActionAt), datetime_diff('second', FirstAutoActionAt, OriginalCreateDate), long(null)),
+        IsStillInOriginalTeam = toint(CurrentOwningTeamId == OriginalOwningTeamId),
+        IncidentLink = strcat('https://portal.microsofticm.com/imp/v3/incidents/details/', tostring(IncidentId), '/home')
+    | project
+        IncidentId,
+        IncidentLink,
+        OriginalCreateDate,
+        OriginalOwningTeamId,
+        OriginalOwningTeamName,
+        OriginalOwningTenantName,
+        OriginalSeverity,
+        OriginalIncidentType,
+        OriginalTitle,
+        CurrentStatus,
+        CurrentSeverity,
+        CurrentOwningTeamId,
+        CurrentOwningTeamName,
+        CurrentOwningTenantName,
+        CurrentIncidentType,
+        CurrentTitle,
+        ParentIncidentId,
+        ModifiedDate,
+        MitigateDate,
+        ResolveDate,
+        HasAutoTransfer,
+        HasAutoLink,
+        HasAnyAutoAction,
+        AutoTransferCorrect,
+        AutoLinkCorrect,
+        HasManualTransferAfterAuto,
+        HasManualRelationshipUpdateAfterAuto,
+        HasAnyManualCorrectionAfterAuto,
+        FirstAutoTransferAt,
+        FirstAutoLinkAt,
+        FirstManualTransferAt,
+        FirstManualRelationshipUpdateAt,
+        FirstAutoActionAt,
+        TransferLatencySeconds,
+        LinkLatencySeconds,
+        FirstAutoActionLatencySeconds,
+        AutoTransferEventCount,
+        AutoLinkEventCount,
+        ManualTransferEventCount,
+        ManualRelationshipUpdateEventCount,
+        IsStillInOriginalTeam
+);
+// -------------------------------------
+// 6) Team-level KPI rollup
+// -------------------------------------
+let TeamLevelKpi = materialize(
+    IncidentLevelKpi
+    | summarize
+        EligibleIncidentCount = count(),
+        AutoTransferCount = countif(HasAutoTransfer == 1),
+        AutoLinkCount = countif(HasAutoLink == 1),
+        AutoAnyActionCount = countif(HasAnyAutoAction == 1),
+        AutoTransferCorrectCount = countif(AutoTransferCorrect == 1),
+        AutoLinkCorrectCount = countif(AutoLinkCorrect == 1),
+        AutoTransferIncorrectCount = countif(AutoTransferCorrect == 0),
+        AutoLinkIncorrectCount = countif(AutoLinkCorrect == 0),
+        ReworkCount = countif(HasAnyManualCorrectionAfterAuto == 1),
+        ManualTransferAfterAutoCount = countif(HasManualTransferAfterAuto == 1),
+        ManualRelationshipUpdateAfterAutoCount = countif(HasManualRelationshipUpdateAfterAuto == 1),
+        TransferLatencyP50Sec = percentile(TransferLatencySeconds, 50),
+        TransferLatencyP95Sec = percentile(TransferLatencySeconds, 95),
+        LinkLatencyP50Sec = percentile(LinkLatencySeconds, 50),
+        LinkLatencyP95Sec = percentile(LinkLatencySeconds, 95),
+        FirstAutoActionLatencyP50Sec = percentile(FirstAutoActionLatencySeconds, 50),
+        FirstAutoActionLatencyP95Sec = percentile(FirstAutoActionLatencySeconds, 95)
+    by OriginalOwningTeamId, OriginalOwningTeamName, OriginalOwningTenantName
+    | extend
+        AutoTransferCoveragePct = todouble(AutoTransferCount) / EligibleIncidentCount,
+        AutoLinkCoveragePct = todouble(AutoLinkCount) / EligibleIncidentCount,
+        AutoAnyCoveragePct = todouble(AutoAnyActionCount) / EligibleIncidentCount,
+        AutoTransferCorrectnessPct = iif(AutoTransferCount > 0, todouble(AutoTransferCorrectCount) / AutoTransferCount, real(null)),
+        AutoLinkCorrectnessPct = iif(AutoLinkCount > 0, todouble(AutoLinkCorrectCount) / AutoLinkCount, real(null)),
+        ReworkRatePct = iif(AutoAnyActionCount > 0, todouble(ReworkCount) / AutoAnyActionCount, real(null)),
+        ManualTransferAfterAutoPct = iif(AutoAnyActionCount > 0, todouble(ManualTransferAfterAutoCount) / AutoAnyActionCount, real(null)),
+        ManualRelationshipUpdateAfterAutoPct = iif(AutoAnyActionCount > 0, todouble(ManualRelationshipUpdateAfterAutoCount) / AutoAnyActionCount, real(null))
+);
+// -------------------------------------
+// 7) Overall KPI rollup
+// -------------------------------------
+let OverallKpi = materialize(
+    IncidentLevelKpi
+    | summarize
+        EligibleIncidentCount = count(),
+        AutoTransferCount = countif(HasAutoTransfer == 1),
+        AutoLinkCount = countif(HasAutoLink == 1),
+        AutoAnyActionCount = countif(HasAnyAutoAction == 1),
+        AutoTransferCorrectCount = countif(AutoTransferCorrect == 1),
+        AutoLinkCorrectCount = countif(AutoLinkCorrect == 1),
+        AutoTransferIncorrectCount = countif(AutoTransferCorrect == 0),
+        AutoLinkIncorrectCount = countif(AutoLinkCorrect == 0),
+        ReworkCount = countif(HasAnyManualCorrectionAfterAuto == 1),
+        ManualTransferAfterAutoCount = countif(HasManualTransferAfterAuto == 1),
+        ManualRelationshipUpdateAfterAutoCount = countif(HasManualRelationshipUpdateAfterAuto == 1),
+        TransferLatencyP50Sec = percentile(TransferLatencySeconds, 50),
+        TransferLatencyP95Sec = percentile(TransferLatencySeconds, 95),
+        LinkLatencyP50Sec = percentile(LinkLatencySeconds, 50),
+        LinkLatencyP95Sec = percentile(LinkLatencySeconds, 95),
+        FirstAutoActionLatencyP50Sec = percentile(FirstAutoActionLatencySeconds, 50),
+        FirstAutoActionLatencyP95Sec = percentile(FirstAutoActionLatencySeconds, 95)
+    | extend
+        AutoTransferCoveragePct = todouble(AutoTransferCount) / EligibleIncidentCount,
+        AutoLinkCoveragePct = todouble(AutoLinkCount) / EligibleIncidentCount,
+        AutoAnyCoveragePct = todouble(AutoAnyActionCount) / EligibleIncidentCount,
+        AutoTransferCorrectnessPct = iif(AutoTransferCount > 0, todouble(AutoTransferCorrectCount) / AutoTransferCount, real(null)),
+        AutoLinkCorrectnessPct = iif(AutoLinkCount > 0, todouble(AutoLinkCorrectCount) / AutoLinkCount, real(null)),
+        ReworkRatePct = iif(AutoAnyActionCount > 0, todouble(ReworkCount) / AutoAnyActionCount, real(null)),
+        ManualTransferAfterAutoPct = iif(AutoAnyActionCount > 0, todouble(ManualTransferAfterAutoCount) / AutoAnyActionCount, real(null)),
+        ManualRelationshipUpdateAfterAutoPct = iif(AutoAnyActionCount > 0, todouble(ManualRelationshipUpdateAfterAutoCount) / AutoAnyActionCount, real(null))
+);
+// ============================================================
+// RESULT SET 1: incident-level detail
+// ============================================================
+IncidentLevelKpi
+| order by OriginalCreateDate asc;
+// ============================================================
+// RESULT SET 2: team-level KPI rollup
+// ============================================================
+TeamLevelKpi
+| order by OriginalOwningTeamName asc;
+// ============================================================
+// RESULT SET 3: overall KPI rollup
+// ============================================================
+OverallKpi

@@ -8,6 +8,7 @@ let ControlPathRunnerChildIncidents = materialize(
     | where Title has 'control' and Title has 'path'
     | parse Title with * 'Runner Name: AzNetToolsRunners.' RunnerName ' Region: ' Region ' Instance: ' RunnerInstance ' Phase: ' Phase
     | where isnotempty(Phase)
+    | where Region !contains 'china' and Region !contains 'usdod' and Region !contains 'usgov'
     | project RunnerIncidentId = IncidentId
 );
 let ControlPathRunnerChildIncidentIds = ControlPathRunnerChildIncidents | project RunnerIncidentId;

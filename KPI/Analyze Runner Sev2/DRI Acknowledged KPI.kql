@@ -108,9 +108,5 @@ latestIncidents
     AcknowledgeContactAlias,
     IcmLink = BuildIncidentLink(tostring(IncidentId)),
     AckType
-| sort by CreateDate asc, AcknowledgeDate asc;
-xinyanTeamSev2IncidentIds;
-teamLookup;
-acknowledgeBase;
-latestIncidents
+| sort by CreateDate asc, AcknowledgeDate asc
 

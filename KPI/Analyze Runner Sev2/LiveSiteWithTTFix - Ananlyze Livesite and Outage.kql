@@ -49,7 +49,7 @@ let baseCandidates = materialize(
     cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
     | where ModifiedDate > lookbackWindow
     | where OwningTeamId in (owningTeamIds)
-    | where Severity <= 2
+    | where Severity in (0,1,2,25)
     | where IncidentType =~ 'LiveSite' or IsOutage == 1
     // Preserve your runner labeling logic
     | extend IncidentType = iif(CorrelationId contains "sdnrunners-hitcount", "Runner", IncidentType)

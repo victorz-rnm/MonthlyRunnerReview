@@ -113,12 +113,15 @@ COLUMN_DEFINITIONS: dict[str, list[tuple[str, str]]] = {
         ("Target", "The expected threshold or preferred direction for the metric."),
         ("Previous", "Value from the previous comparison period."),
         ("Current", "Value from the current reporting period; highlighted for scan reading."),
-        ("Delta", "Current value minus previous value. Rates are shown in percentage points."),
-        ("Status", "Badge based on the target or preferred direction."),
+        ("Adjusted Current", "Current value recalculated after excluding current-period non-success rows marked HasExistingParent already."),
+        ("Delta", "Raw Current value minus Previous value. Rates are shown in percentage points."),
+        ("Status", "Badge evaluated from Adjusted Current when present; raw Current remains visible for audit."),
+        ("Comment", "Reviewer-facing explanation for the current-period result or the rate change."),
     ],
     "summary": [
         ("Month", "The reporting period represented by the row."),
         ("Total CP", "Count of Control Path Runner Sev2/2.5 child incidents in the period."),
+        ("Adjusted Total CP", "Current-period denominator after excluding non-success rows marked HasExistingParent already; shown only for the current period."),
         ("Succeeded", "Linked plus found-parent rows. These are counted as proactive success."),
         ("Linked", "Rows with formal duplicate relationship evidence to a proactive parent incident."),
         ("Found parent", "Rows where proactive parent evidence was found in the child incident description, even if IcM blocked creating the formal child link."),
@@ -126,6 +129,7 @@ COLUMN_DEFINITIONS: dict[str, list[tuple[str, str]]] = {
         ("Failure - database down", "Rows whose proactive triage evidence indicates the Eureka database was down or unavailable."),
         ("Not linked", "Runner child incidents with no proactive parent evidence found."),
         ("Success %", "Succeeded divided by Total CP."),
+        ("Adjusted Success %", "Current-period success rate after excluding HasExistingParent already rows from the denominator."),
         ("Scan attempt %", "Rows with any proactive result other than Not linked, divided by Total CP."),
     ],
     "parent_coverage": [
@@ -161,6 +165,7 @@ COLUMN_DEFINITIONS: dict[str, list[tuple[str, str]]] = {
         ("Date", "Evidence date when available; otherwise the runner child incident date."),
         ("Existing Parent", "Whether the runner child incident already had any IcM parent."),
         ("Team", "Owning team for the runner child incident."),
+        ("Comment", "Reason assigned by report logic, such as HasExistingParent already."),
         ("Title", "Trimmed runner child incident title for context."),
     ],
     "succeeded": [
@@ -381,6 +386,71 @@ def clean_result(value: Any) -> str:
     return aliases.get(result.replace(" ", "").lower(), result)
 
 
+def flag_enabled(value: Any) -> bool:
+    return text_value(value, "0") in {"1", "True", "true", "yes", "Yes"}
+
+
+def proactive_comment(row) -> str:
+    if flag_enabled(row.get("HasExistingParent")):
+        return "HasExistingParent already"
+    result = clean_result(row.get("LinkResult"))
+    if result == "DatabaseDown":
+        return "Failure - database down"
+    if result == "ProactiveFailed":
+        return "Failure - others"
+    if result == "NotLinked":
+        return "No proactive parent found"
+    return "Proactive linked"
+
+
+def comment_summary(frame) -> str:
+    if frame.empty:
+        return "No current rows."
+    counts = frame.apply(proactive_comment, axis=1).value_counts()
+    order = [
+        "HasExistingParent already",
+        "No proactive parent found",
+        "Failure - database down",
+        "Failure - others",
+        "Proactive linked",
+    ]
+    parts = [f"{int(counts[comment])} {comment}" for comment in order if comment in counts]
+    return "; ".join(parts) if parts else "No current comment bucket."
+
+
+def adjusted_exclusion_mask(frame):
+    if frame.empty:
+        return frame.index.to_series().map(lambda _: False)
+    non_success = ~frame["LinkResult"].map(clean_result).isin(SUCCESS_RESULTS)
+    existing_parent = frame.apply(proactive_comment, axis=1) == "HasExistingParent already"
+    return non_success & existing_parent
+
+
+def adjusted_current_frame(frame):
+    if frame.empty:
+        return frame
+    return frame.loc[~adjusted_exclusion_mask(frame)].copy()
+
+
+def success_drop_comment(current_frame, previous_metrics: dict[str, Any], current_metrics: dict[str, Any]) -> str:
+    if current_frame.empty:
+        return "No current rows."
+    non_success = current_frame[~current_frame["LinkResult"].map(clean_result).isin(SUCCESS_RESULTS)].copy()
+    summary = comment_summary(non_success)
+    adjusted_frame = adjusted_current_frame(current_frame)
+    adjusted_metrics = build_metrics(adjusted_frame)
+    excluded_count = int(adjusted_exclusion_mask(current_frame).sum())
+    adjusted_note = f"Adjusted Current excludes {excluded_count} HasExistingParent already rows ({adjusted_metrics['successful']}/{adjusted_metrics['total']} = {format_rate(adjusted_metrics['success_rate'])})."
+    previous_rate = previous_metrics["success_rate"]
+    current_rate = current_metrics["success_rate"]
+    if previous_rate is None or current_rate is None:
+        return f"Non-success drivers: {summary}. {adjusted_note}"
+    delta = current_rate - previous_rate
+    if delta < 0:
+        return f"Down {abs(delta):.1f}pp vs previous period; non-success drivers: {summary}. {adjusted_note}"
+    return f"No decrease vs previous period; non-success drivers: {summary}. {adjusted_note}"
+
+
 def normalize_frame(frame):
     pd = ensure_pandas()
     if frame is None or frame.empty:
@@ -478,6 +548,18 @@ def rate_status(rate: float | None, target: float) -> str:
     return status_badge("in focus", "red")
 
 
+def adjusted_rate_status(adjusted_rate: float | None, previous_rate: float | None, target: float) -> str:
+    if adjusted_rate is None:
+        return status_badge("no data", "gray")
+    if adjusted_rate >= target:
+        return status_badge("on target", "green")
+    if previous_rate is not None and adjusted_rate >= previous_rate - 1.0:
+        return status_badge("adjusted stable", "green")
+    if adjusted_rate >= max(0.0, target - 15.0):
+        return status_badge("trending", "yellow")
+    return status_badge("in focus", "red")
+
+
 def lower_is_better_status(current: int, previous: int) -> str:
     if current == 0:
         return status_badge("clear", "green")
@@ -513,7 +595,7 @@ def icm_anchor(incident_id: Any, link: Any = None) -> str:
 
 
 def yes_no(value: Any) -> str:
-    return "Yes" if text_value(value, "0") in {"1", "True", "true", "yes", "Yes"} else "No"
+    return "Yes" if flag_enabled(value) else "No"
 
 
 def row_date_text(row, *columns: str) -> str:
@@ -551,9 +633,11 @@ def column_definitions(key: str) -> str:
     return f'<div class="column-definitions"><div class="definition-title">Column definitions</div><dl>{rows}</dl></div>'
 
 
-def build_overview_table(previous_metrics: dict[str, Any], current_metrics: dict[str, Any], target: float) -> str:
+def build_overview_table(previous_metrics: dict[str, Any], current_metrics: dict[str, Any], current_frame, target: float) -> str:
     previous_counts = previous_metrics["counts"]
     current_counts = current_metrics["counts"]
+    adjusted_metrics = build_metrics(adjusted_current_frame(current_frame))
+    adjusted_counts = adjusted_metrics["counts"]
     previous_success = previous_metrics["successful"]
     current_success = current_metrics["successful"]
     rows = [
@@ -562,46 +646,57 @@ def build_overview_table(previous_metrics: dict[str, Any], current_metrics: dict
             f"&gt; {target:.0f}%",
             format_rate(previous_metrics["success_rate"]),
             f'<span class="metric-current">{format_rate(current_metrics["success_rate"])}</span>',
+            f'<span class="metric-current">{format_rate(adjusted_metrics["success_rate"])}</span>',
             format_delta_pp(current_metrics["success_rate"], previous_metrics["success_rate"]),
-            rate_status(current_metrics["success_rate"], target),
+            adjusted_rate_status(adjusted_metrics["success_rate"], previous_metrics["success_rate"], target),
+            html.escape(success_drop_comment(current_frame, previous_metrics, current_metrics)),
         ],
         [
             "Succeeded (linked/found)",
             "higher",
             str(previous_success),
             f'<span class="metric-current">{current_success}</span>',
+            str(adjusted_metrics["successful"]),
             format_delta(current_success, previous_success),
-            higher_is_better_status(current_success, previous_success),
+            higher_is_better_status(adjusted_metrics["successful"], previous_success),
+            "Linked plus found-parent rows counted as success.",
         ],
         [
             "Failure - others",
             "0",
             str(previous_counts.get("ProactiveFailed", 0)),
             f'<span class="metric-current">{current_counts.get("ProactiveFailed", 0)}</span>',
+            str(adjusted_counts.get("ProactiveFailed", 0)),
             format_delta(current_counts.get("ProactiveFailed", 0), previous_counts.get("ProactiveFailed", 0)),
-            lower_is_better_status(current_counts.get("ProactiveFailed", 0), previous_counts.get("ProactiveFailed", 0)),
+            lower_is_better_status(adjusted_counts.get("ProactiveFailed", 0), previous_counts.get("ProactiveFailed", 0)),
+            "Non-database proactive failure bucket.",
         ],
         [
             "Failure - database down",
             "0",
             str(previous_counts.get("DatabaseDown", 0)),
             f'<span class="metric-current">{current_counts.get("DatabaseDown", 0)}</span>',
+            str(adjusted_counts.get("DatabaseDown", 0)),
             format_delta(current_counts.get("DatabaseDown", 0), previous_counts.get("DatabaseDown", 0)),
-            lower_is_better_status(current_counts.get("DatabaseDown", 0), previous_counts.get("DatabaseDown", 0)),
+            lower_is_better_status(adjusted_counts.get("DatabaseDown", 0), previous_counts.get("DatabaseDown", 0)),
+            "Database availability or credential failure bucket.",
         ],
         [
             "Not linked",
             "lower",
             str(previous_counts.get("NotLinked", 0)),
             f'<span class="metric-current">{current_counts.get("NotLinked", 0)}</span>',
+            str(adjusted_counts.get("NotLinked", 0)),
             format_delta(current_counts.get("NotLinked", 0), previous_counts.get("NotLinked", 0)),
-            lower_is_better_status(current_counts.get("NotLinked", 0), previous_counts.get("NotLinked", 0)),
+            lower_is_better_status(adjusted_counts.get("NotLinked", 0), previous_counts.get("NotLinked", 0)),
+            html.escape(comment_summary(current_frame[current_frame["LinkResult"].map(clean_result) == "NotLinked"].copy()) if not current_frame.empty else "No current not-linked rows."),
         ],
     ]
-    return table(["KPI", "Target", "Previous", "Current", "Delta", "Status"], rows)
+    return table(["KPI", "Target", "Previous", "Current", "Adjusted Current", "Delta", "Status", "Comment"], rows)
 
 
-def build_summary_table(window: KpiWindow, previous_metrics: dict[str, Any], current_metrics: dict[str, Any]) -> str:
+def build_summary_table(window: KpiWindow, previous_metrics: dict[str, Any], current_metrics: dict[str, Any], current_frame) -> str:
+    adjusted_metrics = build_metrics(adjusted_current_frame(current_frame))
     rows = []
     for label, metrics, current in [
         (window.previous_label, previous_metrics, False),
@@ -610,9 +705,12 @@ def build_summary_table(window: KpiWindow, previous_metrics: dict[str, Any], cur
         counts = metrics["counts"]
         rate = format_rate(metrics["success_rate"])
         rate_cell = f'<span class="metric-current">{rate}</span>' if current else rate
+        adjusted_total_cell = f'<span class="metric-current">{adjusted_metrics["total"]}</span>' if current else "-"
+        adjusted_rate_cell = f'<span class="metric-current">{format_rate(adjusted_metrics["success_rate"])}</span>' if current else "-"
         rows.append([
             html.escape(label),
             str(metrics["total"]),
+            adjusted_total_cell,
             str(metrics["successful"]),
             str(counts.get("Completed", 0)),
             str(counts.get("Incompleted", 0)),
@@ -620,10 +718,11 @@ def build_summary_table(window: KpiWindow, previous_metrics: dict[str, Any], cur
             str(counts.get("DatabaseDown", 0)),
             str(counts.get("NotLinked", 0)),
             rate_cell,
+            adjusted_rate_cell,
             format_rate(metrics["attempt_rate"]),
         ])
     return table(
-        ["Month", "Total CP", "Succeeded", "Linked", "Found parent", "Failure - others", "Failure - database down", "Not linked", "Success %", "Scan attempt %"],
+        ["Month", "Total CP", "Adjusted Total CP", "Succeeded", "Linked", "Found parent", "Failure - others", "Failure - database down", "Not linked", "Success %", "Adjusted Success %", "Scan attempt %"],
         rows,
     )
 
@@ -805,11 +904,11 @@ def parent_group_table(current_frame) -> str:
 
 def action_detail_table(current_frame, limit: int) -> str:
     if current_frame.empty:
-        return table(["Result", "Runner ICM", "Proactive Parent", "Sev", "Date", "Existing Parent", "Team", "Title"], [])
+        return table(["Result", "Runner ICM", "Proactive Parent", "Sev", "Date", "Existing Parent", "Team", "Comment", "Title"], [])
     priority = {"ProactiveFailed": 0, "DatabaseDown": 1, "NotLinked": 2}
     detail = current_frame[~current_frame["LinkResult"].map(clean_result).isin(SUCCESS_RESULTS)].copy()
     if detail.empty:
-        return table(["Result", "Runner ICM", "Proactive Parent", "Sev", "Date", "Existing Parent", "Team", "Title"], [])
+        return table(["Result", "Runner ICM", "Proactive Parent", "Sev", "Date", "Existing Parent", "Team", "Comment", "Title"], [])
     detail["SortPriority"] = detail["LinkResult"].map(lambda result: priority.get(clean_result(result), 9))
     detail = detail.sort_values(["SortPriority", "LinkedDate"], ascending=[True, False])
     rows = []
@@ -825,10 +924,11 @@ def action_detail_table(current_frame, limit: int) -> str:
             html.escape(date_text),
             html.escape(yes_no(row.get("HasExistingParent"))),
             html.escape(text_value(row.get("OwningTeamName"), "Unknown")),
+            html.escape(proactive_comment(row)),
             html.escape(truncate_text(row.get("RunnerTitle"), 180)),
         ])
         row_classes.append(result_css_class(result))
-    return table(["Result", "Runner ICM", "Proactive Parent", "Sev", "Date", "Existing Parent", "Team", "Title"], rows, row_classes)
+    return table(["Result", "Runner ICM", "Proactive Parent", "Sev", "Date", "Existing Parent", "Team", "Comment", "Title"], rows, row_classes)
 
 
 def succeeded_sample_table(current_frame) -> str:
@@ -900,11 +1000,12 @@ def build_html(frame, window: KpiWindow, args: argparse.Namespace, cache_file: P
     <h2 id="overview">Status Overview</h2>
     <p>Control Path Runner Sev2/2.5 incidents from {html.escape(window.previous_display_range)} compared with {html.escape(window.current_display_range)}. Success % counts proactive duplicate links plus proactive parents found through the description fallback, divided by all CP runner children in the period.</p>
     {column_definitions("overview")}
-    {build_overview_table(previous_metrics, current_metrics, args.target)}
+    {build_overview_table(previous_metrics, current_metrics, current_frame, args.target)}
+    <div class="notes"><ul><li>Proactive parent sensitivity is lower now: a proactive parent ICM is created only when the same signature appears on more than two runner instances. Previously the threshold was one runner instance. This can leave occasional one-off runner ICMs without a proactive parent link, but it does not reduce proactive aggregation for recurring runner issues.</li><li>Eureka application database access issue: for about five days, the Eureka application did not have access to the ARM debug and deployment databases. This blocked runner proactive triage for affected incidents during that window. The access issue is fixed now.</li></ul></div>
 
     <h2 id="summary">Proactive Scan Summary</h2>
     {column_definitions("summary")}
-    {build_summary_table(window, previous_metrics, current_metrics)}
+    {build_summary_table(window, previous_metrics, current_metrics, current_frame)}
     {stacked_result_svg(window, previous_metrics, current_metrics)}
 
     <h3>Parent Coverage</h3>
@@ -940,6 +1041,7 @@ def build_html(frame, window: KpiWindow, args: argparse.Namespace, cache_file: P
         <li>CSV cache: <code>{html.escape(cache_display)}</code></li>
         <li>Rendered KQL: <code>{html.escape(rendered_kql)}</code></li>
         <li>The report removes the data-explorer URL line from the source KQL, replaces <code>lookBackTm</code> with the previous-period start, and filters output to before the current-period end.</li>
+                <li>National cloud runner regions containing <code>china</code>, <code>usdod</code>, or <code>usgov</code> are excluded before KPI denominator and linkage calculations.</li>
         <li><code>Succeeded</code> combines duplicate relationship evidence (<code>Linked</code>) and description-based parent evidence (<code>Found parent</code>). <code>Failure - others</code> and <code>Failure - database down</code> come from Eureka proactive triage failure text.</li>
       </ul>
     </div>

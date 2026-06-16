@@ -35,25 +35,25 @@ let SevRunnerChildren = materialize(
     | extend HasExistingParent = iif(isnotempty(ParentIncidentId), 1, 0)
     | project RunnerIncidentId = IncidentId, HasExistingParent, IsProactivelyLinked = 0, LinkedDate = startofday(CreateDate), ChildCreateDate = startofday(CreateDate), LinkResult, RunnerTitle, OwningTeamName, Severity
 );
+let RelationshipLinkRows = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
+    | where Lens_IngestionTime >= QueryStartTime
+    | where RelationshipType =~ 'DUPLICATE'
+    | where ChildIncidentId in (ControlPathRunnerChildIncidentIds)
+    | summarize arg_max(Lens_IngestionTime, ParentIncidentId, ChildIncidentId) by ParentIncidentId, ChildIncidentId
+    | project ProactiveParentIncidentId = ParentIncidentId, RunnerIncidentId = ChildIncidentId, LinkedDate = Lens_IngestionTime
+);
 let ProactiveParentIncidentIds = materialize(
-    cluster('icmcluster').database('IcMDataWarehouse').Incidents
-    | where CreateDate >= QueryStartTime
-    | where Title startswith '[SdnRunner Proactive] Failed Signature:'
-    | where Severity in (2, 25)
-    | distinct ProactiveParentIncidentId = IncidentId
+    RelationshipLinkRows
+    | distinct ProactiveParentIncidentId
 );
 let RelationshipLinkEvidence = materialize(
     cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
     | where IncidentId in (ProactiveParentIncidentIds)
+    | where Title startswith '[SdnRunner Proactive] Failed Signature:'
+    | where Severity in (2, 25)
     | project ProactiveParentIncidentId = IncidentId, Status, ProactiveCreateDate = CreateDate, ParentIncidentId, Tags, ProactiveTitle = Title, OwningTeamName, Severity
-    | join kind=inner hint.strategy=shuffle (
-        cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
-        | where Lens_IngestionTime >= QueryStartTime
-        | where RelationshipType =~ 'DUPLICATE'
-        | where ParentIncidentId in (ProactiveParentIncidentIds)
-        | summarize arg_max(Lens_IngestionTime, ParentIncidentId, ChildIncidentId) by ParentIncidentId, ChildIncidentId
-        | project ProactiveParentIncidentId = ParentIncidentId, RunnerIncidentId = ChildIncidentId, LinkedDate = Lens_IngestionTime
-    ) on ProactiveParentIncidentId
+    | join kind=inner hint.strategy=shuffle (RelationshipLinkRows) on ProactiveParentIncidentId
     | extend HasProactiveParent = 1, IsProactivelyLinkedCompleted = 1
     | project ProactiveParentIncidentId = tostring(ProactiveParentIncidentId), RunnerIncidentId, IsProactivelyLinkedCompleted, Status, ProactiveTitle, ProactiveCreateDate, ParentIncidentId, HasProactiveParent, OwningTeamName, Severity, LinkedDate
 );

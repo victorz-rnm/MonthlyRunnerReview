@@ -34,31 +34,29 @@ let sev2OrSev25RunnerChildren = materialize (
     | extend HasExistingParent = iif(isnotempty( ParentIncidentId), 1, 0)
     | project RunnerIncidentId = IncidentId, HasExistingParent, IsProactivelyLinked = 0, LinkedDate = todatetime(format_datetime(CreateDate,'yyyy-MM-dd')), ChildCreateDate = todatetime(format_datetime(CreateDate,'yyyy-MM-dd')), LinkResult, RunnerTitle = Title, OwningTeamName, Severity
 );
-let proactiveParentIncidentIds =
-materialize(
-    cluster('icmcluster').database('IcMDataWarehouse').Incidents
-    | where CreateDate > lookBackTm
-    | where Title startswith "[SdnRunner Proactive] Failed Signature:"
-    | where Severity in (2,25)
-    | project ProactiveParentIncidentId = IncidentId
+let relationshipLinkRows = materialize(
+    cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
+    | where Lens_IngestionTime > lookBackTm
+    | where RelationshipType =~ "DUPLICATE"
+    | where ChildIncidentId in (controlPathRunnerChildIncidentIds)
+    | summarize arg_max(Lens_IngestionTime, ParentIncidentId, ChildIncidentId) by ParentIncidentId, ChildIncidentId
+    | project ProactiveParentIncidentId = ParentIncidentId, ChildIncidentId, LinkedDate = Lens_IngestionTime
+);
+let proactiveParentIncidentIds = materialize(
+    relationshipLinkRows
+    | project ProactiveParentIncidentId
     | distinct ProactiveParentIncidentId
 );
 // Branch A: relationship-based “Completed”
 let relationshipLinkEvidence =
 (
     cluster('icmcluster').database('IcMDataWarehouse').IncidentsSnapshotV2
-    | where CreateDate > lookBackTm
     | where IncidentId in (proactiveParentIncidentIds)
+    | where Title startswith "[SdnRunner Proactive] Failed Signature:"
+    | where Severity in (2,25)
     // keep it narrow BEFORE join
     | project ProactiveParentIncidentId = IncidentId, Status, CreateDate, ParentIncidentId, Tags, Title, OwningTeamName, Severity
-    | join kind=inner hint.strategy=shuffle (              // apply hint only here [1](https://eng.ms/cid/607526aa-8bba-4c62-b21b-4bbc5db02b70/fid/20770719fb222ac6eeafa8829a9484bcea6fac7b1ec77a70db00057a853ea2b9)
-        cluster('icmcluster').database('IcMDataWarehouse').IncidentRelationships
-        | where Lens_IngestionTime > lookBackTm
-        | where RelationshipType =~ "DUPLICATE"
-        | where ParentIncidentId in (proactiveParentIncidentIds)
-        | summarize arg_max(Lens_IngestionTime, ParentIncidentId, ChildIncidentId) by ParentIncidentId, ChildIncidentId
-        | project ProactiveParentIncidentId = ParentIncidentId, ChildIncidentId, LinkedDate = Lens_IngestionTime
-    ) on ProactiveParentIncidentId
+    | join kind=inner hint.strategy=shuffle (relationshipLinkRows) on ProactiveParentIncidentId
     | extend HasProactiveParent = 1,
              IsProactivelyLinkedCompleted       = 1
     | project tostring(ProactiveParentIncidentId), RunnerIncidentId = ChildIncidentId, IsProactivelyLinkedCompleted, Status, Title, Tags, CreateDate, ParentIncidentId, HasProactiveParent, OwningTeamName, Severity, LinkedDate
